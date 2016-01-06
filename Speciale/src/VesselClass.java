@@ -9,6 +9,7 @@ public class VesselClass {
 	private double designSpeed;
 	private double fuelConsumptionDesign;
 	private double fuelConsumptionIdle;
+	private int noAvailable;
 	private int panamaFee;
 	private int suezFee;
 	
@@ -75,13 +76,20 @@ public class VesselClass {
 		return suezFee;
 	}
 
+	public int getNoAvailable() {
+		return noAvailable;
+	}
+
+	public void setNoAvailable(int noAvailable) {
+		this.noAvailable = noAvailable;
+	}
+
 	@Override
 	public String toString() {
-		return "VesselClass [name=" + name + ", capacity=" + capacity + ", TCRate=" + TCRate + ", draft=" + draft
-				+ ", minSpeed=" + minSpeed + ", maxSpeed=" + maxSpeed + ", designSpeed=" + designSpeed
-				+ ", fuelConsumptionDesign=" + fuelConsumptionDesign + ", fuelConsumptionIdle=" + fuelConsumptionIdle
-				+ ", panamaFee=" + panamaFee + ", suezFee=" + suezFee + "]";
+		return "VesselClass [name=" + name + ", noAvailable=" + noAvailable + ", capacity=" + capacity + ", TCRate="
+				+ TCRate + ", draft=" + draft + ", minSpeed=" + minSpeed + ", maxSpeed=" + maxSpeed + ", designSpeed="
+				+ designSpeed + ", fuelConsumptionDesign=" + fuelConsumptionDesign + ", fuelConsumptionIdle="
+				+ fuelConsumptionIdle + ", panamaFee=" + panamaFee + ", suezFee=" + suezFee + "]";
 	}
-	
 	
 }
