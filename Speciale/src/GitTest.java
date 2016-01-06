@@ -7,4 +7,7 @@ public class GitTest {
 	    System.out.println("Git should not be a conflict after all.");
 	}
 
+	public boolean conflict(){
+		return false;
+	}
 }
