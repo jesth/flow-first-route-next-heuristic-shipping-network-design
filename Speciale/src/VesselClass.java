@@ -9,13 +9,26 @@ public class VesselClass {
 	private double designSpeed;
 	private double fuelConsumptionDesign;
 	private double fuelConsumptionIdle;
-	private int noAvailable;
 	private int panamaFee;
 	private int suezFee;
+	private int noAvailable;
 	
 	public VesselClass(){
 	}
 
+	/**
+	 * @param name
+	 * @param capacity
+	 * @param TCRate
+	 * @param draft
+	 * @param minSpeed
+	 * @param maxSpeed
+	 * @param designSpeed
+	 * @param fuelConsumptionDesign
+	 * @param fuelConsumptionIdle
+	 * @param panamaFee
+	 * @param suezFee
+	 */
 	public VesselClass(String name, int capacity, int TCRate, double draft, double minSpeed, double maxSpeed,
 			double designSpeed, double fuelConsumptionDesign, double fuelConsumptionIdle, int panamaFee, int suezFee) {
 		super();
@@ -30,6 +43,7 @@ public class VesselClass {
 		this.fuelConsumptionIdle = fuelConsumptionIdle;
 		this.panamaFee = panamaFee;
 		this.suezFee = suezFee;
+		this.noAvailable = 0;
 	}
 
 	public String getName() {
