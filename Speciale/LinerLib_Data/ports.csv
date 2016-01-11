@@ -73,7 +73,6 @@ USDUT	Dutch Harbor	United States	United States	US West Coast	-166.53743	53.81	9.
 ZAELS	East London	South Africa	South Africa	South Africa	27.898	-32.989	8	199.00	97.00	15156.00	21.00
 MXESE	Ensenada	Mexico	Mexico	US West Coast	-116.61667	31.86667	9.5	297.00	148.00	11173.00	5.00
 ECESM	Esmeraldas	Ecuador	Ecuador	South America West Coast	-79.6875	0.9687	8	86.00	118.00	1171.00	11.00
-WP081	Fazendinha	Brazil	Brazil	Brazil	-47.7187	-0.9218	9.5	NULL	NULL		
 GBFXT	Felixstowe	United Kingdom	United Kingdom	UK	1.35	51.9531	13.5	250.00	108.00	12936.00	9.00
 MQFDF	Fort de France	Martinique	Martinique	US Gulf Coast	-61.081786	14.602804	9.5	468.00	360.00	6154.00	34.00
 FRFOS	Fos sur Mer	France	France	North Continent Europe	4.95	43.433333	12.5	390.00	497.00	2271.00	16.00
@@ -127,7 +126,6 @@ FIKTK	Kotka	Finland	Finland	North Continent Europe	26.92	60.47	9.5	137.00	13.00	
 NOKRS	Kristiansand	Norway	Norway	North Continent Europe	8	58.1562	8	141.00	109.00	24076.00	180.00
 KRKAN	Kwangyang	Korea. South	Korea. South	Korea	127.58	34.97	12.5	49.00	48.00	2453.00	1.00
 VELAG	La Guaira	Venezuela	Venezuela	Brazil	-66.93333	10.6	8	233.00	222.00	23772.00	26.00
-FRLPE	La Pallice	France	France	North Continent Europe	-1.19276	46.16774	8	NULL	NULL	23756.00	174.00
 THLCH	Laem Chabang	Thailand	Thailand	Singapore	100.991433	13.382173	9.5	95.00	1.00	899.00	6.00
 NOLAR	Larvik	Norway	Norway	North Continent Europe	10	59.0625	9.5	268.00	146.00	24891.00	162.00
 ESLPA	Las Palmas	Spain	Spain	West Med	-15.42	28.1	13.5	403.00	342.00	120.00	12.00
@@ -160,7 +158,6 @@ TRMER	Mersin	Turkey	Turkey	West Med	34.63	36.8	11	238.00	144.00	10519.00	0.00
 USMIA	Miami	United States	United States	US Gulf Coast	-80.20735	25.79371	11	400.00	411.00	6973.00	3.00
 CVMIN	Mindelo	Cape Verde Island	Cape Verde Island	West Africa	-24.99	16.89	9.5	267.00	51.00	24361.00	56.00
 LYMRA	Misuratah	Libya	Libya	West Med	15.0937	32.375	9.5	204.00	141.00	10966.00	9.00
-USMOB	Mobile	United States	United States	US East Coast	-88.0431	30.6942	11	NULL	NULL	4617.00	16.00
 KEMBA	Mombasa	Kenya	Kenya	South Africa	39.6562	-4.0468	8	223.00	125.00	7956.00	18.00
 LRMLW	Monrovia	Liberia	Liberia	West Africa	-10.7968	6.3125	8	184.00	97.00	32401.00	59.00
 UYMVD	Montevideo	Uruguay	Uruguay	Brazil	-56.183333	-34.883333	8	239.00	154.00	2834.00	18.00
@@ -281,7 +278,7 @@ BRVIX	Vitoria	Brazil	Brazil	Brazil	-40.22	-20.19	8	878.00	519.00	1181.00	19.00
 NAWVB	Walvis Bay	Namibia	Namibia	West Africa	14.506	-22.944	9.5	28.00	218.00	2138.00	9.00
 NZWLG	Wellington	New Zealand	New Zealand	Australia	174.7812	-41.2968	12.5	224.00	140.00	852.00	9.00
 ANWIL	Willemstad	Netherl. Antilles	Netherl. Antilles	US Gulf Coast	-68.91667	12.1	9.5	673.00	157.00	6535.00	34.00
-USILM	WilmingtonNC	United States	United States	US East Coast	-77.945	34.2256	11	NULL	NULL	18625.00	3.00
+USILM	WilmingtonNC	United States	United States	US East Coast	-77.945	34.2256	11	461	330	18625.00	3.00
 CNXMN	Xiamen	China	China	South China	118.08	24.45	12.5	108.00	57.00	5267.00	4.00
 CNTXG	Xingang	China	China	North China	117.56	38.562	13.5	172.00	49.00	5922.00	4.00
 CNYTN	Shenzhen	China	China	South China	114.26667	22.58333	13.5	177.00	78.00	7220.00	4.00
@@ -292,145 +289,3 @@ NOAES	Alesund	Norway	Norway	North Continent Europe	6.5	62.49	9.5	684.00	107.00	2
 DKAAR	Aarhus	Denmark	Denmark	North Continent Europe	10.216666	56.15	12.5	429.00	203.00	11861.00	7.00
 PAPCN	Panama Canal	Panama	Panama	US West Coast	-79.5312	8.9531	12.5	509.00	115.00	-1153.00	253.00
 REREU	Port Reunion	Reunion	Reunion	South Africa	55.533333	-20.883333	9.5	126.00	9.00	11598.00	15.00
-MXACA	Acapulco	Mexico	Mexico	US West Coast	16.51	-99.52					
-GHACC	Accra	Ghana	Ghana	West Africa							
-AUALH	Albany	Australia	Australia	Australia							
-ESALC	Alicante	Spain	Spain	West Med			12.5				
-ESLEI	Almeria	Spain	Spain	West Med	36.5	-2.27					
-NLAMS	Amsterdam	Netherlands	Netherlands	North Continent Europe							
-ITAOI	Ancona	Italy	Italy	West Med							
-CLANF	Antofagasta	Chile	Chile	South America West Coast	-23.38	-70.23	13.5				
-BRAJU	Aracaju	Brazil	Brazil	Brazil							
-ITATX	Arbatax	Italy	Italy	West Med	39.56	9.42					
-AUARD	Ardrossan	Australia	Australia	Australia							
-CANWP	Argentia	Canada	Canada	Canada East Coast	47.18	-54					
-ERASA	Assab				13	42.44					
-CKAVA	Avarua				-21.11	-159.46					
-PTAVE	Aveiro	Portugal	Portugal	West Med	40.38	-8.39					
-AUBWB	Barrow Island	Australia	Australia	Australia							
-IDBLW	Belawan	Indonesia	Indonesia	Singapore							
-BRBEL	Belem	Brazil	Brazil	Brazil	-1.27	-48.3					
-FRBOD	Bordeaux	France	France	North Continent Europe							
-BBBGI	Bridgetown										
-ITBDS	Brindisi	Italy	Italy	West Med							
-BRCDO	Cabedelo	Brazil	Brazil	Brazil							
-ESCAD	Cadiz	Spain	Spain	West Med			9.5				
-ITCAG	Cagliari	Italy	Italy	West Med							
-CUCAI	Caibarien	Cuba	Cuba	US Gulf Coast	22.31	-79.28					
-AUCLN	Cape Leeuwin	Australia	Australia	Australia							
-HTCAP	Cap-Haitien				19.45	-72.12					
-VECUP	Carupano	Venezuela	Venezuela	Brazil							
-PHCEB	Cebu	Philippines	Philippines	Singapore			8				
-ESCEU	Ceuta	Spain	Spain	West Med							
-IRZBR	Chah Bahar	Iran	Iran	Dubai							
-VICHA	Charlotte Amalie										
-JPCHW	Chimu Wan	Japan	Japan	Japan	26.23	127.55					
-ITCVV	Civitavecchia	Italy	Italy	West Med							
-CRCLN	Colon	Costa Rica	Costa Rica	US West Coast	9.55	-84.15					
-CADAR	Dartmouth	Canada	Canada	Canada East Coast	44.4	-63.34					
-PHDVO	Davao	Philippines	Philippines	Singapore			8				
-TRDRC	Derince	Turkey	Turkey	West Med							
-GBDVR	Dover	United Kingdom	United Kingdom	UK							
-CAFAH	Falmouth	Canada	Canada	Canada East Coast	45	-64.1					
-TRFET	Fethiye	Turkey	Turkey	West Med							
-ITFCO	Fiumicino	Italy	Italy	West Med							
-USFLL	Fort Lauderdale	United States	United States	US East Coast							
-TVFUN	Funafuti										
-PTFNC	Funchal	Portugal	Portugal	West Med							
-USGLS	Galveston	United States	United States	US East Coast							
-ITGEA	Gela	Italy	Italy	West Med							
-AUGTT	Georgetown	Australia	Australia	Australia							
-ESGIJ	Gijon	Spain	Spain	West Med	43.32	-5.4					
-LRGRE	Greenville	Liberia	Liberia	West Africa							
-JPHKD	Hakodate	Japan	Japan	Japan							
-AUHAL	Halifax	Australia	Australia	Australia	-18.35	146.17					
-AUHLT	Hamilton	Australia	Australia	Australia							
-AUHBA	Hobart	Australia	Australia	Australia	-42.52	147.18					
-PEILQ	Ilo	Peru	Peru	South America West Coast							
-PHILO	Iloilo	Philippines	Philippines	Singapore							
-GRNAI	Iraklion	Greece	Greece	West Med	35.2	22.43					
-LKKNK	Kankesanturai	Sri Lanka	Sri Lanka	Mumbai							
-SEKAA	Karlskrona	Sweden	Sweden	North Continent Europe							
-JPKWS	Kawasaki	Japan	Japan	Japan							
-AUKIT	Kingston	Australia	Australia	Australia							
-DKCPH	Kobenhavn	Denmark	Denmark	North Continent Europe			8				
-PGLAE	Lae										
-ESZGM	Lagos	Spain	Spain	West Med	36.48	-3.26					
-CYLCA	Larnaca	Cyprus	Cyprus	West Med							
-GBLOW	Lowestoft	United Kingdom	United Kingdom	UK							
-MYMKZ	Malacca	Malaysia	Malaysia	Singapore							
-MZMPM	Maputo										
-ARMDQ	Mar Del Plata	Argentina	Argentina	Brazil	-38	-57.33	8				
-FRETN	Menton	France	France	North Continent Europe	43.47	7.3					
-ITMSN	Messina	Italy	Italy	West Med							
-SOMGQ	Mogadishu										
-ITMNP	Monopoli	Italy	Italy	West Med							
-MXMRE	Morro Redondo	Mexico	Mexico	US West Coast							
-JPNGS	Nagasaki	Japan	Japan	Japan							
-IDNAH	Naha	Indonesia	Indonesia	Singapore							
-ITNAP	Napoli	Italy	Italy	West Med	40.5	14.15	9.5				
-BSNAS	Nassau	Bahamas	Bahamas	US Gulf Coast	25.05	-77.21					
-BRNAT	Natal	Brazil	Brazil	Brazil							
-AWORJ	Oranjestad										
-ASPPG	Pago Pago										
-ITPMO	Palermo	Italy	Italy	West Med							
-MZLMZ	Palma										
-IDPNJ	Panjang	Indonesia	Indonesia	Singapore							
-SRPBM	Paramaribo										
-SLPEP	Pepel	Sierra Leone	Sierra Leone	West Africa							
-GBPLY	Plymouth	United Kingdom	United Kingdom	UK	50.24	-4.07					
-PRPSE	Ponce	Puerto Rico	Puerto Rico	US Gulf Coast							
-PTPDL	Ponta Delgada	Portugal	Portugal	West Med	37.44	-25.4					
-JMPOT	Port Antonio										
-USNTD	Port Hueneme	United States	United States	US East Coast	34.08	-119.11					
-CVGRA	Porto Grande	Cape Verde Island	Cape Verde Island	West Africa	16.52	-25					
-CAPRR	Prince Rupert	Canada	Canada	Canada East Coast			13.5				
-CLPUQ	Punta Arenas	Chile	Chile	South America West Coast	-53.08	-70.56					
-VNUIH	Qui Nhon	Vietnam	Vietnam	Singapore							
-PGRAB	Rabaul										
-ITRAN	Ravenna	Italy	Italy	West Med			8				
-BRREC	Recife	Brazil	Brazil	Brazil							
-AURDS	Rhodes	Australia	Australia	Australia	-33.5	151.05					
-ZARCB	Richards Bay	South Africa	South Africa	South Africa			8				
-BRRIO	Rio De Janeiro	Brazil	Brazil	Brazil							
-PESVY	Salaverry	Peru	Peru	South America West Coast							
-ZASDB	Saldanha Bay	South Africa	South Africa	South Africa							
-BRSSA	Salvador	Brazil	Brazil	Brazil			9.5				
-ESSCI	San Ciprian	Spain	Spain	West Med							
-USSAN	San Diego	United States	United States	US East Coast							
-ARSFE	San Fernando	Argentina	Argentina	Brazil							
-ARSFO	San Francisco	Argentina	Argentina	Brazil	-31.25	-62.04					
-PESNX	San Nicolas	Peru	Peru	South America West Coast							
-ESEAS	San Sebastian	Spain	Spain	West Med							
-CUSCU	Santiago De Cuba	Cuba	Cuba	US Gulf Coast			8				
-CLSDO	Santo Domingo	Chile	Chile	South America West Coast	-33.38	-71.39					
-DESAS	Sassnitz	Germany	Germany	North Continent Europe							
-GBSFW	Scapa Flow	United Kingdom	United Kingdom	UK							
-GHSEK	Sekondi	Ghana	Ghana	West Africa							
-JPSHS	Shimonoseki	Japan	Japan	Japan							
-ITSIR	Siracusa	Italy	Italy	West Med							
-SESLI	Slite	Sweden	Sweden	North Continent Europe							
-IDSOQ	Sorong	Indonesia	Indonesia	Singapore							
-BESGS	St Georges	Belgium	Belgium	North Continent Europe	50.36	5.21					
-USSJ4	St Johns	United States	United States	US East Coast	43	-84.33					
-FRSNG	St Nazaire	France	France	North Continent Europe	44.12	4.36					
-TWTXG	Taichung	Taiwan	Taiwan	Singapore							
-PETYL	Talara	Peru	Peru	South America West Coast							
-MXTAM	Tampico	Mexico	Mexico	US West Coast	22.15	-97.52					
-TZTGT	Tanga	Tanzania	Tanzania	South Africa							
-JPTKY	Tokuyama	Japan	Japan	Japan							
-FOTOR	Torshavn				62.1	-64.6					
-BRTRM	Tramandai	Brazil	Brazil	Brazil	-29.58	-50.08					
-LKTRR	Trincomalee	Sri Lanka	Sri Lanka	Mumbai							
-INTUT	Tuticorin	India	India	Mumbai	8.47	78.08	9.5				
-JPUBJ	Ube	Japan	Japan	Japan							
-BRVPO	Valparaiso	Brazil	Brazil	Brazil							
-LVVNT	Ventspils										
-INVVA	Veraval	India	India	Mumbai							
-JPWTU	Wakamatsu	Japan	Japan	Japan							
-JPWAK	Wakayama	Japan	Japan	Japan							
-UMAWK	Wake Island										
-NZWAG	Wanganui	New Zealand	New Zealand	Australia							
-NZWRE	Whangarei	New Zealand	New Zealand	Australia							
-DEWVN	Wilhelmshaven	Germany	Germany	North Continent Europe	53.31	8.08					
-TZZNZ	Zanzibar	Tanzania	Tanzania	South Africa			8				
