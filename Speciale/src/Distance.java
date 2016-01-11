@@ -2,8 +2,8 @@
 public class Distance {
 	private Port origin;
 	private Port destination;
-	private double draft;
 	private int distance;
+	private double draft;
 	private boolean suez;
 	private boolean panama;
 	
@@ -14,17 +14,17 @@ public class Distance {
 	/**
 	 * @param origin
 	 * @param destination
-	 * @param draft
 	 * @param distance
+	 * @param draft
 	 * @param suez
 	 * @param panama
 	 */
-	public Distance(Port origin, Port destination, double draft, int distance, boolean suez, boolean panama) {
+	public Distance(Port origin, Port destination, int distance, double draft, boolean suez, boolean panama) {
 		super();
 		this.origin = origin;
 		this.destination = destination;
-		this.draft = draft;
 		this.distance = distance;
+		this.draft = draft;
 		this.suez = suez;
 		this.panama = panama;
 	}

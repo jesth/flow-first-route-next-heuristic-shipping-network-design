@@ -17,6 +17,20 @@ public class Port {
 		
 	}
 	
+	/**
+	 * @param UNLocode
+	 * @param name
+	 * @param country
+	 * @param cabotage
+	 * @param region
+	 * @param lng
+	 * @param lat
+	 * @param draft
+	 * @param moveCost
+	 * @param transshipCost
+	 * @param fixedCallCost
+	 * @param varCallCost
+	 */
 	public Port(String UNLocode, String name, String country, String cabotage, String region, double lng, double lat,
 			double draft, double moveCost, double transshipCost, double fixedCallCost, double varCallCost) {
 		super();
