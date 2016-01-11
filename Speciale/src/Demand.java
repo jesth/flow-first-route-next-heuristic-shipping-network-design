@@ -65,7 +65,7 @@ public class Demand {
 	 */
 	@Override
 	public String toString() {
-		return "Demand [origin=" + origin + ", destination=" + destination + ", demand=" + demand + ", rate=" + rate
+		return "Demand [origin=" + origin.getName() + ", destination=" + destination.getName() + ", demand=" + demand + ", rate=" + rate
 				+ ", maxTransitTime=" + maxTransitTime + "]";
 	}
 

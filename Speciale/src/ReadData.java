@@ -14,7 +14,7 @@ public class ReadData {
 		HashMap<String, Port> ports = new HashMap<String, Port>();
 		File input = new File("LinerLib_Data\\ports.csv");
 		Scanner scanner = new Scanner(input);
-		scanner.useDelimiter("\t");
+		scanner.useDelimiter("\t|\n");
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String UNLocode = scanner.next();
@@ -29,13 +29,13 @@ public class ReadData {
 			textIn = scanner.next();
 			double draft = Double.parseDouble(textIn);
 			textIn = scanner.next();
-			int moveCost = Integer.parseInt(textIn);
+			int moveCost = (int) Double.parseDouble(textIn);
 			textIn = scanner.next();
-			int transshipCost = Integer.parseInt(textIn);
+			int transshipCost = (int) Double.parseDouble(textIn);
 			textIn = scanner.next();
-			int fixedCallCost = Integer.parseInt(textIn);
+			int fixedCallCost = (int) Double.parseDouble(textIn);
 			textIn = scanner.next();
-			int varCallCost = Integer.parseInt(textIn);
+			int varCallCost = (int) Double.parseDouble(textIn);
 			Port newPort = new Port(UNLocode, name, country, cabotage, region, lng, lat, 
 					draft, moveCost, transshipCost, fixedCallCost, varCallCost);
 			ports.put(UNLocode, newPort);
@@ -49,7 +49,7 @@ public class ReadData {
 		ArrayList<Demand> demands = new ArrayList<Demand>();
 		File input = new File("LinerLib_Data\\"+fileName);
 		Scanner scanner = new Scanner(input);
-		scanner.useDelimiter("\t");
+		scanner.useDelimiter("\t|\n");
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String originUNLo = scanner.next();
@@ -74,7 +74,7 @@ public class ReadData {
 		ArrayList<Distance> distances = new ArrayList<Distance>();
 		File input = new File("LinerLib_Data\\dist_dense.csv");
 		Scanner scanner = new Scanner(input);
-		scanner.useDelimiter("\t");
+		scanner.useDelimiter("\t|\n");
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String originUNLo = scanner.next();
@@ -85,7 +85,7 @@ public class ReadData {
 			int distance = Integer.parseInt(textIn);	
 			textIn = scanner.next();
 			double draft;
-			if(textIn == ""){
+			if(textIn.isEmpty()){
 				draft = -1;
 			} else {
 				draft = Double.parseDouble(textIn);
@@ -114,7 +114,7 @@ public class ReadData {
 		ArrayList<VesselClass> vesselClasses = new ArrayList<VesselClass>();
 		File input = new File("LinerLib_Data\\fleet_data.csv");
 		Scanner scanner = new Scanner(input);
-		scanner.useDelimiter("\t");
+		scanner.useDelimiter("\t|\n");
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String name = scanner.next();
@@ -136,7 +136,7 @@ public class ReadData {
 			double fuelConsumptionIdle = Double.parseDouble(textIn);
 			textIn = scanner.next();
 			int panamaFee;
-			if(textIn == ""){
+			if(textIn.isEmpty()){
 				panamaFee = -1;
 			} else {
 				panamaFee = Integer.parseInt(textIn);
@@ -151,7 +151,7 @@ public class ReadData {
 		scanner.close();
 		input = new File("LinerLib_Data\\"+fileName);
 		Scanner scanner2 = new Scanner(input);
-		scanner2.useDelimiter("\t");
+		scanner2.useDelimiter("\t|\n");
 		scanner2.nextLine();
 		while(scanner2.hasNextLine()){
 			String name = scanner2.next();

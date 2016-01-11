@@ -4,9 +4,10 @@ import java.util.ArrayList;
 public class Graph {
 	private ArrayList<Node> nodes;
 	private ArrayList<Edge> edges;
+	private Data data;
 	
 	public Graph() throws FileNotFoundException {
-		Data data = new Data("Demand_Baltic.csv", "fleet_Baltic.csv");
+		data = new Data("Demand_Baltic.csv", "fleet_Baltic.csv");
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		createCentroids(data);
@@ -30,8 +31,15 @@ public class Graph {
 		}
 	}
 
-	public static void main() {
-		
+	public ArrayList<Node> getNodes() {
+		return nodes;
 	}
 
+	public ArrayList<Edge> getEdges() {
+		return edges;
+	}
+
+	public Data getData() {
+		return data;
+	}
 }
