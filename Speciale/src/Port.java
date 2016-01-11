@@ -12,6 +12,7 @@ public class Port {
 	private double transshipCost;
 	private double fixedCallCost;
 	private double varCallCost;
+	private Node centroidNode;
 	
 	public Port(){
 		
@@ -46,8 +47,10 @@ public class Port {
 		this.transshipCost = transshipCost;
 		this.fixedCallCost = fixedCallCost;
 		this.varCallCost = varCallCost;
+		this.centroidNode = null;
 	}
-	
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -105,5 +108,13 @@ public class Port {
 
 	public double getVarCallCost() {
 		return varCallCost;
+	}
+	
+	public Node getCentroidNode() {
+		return centroidNode;
+	}
+
+	public void setCentroidNode(Node centroidNode) {
+		this.centroidNode = centroidNode;
 	}
 }
