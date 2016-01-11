@@ -84,7 +84,12 @@ public class ReadData {
 			String textIn = scanner.next();
 			int distance = Integer.parseInt(textIn);	
 			textIn = scanner.next();
-			double draft = Double.parseDouble(textIn);	
+			double draft;
+			if(textIn == ""){
+				draft = -1;
+			} else {
+				draft = Double.parseDouble(textIn);
+			}
 			textIn = scanner.next();
 			int panamaInt = Integer.parseInt(textIn);
 			boolean panama = false;
@@ -130,7 +135,12 @@ public class ReadData {
 			textIn = scanner.next();
 			double fuelConsumptionIdle = Double.parseDouble(textIn);
 			textIn = scanner.next();
-			int panamaFee = Integer.parseInt(textIn);	
+			int panamaFee;
+			if(textIn == ""){
+				panamaFee = -1;
+			} else {
+				panamaFee = Integer.parseInt(textIn);
+			}
 			textIn = scanner.next();
 			int suezFee = Integer.parseInt(textIn);
 			VesselClass newVesselClass = new VesselClass(name, capacity, TCRate, draft, minSpeed, maxSpeed, 

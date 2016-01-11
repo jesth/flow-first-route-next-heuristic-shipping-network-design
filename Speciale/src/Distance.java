@@ -3,7 +3,8 @@ public class Distance {
 	private Port origin;
 	private Port destination;
 	private int distance;
-	private double draft;
+	//Draft is set to 14, which is not restricting, if no other value is supplied.
+	private double draft = 14;
 	private boolean suez;
 	private boolean panama;
 	
@@ -24,7 +25,9 @@ public class Distance {
 		this.origin = origin;
 		this.destination = destination;
 		this.distance = distance;
-		this.draft = draft;
+		if(draft != -1){
+			this.draft = draft;
+		}
 		this.suez = suez;
 		this.panama = panama;
 	}
