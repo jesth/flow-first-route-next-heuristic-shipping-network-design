@@ -1,8 +1,8 @@
 
 public class Node {
-	Port port;
-	Rotation rotation;
-	boolean centroid;
+	private Port port;
+	private Rotation rotation;
+	private boolean centroid;
 	
 	public Node(){
 	}

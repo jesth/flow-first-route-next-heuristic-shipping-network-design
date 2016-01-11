@@ -1,10 +1,10 @@
 
 public class Edge {
-	Node fromNode;
-	Node toNode;
-	int cost; 
-	int capacity;
-	boolean omission;
+	private Node fromNode;
+	private Node toNode;
+	private int cost; 
+	private int capacity;
+	private boolean omission;
 	
 	public Edge(){
 	}
@@ -25,6 +25,8 @@ public class Edge {
 	}
 
 	/** Constructor for omission edges.
+	 *  Cost is set default 1000$.
+	 *  Capacity is set default to Integer.MAX_VALUE.
 	 * @param fromNode
 	 * @param toNode
 	 */
