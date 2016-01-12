@@ -43,6 +43,8 @@ public class Edge {
 	}
 
 	/** Constructor for omission edges.
+	 *  Cost is set default 1000$.
+	 *  Capacity is set default to Integer.MAX_VALUE.
 	 * @param fromNode
 	 * @param toNode
 	 */
