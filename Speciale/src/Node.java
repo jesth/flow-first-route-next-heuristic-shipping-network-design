@@ -1,8 +1,10 @@
 
 public class Node {
-	Port port;
-	Rotation rotation;
-	boolean centroid;
+	private Port port;
+	private Rotation rotation;
+	private boolean centroid;
+	private boolean departure;
+	private boolean arrival;
 	
 	public Node(){
 	}
@@ -11,11 +13,13 @@ public class Node {
 	 * @param port
 	 * @param rotation
 	 */
-	public Node(Port port, Rotation rotation){
+	public Node(Port port, Rotation rotation, boolean departure){
 		super();
 		this.port = port;
 		this.rotation = rotation;
 		this.centroid = false;
+		this.departure = departure;
+		this.arrival = !departure;
 	}
 	
 	/** Constructor for centroids.
@@ -26,6 +30,8 @@ public class Node {
 		this.port = port;
 		this.rotation = null;
 		this.centroid = true;
+		this.departure = false;
+		this.arrival = false;
 	}
 
 	/**
@@ -47,6 +53,14 @@ public class Node {
 	 */
 	public boolean isCentroid() {
 		return centroid;
+	}
+	
+	public boolean isDeparture() {
+		return departure;
+	}
+
+	public boolean isArrival() {
+		return arrival;
 	}
 
 	/* (non-Javadoc)

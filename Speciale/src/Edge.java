@@ -1,27 +1,45 @@
 
 public class Edge {
-	Node fromNode;
-	Node toNode;
-	int cost; 
-	int capacity;
-	boolean omission;
+	private Node fromNode;
+	private Node toNode;
+	private int cost; 
+	private int capacity;
+	private double travelTime;
+	private boolean omission;
+	private boolean sail;
+	private boolean dwell;
+	private boolean transshipment;
+	private boolean loadUnload;
 	
 	public Edge(){
 	}
 
-	/** Constructor for "real" edges. I.e. not omission or transshipment.
+	/** Constructor for rotation edges. I.e. not omission, load/unload or transshipment. 
 	 * @param fromNode
 	 * @param toNode
 	 * @param cost
 	 * @param capacity
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime){
 		super();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = cost;
 		this.capacity = capacity;
+		this.travelTime = travelTime;
 		this.omission = false;
+		this.transshipment = false;
+		this.loadUnload = false;
+		if(fromNode.isDeparture() && toNode.isArrival()){
+			this.sail = true;	
+			this.dwell = false;
+		} else if(fromNode.isArrival() && toNode.isDeparture()){
+			this.sail = false;	
+			this.dwell = true;
+		} else {
+			throw new RuntimeException("Tried to construct a rotation edge where both "
+					+ "from and to node are of the same type (dep or arr).");
+		}
 	}
 
 	/** Constructor for omission edges.
@@ -34,7 +52,13 @@ public class Edge {
 		this.toNode = toNode;
 		this.cost = 1000;
 		this.capacity = Integer.MAX_VALUE;
+		this.travelTime = 0;
 		this.omission = true;
+		this.sail = false;
+		this.dwell = false;
+		this.transshipment = false;
+		this.loadUnload = false;
+		
 	}
 	
 	/**
@@ -70,6 +94,10 @@ public class Edge {
 	 */
 	public boolean isOmission() {
 		return omission;
+	}
+	
+	public double getTravelTime() {
+		return travelTime;
 	}
 
 	/* (non-Javadoc)
