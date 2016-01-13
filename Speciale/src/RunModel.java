@@ -4,8 +4,8 @@ public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Graph testGraph = new Graph();
-		for(Demand i : testGraph.getData().getDemands()){
-			System.out.println(i);
+		for(Node i : testGraph.getNodes()){
+			System.out.println(i.getDistances().length);
 		}
 	}
 

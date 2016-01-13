@@ -15,8 +15,12 @@ public class Graph {
 	}
 	
 	public void createCentroids(Data data){
+		//Sets the number of centroids in the Node class once and for all, and is then garbage collected.
+		new Node(data.getPorts().size());
+		int counter = 0;
 		for(Port i : data.getPorts().values()){
-			Node newCentroid = new Node(i);
+			Node newCentroid = new Node(i, counter);
+			counter++;
 			nodes.add(newCentroid);
 			i.setCentroidNode(newCentroid);
 		}

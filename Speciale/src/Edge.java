@@ -40,6 +40,7 @@ public class Edge {
 			throw new RuntimeException("Tried to construct a rotation edge where both "
 					+ "from and to node are of the same type (dep or arr).");
 		}
+		toNode.addIngoingEdge(this);
 	}
 
 	/** Constructor for omission edges.
@@ -60,7 +61,7 @@ public class Edge {
 		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
-		
+		toNode.addIngoingEdge(this);
 	}
 	
 	/**
