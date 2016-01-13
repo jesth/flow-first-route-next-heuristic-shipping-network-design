@@ -30,15 +30,10 @@ public class Distance {
 		this.distanceSuez = Integer.MAX_VALUE;
 		this.distancePanama = Integer.MAX_VALUE;
 		this.distanceSuezPanama = Integer.MAX_VALUE;
-		this.draftNone = 14;
-		this.draftSuez = 14;
-		this.draftPanama = 14;
-		this.draftSuezPanama = 14;
-//		if(draft != -1){
-//			this.draft = draft;
-//		}
-//		this.suez = suez;
-//		this.panama = panama;
+		this.draftNone = -1;
+		this.draftSuez = -1;
+		this.draftPanama = -1;
+		this.draftSuezPanama = -1;
 	}
 
 	/**

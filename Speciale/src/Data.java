@@ -4,9 +4,10 @@ import java.util.HashMap;
 
 public class Data {
 	private HashMap<String, Port> ports;
-	private ArrayList<Distance> distances;
+	private Distance[][] distances;
 	private ArrayList<Demand> demands;
 	private ArrayList<VesselClass> vesselClasses;
+	private int portStay = 24;
 	
 	public Data(String demandFileName, String vesselNoFileName) throws FileNotFoundException{
 		ports = ReadData.readPorts();
@@ -19,8 +20,12 @@ public class Data {
 		return ports;
 	}
 
-	public ArrayList<Distance> getDistances() {
+	public Distance[][] getDistances() {
 		return distances;
+	}
+	
+	public Distance getDistance(int portId1, int portId2){
+		return distances[portId1][portId2];
 	}
 
 	public ArrayList<Demand> getDemands() {
@@ -29,5 +34,9 @@ public class Data {
 
 	public ArrayList<VesselClass> getVesselClasses() {
 		return vesselClasses;
+	}
+	
+	public int getPortStay(){
+		return portStay;
 	}
 }
