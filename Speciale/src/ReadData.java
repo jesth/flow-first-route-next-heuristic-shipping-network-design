@@ -72,8 +72,8 @@ public class ReadData {
 		return demands;
 	}
 
-	public static ArrayList<Distance> readDistances(HashMap<String, Port> ports) throws FileNotFoundException{
-		ArrayList<Distance> distances = new ArrayList<Distance>();
+	public static Distance[][] readDistances(HashMap<String, Port> ports) throws FileNotFoundException{
+		Distance[][] distances = new Distance[ports.size()][ports.size()];
 		File input = new File("LinerLib_Data\\dist_dense.csv");
 		Scanner scanner = new Scanner(input);
 		scanner.useDelimiter("\t|\n");
@@ -86,10 +86,8 @@ public class ReadData {
 			String textIn = scanner.next();
 			int distance = Integer.parseInt(textIn);	
 			textIn = scanner.next();
-			double draft;
-			if(textIn.isEmpty()){
-				draft = -1;
-			} else {
+			double draft = 14;
+			if(!textIn.isEmpty()){
 				draft = Double.parseDouble(textIn);
 			}
 			textIn = scanner.next();
@@ -104,8 +102,21 @@ public class ReadData {
 			if(suezInt == 1){
 				suez = true;
 			}
-			Distance newDistance = new Distance(origin, destination, distance, draft, panama, suez);
-			distances.add(newDistance);
+			if(distances[origin.getPortId()][destination.getPortId()] == null){
+				distances[origin.getPortId()][destination.getPortId()] = new Distance(origin, destination);
+			}
+			if(panama == true && suez == true){
+				distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
+			} else if(panama == true && suez == false){
+				distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
+			} else if(panama == false && suez == true){
+				distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
+			} else {
+				distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
+			}
+			
+			
+			
 			scanner.nextLine();
 		}
 		scanner.close();
