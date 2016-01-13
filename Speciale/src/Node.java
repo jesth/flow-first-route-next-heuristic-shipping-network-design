@@ -6,12 +6,12 @@ public class Node {
 	private boolean centroid;
 	private boolean departure;
 	private boolean arrival;
-	private int centroidId;
 	private int[] distances;
 	private Edge[] predecessors;
 	private boolean[] unprocessed;
 	private static int noOfCentroids;
 	private ArrayList<Edge> ingoingEdges;
+	private ArrayList<Edge> outgoingEdges;
 	
 	/** Constructor for setting the number of centroids. To be used one time only!
 	 * @param noOfCentroids
@@ -31,28 +31,28 @@ public class Node {
 		this.centroid = false;
 		this.departure = departure;
 		this.arrival = !departure;
-		this.centroidId = -1;
 		this.distances = new int[noOfCentroids];
 		this.predecessors = new Edge[noOfCentroids];
 		this.unprocessed = new boolean[noOfCentroids];
 		this.ingoingEdges = new ArrayList<Edge>();
+		this.outgoingEdges = new ArrayList<Edge>();
 	}
 	
 	/** Constructor for centroids.
 	 * @param port
 	 */
-	public Node(Port port, int centroidId){
+	public Node(Port port){
 		super();
 		this.port = port;
 		this.rotation = null;
 		this.centroid = true;
 		this.departure = false;
 		this.arrival = false;
-		this.centroidId = centroidId;
 		this.distances = new int[noOfCentroids];
 		this.predecessors = new Edge[noOfCentroids];
 		this.unprocessed = new boolean[noOfCentroids];
 		this.ingoingEdges = new ArrayList<Edge>();
+		this.outgoingEdges = new ArrayList<Edge>();
 	}
 
 	/**
@@ -83,10 +83,6 @@ public class Node {
 	public boolean isArrival() {
 		return arrival;
 	}
-
-	public int getCentroidId() {
-		return centroidId;
-	}
 	
 	/**
 	 * @param centroidId
@@ -99,10 +95,12 @@ public class Node {
 	}
 	
 	public void setUnprocessed(int centroidId){
+		BellmanFord.addUnprocessedNode(this);
 		unprocessed[centroidId] = true;
 	}
 	
 	public void setProcessed(int centroidId){
+		BellmanFord.removeUnprocessedNode(this);
 		unprocessed[centroidId] = false;
 	}
 	
@@ -114,7 +112,7 @@ public class Node {
 		return distances[centroidId];
 	}
 	
-	public Edge getPredecessors(int centroidId){
+	public Edge getPredecessor(int centroidId){
 		return predecessors[centroidId];
 	}
 	
@@ -130,8 +128,16 @@ public class Node {
 		ingoingEdges.add(ingoingEdge);
 	}
 	
+	public void addOutgoingEdge(Edge outgoingEdge){
+		outgoingEdges.add(outgoingEdge);
+	}
+	
 	public ArrayList<Edge> getIngoingEdges() {
 		return ingoingEdges;
+	}
+	
+	public ArrayList<Edge> getOutgoingEdges() {
+		return outgoingEdges;
 	}
 
 	/* (non-Javadoc)
@@ -139,7 +145,7 @@ public class Node {
 	 */
 	@Override
 	public String toString() {
-		return "Node [port=" + port + ", rotation=" + rotation + ", centroid=" + centroid + "]";
+		return "Node [port=" + port.getName() + ", rotation=" + rotation + ", centroid=" + centroid + "]";
 	}
 	
 }

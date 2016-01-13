@@ -13,6 +13,7 @@ public class Port {
 	private double fixedCallCost;
 	private double varCallCost;
 	private Node centroidNode;
+	private int portId;
 	
 	public Port(){
 		
@@ -33,7 +34,7 @@ public class Port {
 	 * @param varCallCost
 	 */
 	public Port(String UNLocode, String name, String country, String cabotage, String region, double lng, double lat,
-			double draft, double moveCost, double transshipCost, double fixedCallCost, double varCallCost) {
+			double draft, double moveCost, double transshipCost, double fixedCallCost, double varCallCost, int portId) {
 		super();
 		this.UNLocode = UNLocode;
 		this.name = name;
@@ -48,6 +49,7 @@ public class Port {
 		this.fixedCallCost = fixedCallCost;
 		this.varCallCost = varCallCost;
 		this.centroidNode = null;
+		this.portId = portId;
 	}
 
 
@@ -112,6 +114,10 @@ public class Port {
 	
 	public Node getCentroidNode() {
 		return centroidNode;
+	}
+	
+	public int getPortId(){
+		return portId;
 	}
 
 	public void setCentroidNode(Node centroidNode) {

@@ -16,6 +16,7 @@ public class ReadData {
 		Scanner scanner = new Scanner(input);
 		scanner.useDelimiter("\t|\n");
 		scanner.nextLine();
+		int counter = 0;
 		while(scanner.hasNextLine()){
 			String UNLocode = scanner.next();
 			String name = scanner.next();
@@ -37,8 +38,9 @@ public class ReadData {
 			textIn = scanner.next();
 			int varCallCost = (int) Double.parseDouble(textIn);
 			Port newPort = new Port(UNLocode, name, country, cabotage, region, lng, lat, 
-					draft, moveCost, transshipCost, fixedCallCost, varCallCost);
+					draft, moveCost, transshipCost, fixedCallCost, varCallCost, counter);
 			ports.put(UNLocode, newPort);
+			counter++;
 			scanner.nextLine();
 		}
 		scanner.close();

@@ -4,6 +4,7 @@ public class Edge {
 	private Node toNode;
 	private int cost; 
 	private int capacity;
+	private int load;
 	private double travelTime;
 	private boolean omission;
 	private boolean sail;
@@ -41,6 +42,7 @@ public class Edge {
 					+ "from and to node are of the same type (dep or arr).");
 		}
 		toNode.addIngoingEdge(this);
+		fromNode.addOutgoingEdge(this);
 	}
 
 	/** Constructor for omission edges.
@@ -62,6 +64,7 @@ public class Edge {
 		this.transshipment = false;
 		this.loadUnload = false;
 		toNode.addIngoingEdge(this);
+		fromNode.addOutgoingEdge(this);
 	}
 	
 	/**
@@ -101,6 +104,26 @@ public class Edge {
 	
 	public double getTravelTime() {
 		return travelTime;
+	}
+	
+	public void resetLoad(){
+		load = 0;
+	}
+	
+	public void addLoad(int load){
+		this.load += load;
+	}
+
+	public int getLoad() {
+		return load;
+	}
+	
+	public String getFromPortUNLo(){
+		return fromNode.getPort().getUNLocode();
+	}
+	
+	public String getToPortUNLo(){
+		return toNode.getPort().getUNLocode();
 	}
 
 	/* (non-Javadoc)

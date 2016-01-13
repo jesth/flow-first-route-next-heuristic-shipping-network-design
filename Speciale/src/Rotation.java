@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class Rotation {
 	private VesselClass vesselClass;
-//	ArrayList<Port> ports;
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
 	private double rotationTime;
@@ -11,14 +10,13 @@ public class Rotation {
 	public Rotation(){
 	}
 
-	public Rotation(VesselClass vesselClass, ArrayList<Node> rotationNodes, 
-			ArrayList<Edge> rotationEdges) {
+	public Rotation(VesselClass vesselClass) {
 		super();
 		this.vesselClass = vesselClass;
-		this.rotationNodes = rotationNodes;
-		this.rotationEdges = rotationEdges;
-		this.rotationTime = calculateRotationTime();
-		this.noVessels = calculateNoVessels();
+		this.rotationNodes = new ArrayList<Node>();
+		this.rotationEdges = new ArrayList<Edge>();
+		this.rotationTime = 0;
+		this.noVessels = 0;
 	}
 	
 	public double calculateRotationTime(){
@@ -36,6 +34,14 @@ public class Rotation {
 
 	public VesselClass getVesselClass() {
 		return vesselClass;
+	}
+	
+	public void addRotationNode(Node node){
+		rotationNodes.add(node);
+	}
+	
+	public void addRotationEdge(Edge edge){
+		rotationEdges.add(edge);
 	}
 
 	public ArrayList<Node> getRotationNodes() {
