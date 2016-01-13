@@ -139,6 +139,10 @@ public class Node {
 	public ArrayList<Edge> getOutgoingEdges() {
 		return outgoingEdges;
 	}
+	
+	public int getPortId(){
+		return port.getPortId();
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -15,13 +15,13 @@ public class Edge {
 	public Edge(){
 	}
 
-	/** Constructor for rotation edges. I.e. not omission, load/unload or transshipment. 
+	/** Constructor for rotation, load/unload and transshipment edges, i.e. not omission edges. 
 	 * @param fromNode
 	 * @param toNode
 	 * @param cost
 	 * @param capacity
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime, boolean rotationEdge){
 		super();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
@@ -29,17 +29,21 @@ public class Edge {
 		this.capacity = capacity;
 		this.travelTime = travelTime;
 		this.omission = false;
+		this.sail = false;	
+		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
-		if(fromNode.isDeparture() && toNode.isArrival()){
+		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
 			this.sail = true;	
-			this.dwell = false;
-		} else if(fromNode.isArrival() && toNode.isDeparture()){
-			this.sail = false;	
+		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
+		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge) {
+			this.transshipment = true;
+		} else if(fromNode.isArrival() && toNode.isCentroid() || fromNode.isCentroid() && toNode.isDeparture()){
+			this.loadUnload = true;
 		} else {
-			throw new RuntimeException("Tried to construct a rotation edge where both "
-					+ "from and to node are of the same type (dep or arr).");
+			throw new RuntimeException("Tried to construct an edge that does not fit "
+					+ "with either sail, dwell, transshipment or load/unload definitions.");
 		}
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
@@ -102,6 +106,22 @@ public class Edge {
 		return omission;
 	}
 	
+	public boolean isSail() {
+		return sail;
+	}
+
+	public boolean isDwell() {
+		return dwell;
+	}
+
+	public boolean isTransshipment() {
+		return transshipment;
+	}
+
+	public boolean isLoadUnload() {
+		return loadUnload;
+	}
+
 	public double getTravelTime() {
 		return travelTime;
 	}

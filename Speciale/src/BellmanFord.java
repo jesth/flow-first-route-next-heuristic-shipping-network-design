@@ -14,8 +14,8 @@ public class BellmanFord {
 				i.setLabels(j, Integer.MAX_VALUE, null);
 			}
 			if(i.isCentroid()){
-				i.setLabels(i.getCentroidId(), 0, null);
-				i.setUnprocessed(i.getCentroidId());
+				i.setLabels(i.getPortId(), 0, null);
+				i.setUnprocessed(i.getPortId());
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class BellmanFord {
 		Node fromNode = demand.getOrigin().getCentroidNode();
 		Node toNode = demand.getDestination().getCentroidNode();
 		ArrayList<Edge> usedEdges = new ArrayList<Edge>();
-		int fromNodeId = fromNode.getCentroidId();
+		int fromNodeId = fromNode.getPortId();
 		Edge predecessor = toNode.getPredecessor(fromNodeId);
 		usedEdges.add(predecessor);
 		while(!predecessor.getFromNode().equals(fromNode)){
@@ -112,11 +112,24 @@ public class BellmanFord {
 		String str = "Demand of " + demand.getDemand() + " from " + demand.getOrigin().getUNLocode() + " to " + 
 		demand.getDestination().getUNLocode() + " uses route: \n";
 		int counter = 1;
+		boolean wasDwell = false;
+		str += "Leg " + counter + ": ";
 		for(Edge e : usedEdges){
-			str += "Leg " + counter + ": From " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + ". ";
-			if(e.isOmission()){
-				str += "Omission edge. ";
+			if(e.isSail() && !wasDwell){
+				str += e.getFromPortUNLo() + "-" + e.getToPortUNLo();
+			} else if(e.isSail() && wasDwell){
+				str += "-" + e.getToPortUNLo();
+				wasDwell = false;
+			} else if(e.isDwell()){
+				wasDwell = true;
+			} else if(e.isTransshipment()){
+				wasDwell = false;
+				counter++;
+				str += "\nLeg " + counter + ": ";
+			} else if(e.isOmission()){
+				str += e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " via omission edge";
 			} 
+			counter++;
 		}
 		str += "\n";
 		System.out.println(str);

@@ -74,6 +74,12 @@ public class ReadData {
 
 	public static Distance[][] readDistances(HashMap<String, Port> ports) throws FileNotFoundException{
 		Distance[][] distances = new Distance[ports.size()][ports.size()];
+		for(int i = 0; i < distances.length; i++){
+			for(int j = 0; j < distances[i].length; j++){
+				distances[i][j] = new Distance();
+			}
+		}
+
 		File input = new File("LinerLib_Data\\dist_dense.csv");
 		Scanner scanner = new Scanner(input);
 		scanner.useDelimiter("\t|\n");
@@ -102,21 +108,18 @@ public class ReadData {
 			if(suezInt == 1){
 				suez = true;
 			}
-			if(distances[origin.getPortId()][destination.getPortId()] == null){
-				distances[origin.getPortId()][destination.getPortId()] = new Distance(origin, destination);
+			try{
+				if(panama == true && suez == true){
+					distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
+				} else if(panama == true && suez == false){
+					distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
+				} else if(panama == false && suez == true){
+					distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
+				} else {
+					distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
+				}
+			} catch(NullPointerException e){
 			}
-			if(panama == true && suez == true){
-				distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
-			} else if(panama == true && suez == false){
-				distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
-			} else if(panama == false && suez == true){
-				distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
-			} else {
-				distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
-			}
-			
-			
-			
 			scanner.nextLine();
 		}
 		scanner.close();
