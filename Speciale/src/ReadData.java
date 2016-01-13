@@ -105,17 +105,15 @@ public class ReadData {
 			if(distances[origin.getPortId()][destination.getPortId()] == null){
 				distances[origin.getPortId()][destination.getPortId()] = new Distance(origin, destination);
 			}
-			if(panama == true && suez == true){
-				distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
-			} else if(panama == true && suez == false){
-				distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
-			} else if(panama == false && suez == true){
-				distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
-			} else {
+			if(suez == false && panama == false){
 				distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
+			} else if(suez == true && panama == false){
+				distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
+			} else if(suez == false && panama == true){
+				distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
+			} else {
+				distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
 			}
-			
-			
 			
 			scanner.nextLine();
 		}

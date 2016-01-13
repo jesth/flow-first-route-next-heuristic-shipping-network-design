@@ -132,14 +132,14 @@ public class Distance {
 	}
 	
 	public int getDistance(boolean suez, boolean panama){
-		if(panama == true && suez == true){
-			return distanceSuezPanama;
-		} else if(panama == true && suez == false){
-			return distancePanama;
-		} else if(panama == false && suez == true){
-			return distanceSuez;
-		} else {
+		if(suez == false && panama == false){
 			return distanceNone;
+		} else if(suez == true && panama == false){
+			return distanceSuez;
+		} else if(suez == false && panama == true){
+			return distancePanama;
+		} else {
+			return distanceSuezPanama;
 		}
 	}
 	
