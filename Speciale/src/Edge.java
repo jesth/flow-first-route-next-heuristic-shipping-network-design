@@ -3,6 +3,8 @@ public class Edge {
 	private Node fromNode;
 	private Node toNode;
 	private int cost; 
+	private int realCost;
+	private int lagrange;
 	private int capacity;
 	private int load;
 	private double travelTime;
@@ -26,6 +28,8 @@ public class Edge {
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = cost;
+		this.realCost = cost;
+		this.lagrange = 0;
 		this.capacity = capacity;
 		this.travelTime = travelTime;
 		this.omission = false;
@@ -50,16 +54,19 @@ public class Edge {
 	}
 
 	/** Constructor for omission edges.
-	 *  Cost is set default 1000$.
+	 *  Cost is set to the revenue of the OD-pair + 1000$.
 	 *  Capacity is set default to Integer.MAX_VALUE.
 	 * @param fromNode
 	 * @param toNode
+	 * @param revenue
 	 */
-	public Edge(Node fromNode, Node toNode){
+	public Edge(Node fromNode, Node toNode, int revenue){
 		super();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
-		this.cost = 1000;
+		this.cost = 1000 + revenue;
+		this.realCost = 1000;
+		this.lagrange = 0;
 		this.capacity = Integer.MAX_VALUE;
 		this.travelTime = 0;
 		this.omission = true;
@@ -90,6 +97,18 @@ public class Edge {
 	 */
 	public int getCost() {
 		return cost;
+	}
+	
+	public void addLagrange(int lagrange){
+		this.lagrange = this.lagrange + lagrange;
+		this.cost = this.realCost+this.lagrange;
+	}
+
+	/**
+	 * @return the realCost
+	 */
+	public int getRealCost() {
+		return realCost;
 	}
 
 	/**

@@ -28,7 +28,7 @@ public class Graph {
 		for(Demand i : data.getDemands()){
 			Node fromCentroid = i.getOrigin().getCentroidNode();
 			Node toCentroid = i.getDestination().getCentroidNode();
-			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid);
+			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, i.getRate());
 			edges.add(newOmissionEdge);
 		}
 	}
