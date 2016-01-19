@@ -11,6 +11,8 @@ public class Edge {
 	private boolean dwell;
 	private boolean transshipment;
 	private boolean loadUnload;
+	private Rotation rotation;
+	private int noInRotation;
 	
 	public Edge(){
 	}
@@ -21,7 +23,7 @@ public class Edge {
 	 * @param cost
 	 * @param capacity
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime, boolean rotationEdge){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime, boolean rotationEdge, Rotation rotation, int noInRotation){
 		super();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
@@ -33,6 +35,8 @@ public class Edge {
 		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
+		this.rotation = rotation;
+		this.noInRotation = noInRotation;
 		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
 			this.sail = true;	
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
@@ -67,6 +71,8 @@ public class Edge {
 		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
+		this.rotation = null;
+		this.noInRotation = -1;
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 	}
@@ -144,6 +150,14 @@ public class Edge {
 	
 	public String getToPortUNLo(){
 		return toNode.getPort().getUNLocode();
+	}
+	
+	public Rotation getRotation(){
+		return this.rotation;
+	}
+	
+	public int getNoInRotation(){
+		return this.noInRotation;
 	}
 
 	/* (non-Javadoc)

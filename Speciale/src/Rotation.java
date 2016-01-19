@@ -1,17 +1,21 @@
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Rotation {
+	private int id;
 	private VesselClass vesselClass;
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
 	private double rotationTime;
 	private int noVessels;
+	private static AtomicInteger idCounter = new AtomicInteger();
 	
 	public Rotation(){
 	}
 
 	public Rotation(VesselClass vesselClass) {
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.vesselClass = vesselClass;
 		this.rotationNodes = new ArrayList<Node>();
 		this.rotationEdges = new ArrayList<Edge>();
@@ -54,6 +58,10 @@ public class Rotation {
 
 	public int getNoVessels() {
 		return noVessels;
+	}
+	
+	public int getId(){
+		return id;
 	}
 
 	@Override

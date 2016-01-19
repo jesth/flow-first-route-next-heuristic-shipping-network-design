@@ -1,10 +1,13 @@
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Demand {
+	private int id;
 	private Port origin;
 	private Port destination;
 	private int demand;
 	private int rate;
 	private int maxTransitTime;
+	private static AtomicInteger idCounter = new AtomicInteger();
 	
 	public Demand(){
 	}
@@ -18,6 +21,7 @@ public class Demand {
 	 */
 	public Demand(Port origin, Port destination, int demand, int rate, int maxTransitTime) {
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.origin = origin;
 		this.destination = destination;
 		this.demand = demand;
@@ -58,6 +62,10 @@ public class Demand {
 	 */
 	public int getMaxTransitTime() {
 		return maxTransitTime;
+	}
+	
+	public int getId(){
+		return this.id;
 	}
 
 	/* (non-Javadoc)

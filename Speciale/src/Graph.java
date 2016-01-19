@@ -57,20 +57,20 @@ public class Graph {
 			arrNode  = createRotationNode(ports.get(i), rotation, false);
 			Distance distance = data.getDistance(depNode.getPortId(), arrNode.getPortId());
 			double travelTime = (double) distance.getDistance(suez, panama) / vesselClass.getDesignSpeed();
-			createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime);
+			createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime, i);
 			depNode = createRotationNode(ports.get(i), rotation, true);
-			createRotationEdge(rotation, arrNode, depNode, 0, vesselClass.getCapacity(), data.getPortStay());
+			createRotationEdge(rotation, arrNode, depNode, 0, vesselClass.getCapacity(), data.getPortStay(), -1);
 		}
 		//Rotation closed at port 0 outside of for loop.
 		arrNode  = createRotationNode(ports.get(0), rotation, false);
 		Distance distance = data.getDistance(depNode.getPortId(), arrNode.getPortId());
 		double travelTime = (double) distance.getDistance(suez, panama) / vesselClass.getDesignSpeed();
-		createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime);
-		createRotationEdge(rotation, arrNode, firstNode, 0, vesselClass.getCapacity(), data.getPortStay());
+		createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime, ports.size());
+		createRotationEdge(rotation, arrNode, firstNode, 0, vesselClass.getCapacity(), data.getPortStay(), -1);
 	}
 	
-	private void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, double travelTime){
-		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, travelTime, true);
+	private void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, double travelTime, int noInRotation){
+		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, travelTime, true, rotation, noInRotation);
 		rotation.addRotationEdge(newEdge);
 		edges.add(newEdge);
 	}
@@ -89,7 +89,7 @@ public class Graph {
 	
 	private void createLoadUnloadEdge(Node fromNode, Node toNode){
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
-		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, 0, false);
+		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, 0, false, null, -1);
 		edges.add(newEdge);
 	}
 

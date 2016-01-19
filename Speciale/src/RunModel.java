@@ -24,6 +24,7 @@ public class RunModel {
 		for(Demand i : testGraph.getData().getDemands()){
 			BellmanFord.printRoute(i);
 		}
+		MulticommodityFlow.saveODSol("C:\\Users\\Jesper T\\Documents\\test.csv", testGraph.getData().getDemands());
 	}
 
 }
