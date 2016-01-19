@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class BellmanFord {
 	private static ArrayList<Node> unprocessedNodes = new ArrayList<Node>();
 	private static Graph graph;
-	
+
 	/** Initializes all nodes to distance Integer.MAX_VALUE and predecessor to null. Exception: Centroids.
 	 * @param graph
 	 */
@@ -19,7 +19,7 @@ public class BellmanFord {
 			}
 		}
 	}
-	
+
 	public static void run(){
 		while(!unprocessedNodes.isEmpty()){
 			Node u = unprocessedNodes.get(0);
@@ -27,15 +27,20 @@ public class BellmanFord {
 		}
 		for(Edge e : graph.getEdges()){
 			e.resetLoad();
+			e.clearShortestPathOD();
 		}
-//		for(Demand i : graph.getData().getDemands()){
-//			ArrayList<Edge> route = getRoute(i);
-//			for(Edge e : route){
-//				e.addLoad(i.getDemand());
-//			}
-//		}
+		for(Demand d : graph.getData().getDemands()){
+			int lagrangeProfit = d.getRate();
+			ArrayList<Edge> route = getRoute(d);
+			for(Edge e : route){
+				e.addLoad(d.getDemand());
+				e.addShortestPathOD(d);
+				lagrangeProfit -= e.getCost();
+			}
+			d.setLagrangeProfit(lagrangeProfit);
+		}
 	}
-	
+
 	public static void relaxAll(Node u){
 		for(int i = 0; i < u.getDistances().length; i++){
 			if(u.isUnprocessed(i)){
@@ -46,7 +51,7 @@ public class BellmanFord {
 			}
 		}
 	}
-	
+
 	public static void relax(int centroidId, Edge edge){
 		Node u = edge.getFromNode();
 		Node v = edge.getToNode();
@@ -55,16 +60,24 @@ public class BellmanFord {
 			v.setUnprocessed(centroidId);
 		}
 	}
-	
+
 	public static void relaxEdge(Edge edge){
+//		System.out.println("Relaxing edge " + edge);
 		Node toNode = edge.getToNode();
 		for(int i = 0; i < toNode.getDistances().length; i++){
-			if(toNode.getPredecessor(i).equals(edge)){
-				resetNode(i, toNode);
+			try{
+				if(toNode.getPredecessor(i).equals(edge)){
+					resetNode(i, toNode);
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!");
+				} else {
+					System.out.println(toNode.getPredecessor(i).simplePrint());
+				}
+			} catch(NullPointerException e){
+				
 			}
 		}
 	}
-	
+
 	public static void resetNode(int centroidId, Node resetNode){
 		for(Edge e : resetNode.getOutgoingEdges()){
 			Node toNode = e.getToNode();
@@ -76,10 +89,10 @@ public class BellmanFord {
 		for(Edge e : resetNode.getIngoingEdges()){
 			Node fromNode = e.getFromNode();
 			fromNode.setUnprocessed(centroidId);
-			
+
 		}
 	}
-	
+
 	public static void addNodes(ArrayList<Node> unprocessedNodes){
 		for(Node i : unprocessedNodes){
 			if(!unprocessedNodes.contains(i)){
@@ -87,7 +100,7 @@ public class BellmanFord {
 			}
 		}
 	}
-	
+
 	/** Returns the route from one centroid/port to another centroid/port.
 	 * @param fromNode
 	 * @param toNode
@@ -106,11 +119,11 @@ public class BellmanFord {
 		}
 		return usedEdges;
 	}
-	
+
 	public static void printRoute(Demand demand){
 		ArrayList<Edge> usedEdges = getRoute(demand);
 		String str = "Demand of " + demand.getDemand() + " from " + demand.getOrigin().getUNLocode() + " to " + 
-		demand.getDestination().getUNLocode() + " uses route: \n";
+				demand.getDestination().getUNLocode() + " uses route: \n";
 		int counter = 1;
 		boolean wasDwell = false;
 		str += "Leg " + counter + ": ";
@@ -135,13 +148,13 @@ public class BellmanFord {
 		System.out.println(str);
 		//TODO: Not finished - needs rotation information for non-omission edges.
 	}
-	
+
 	public static void addUnprocessedNode(Node unprocessedNode){
 		if(!unprocessedNodes.contains(unprocessedNode)){
 			unprocessedNodes.add(unprocessedNode);
 		}
 	}
-	
+
 	public static void removeUnprocessedNode(Node unprocessedNode){
 		unprocessedNodes.remove(unprocessedNode);
 	}

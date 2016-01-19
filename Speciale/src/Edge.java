@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Edge {
 	private Node fromNode;
@@ -5,6 +6,7 @@ public class Edge {
 	private int cost; 
 	private int realCost;
 	private int lagrange;
+	private int lagrangeMultiplier;
 	private int capacity;
 	private int load;
 	private double travelTime;
@@ -15,6 +17,7 @@ public class Edge {
 	private boolean loadUnload;
 	private Rotation rotation;
 	private int noInRotation;
+	private ArrayList<Demand> shortestPathOD;
 	
 	public Edge(){
 	}
@@ -32,6 +35,7 @@ public class Edge {
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
+		this.lagrangeMultiplier = 0;
 		this.capacity = capacity;
 		this.travelTime = travelTime;
 		this.omission = false;
@@ -55,6 +59,7 @@ public class Edge {
 		}
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
+		shortestPathOD = new ArrayList<Demand>();
 	}
 
 	/** Constructor for omission edges.
@@ -71,6 +76,7 @@ public class Edge {
 		this.cost = 1000 + revenue;
 		this.realCost = 1000;
 		this.lagrange = 0;
+		this.lagrangeMultiplier = 0;
 		this.capacity = Integer.MAX_VALUE;
 		this.travelTime = 0;
 		this.omission = true;
@@ -82,6 +88,7 @@ public class Edge {
 		this.noInRotation = -1;
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
+		shortestPathOD = new ArrayList<Demand>();
 	}
 	
 	/**
@@ -105,8 +112,9 @@ public class Edge {
 		return cost;
 	}
 	
-	public void addLagrange(int lagrange){
-		this.lagrange = this.lagrange + lagrange;
+	public void addLagrange(int lagrangeInput, int iteration){
+		this.lagrangeMultiplier = lagrangeInput;
+		this.lagrange += (int) (lagrangeInput * 1.0 / (double) iteration) + 1;
 		this.cost = this.realCost+this.lagrange;
 	}
 
@@ -177,6 +185,36 @@ public class Edge {
 	
 	public int getNoInRotation(){
 		return this.noInRotation;
+	}
+	
+	public void clearShortestPathOD(){
+		shortestPathOD.clear();
+	}
+	
+	public void addShortestPathOD(Demand newOD){
+		shortestPathOD.add(newOD);
+	}
+	
+	public ArrayList<Demand> getShortestPathOD(){
+		return shortestPathOD;
+	}
+
+	public int getLagrangeMultiplier() {
+		return lagrangeMultiplier;
+	}
+
+	public String simplePrint(){
+		String str = "Edge: ";
+		if(sail || omission){
+			str+= fromNode.getPort().getUNLocode() + "-" + toNode.getPort().getUNLocode();
+			if(omission){
+				str+= " omission";
+			}
+		} else {
+			str+= "internal in " + fromNode.getPort().getUNLocode();
+		}
+		str +=  " with load: " + load + " and capacity: " + capacity;
+		return str;
 	}
 
 	/* (non-Javadoc)

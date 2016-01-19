@@ -7,39 +7,40 @@ import java.util.ArrayList;
 public class MulticommodityFlow {
 	private static Graph graph;
 	
-	public static void run(ArrayList<Demand> demands){
+	public static void initialize(Graph inputGraph){
+		graph = inputGraph;
+		BellmanFord.initialize(graph);
+	}
+	
+	public static void run(){
 		BellmanFord.run();
-		ArrayList<Edge> rotationRoute = new ArrayList<Edge>();
-
-		for (Demand d : demands){
-			rotationRoute = BellmanFord.getRoute(d);
-			for (Edge e : rotationRoute){
-				e.addLoad(d.getDemand());
-			}
-		}
-		int lagrange;
 		int iteration = 1;
 		boolean invalidFlow = true;
 		while (invalidFlow){
 			invalidFlow = false;
 			for (Edge e : graph.getEdges()){
 				if(e.getCapacity() < e.getLoad()){
+					System.out.println("Invalid flow on edge " + e.simplePrint());
 					invalidFlow = true;
-					lagrange = (e.getLoad() - e.getCapacity()) * 1/iteration;
-					e.addLagrange(lagrange);
+					int lowestProfit = Integer.MAX_VALUE;
+					for(Demand d : e.getShortestPathOD()){
+						if(d.getLagrangeProfit() < lowestProfit){
+							lowestProfit = d.getLagrangeProfit();
+							System.out.println("Lowest profit: " + lowestProfit);
+						}
+					}
+					System.out.println("Cost was " + e.getCost());
+//					System.out.println(e);
+					e.addLagrange(lowestProfit, iteration);
+					BellmanFord.relaxEdge(e);
+					System.out.println("Cost is now " + e.getCost());
 				}
 			}
 			iteration++;
 			BellmanFord.run();
-			for (Demand d : demands){
-				rotationRoute = BellmanFord.getRoute(d);
-				for (Edge e : rotationRoute){
-					e.addLoad(d.getDemand());
-				}
-			}
 		}
 	}
-
+	
 	public static void saveODSol(String fileName, ArrayList<Demand> demands){
 		try {
 			File fileOut = new File(fileName);

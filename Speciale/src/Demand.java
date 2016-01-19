@@ -6,6 +6,7 @@ public class Demand {
 	private Port destination;
 	private int demand;
 	private int rate;
+	private int lagrangeProfit;
 	private int maxTransitTime;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	
@@ -26,6 +27,7 @@ public class Demand {
 		this.destination = destination;
 		this.demand = demand;
 		this.rate = rate;
+		this.lagrangeProfit = 0;
 		this.maxTransitTime = maxTransitTime;
 	}
 
@@ -66,6 +68,14 @@ public class Demand {
 	
 	public int getId(){
 		return this.id;
+	}
+	
+	public int getLagrangeProfit() {
+		return lagrangeProfit;
+	}
+
+	public void setLagrangeProfit(int lagrangeProfit) {
+		this.lagrangeProfit = lagrangeProfit;
 	}
 
 	/* (non-Javadoc)

@@ -17,10 +17,15 @@ public class RunModel {
 		testGraph.createRotation(ports, vesselClass, false, false);
 		
 		
-		BellmanFord.initialize(testGraph);
-		System.out.println("Intialized");
-		BellmanFord.run();
-		System.out.println("Done");
+//		BellmanFord.initialize(testGraph);
+//		System.out.println("Intialized");
+//		BellmanFord.run();
+//		System.out.println("Done");
+//		for(Demand i : testGraph.getData().getDemands()){
+//			BellmanFord.printRoute(i);
+//		}
+		MulticommodityFlow.initialize(testGraph);
+		MulticommodityFlow.run();
 		for(Demand i : testGraph.getData().getDemands()){
 			BellmanFord.printRoute(i);
 		}
