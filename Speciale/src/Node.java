@@ -17,7 +17,7 @@ public class Node {
 	 * @param noOfCentroids
 	 */
 	public Node(int noOfCentroids){
-		this.noOfCentroids = noOfCentroids;
+		Node.noOfCentroids = noOfCentroids;
 	}
 
 	/** Constructor for nodes, i.e. not centroids.

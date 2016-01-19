@@ -28,12 +28,12 @@ public class BellmanFord {
 		for(Edge e : graph.getEdges()){
 			e.resetLoad();
 		}
-		for(Demand i : graph.getData().getDemands()){
-			ArrayList<Edge> route = getRoute(i);
-			for(Edge e : route){
-				e.addLoad(i.getDemand());
-			}
-		}
+//		for(Demand i : graph.getData().getDemands()){
+//			ArrayList<Edge> route = getRoute(i);
+//			for(Edge e : route){
+//				e.addLoad(i.getDemand());
+//			}
+//		}
 	}
 	
 	public static void relaxAll(Node u){
