@@ -73,7 +73,7 @@ public class BellmanFord {
 					System.out.println(toNode.getPredecessor(i).simplePrint());
 				}
 			} catch(NullPointerException e){
-				
+//				System.out.println("no pre");
 			}
 		}
 	}

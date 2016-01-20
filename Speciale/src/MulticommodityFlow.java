@@ -24,15 +24,29 @@ public class MulticommodityFlow {
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
 					for(Demand d : e.getShortestPathOD()){
-						if(d.getLagrangeProfit() < lowestProfit){
-							lowestProfit = d.getLagrangeProfit();
-							System.out.println("Lowest profit: " + lowestProfit);
+						if(d.getRate() < lowestProfit){
+							lowestProfit = d.getRate();
 						}
+						
+//						if(d.getLagrangeProfit() <= lowestProfit){
+//							lowestProfit = d.getLagrangeProfit();
+//							String str = "";
+//							if(e.isOmission())
+//								str += "omission";
+//							if(e.isDwell())
+//								str += "dwell";
+//							if(e.isLoadUnload())
+//								str += "loadUnload";
+//							if(e.isSail())
+//								str += "sail";
+//							System.out.println("Lowest profit: " + lowestProfit + " edge-type: " + str + " demandOrigin: " + d.getOrigin().getUNLocode() + " demandDest.: " + d.getDestination().getUNLocode() + " demand " + d.getDemand());
+//						}
 					}
 					System.out.println("Cost was " + e.getCost());
 //					System.out.println(e);
-					e.addLagrange(lowestProfit, iteration);
 					BellmanFord.relaxEdge(e);
+					e.addLagrange(lowestProfit, iteration);
+//					e.addLagrange(lowestProfit, iteration);
 					System.out.println("Cost is now " + e.getCost());
 				}
 			}
