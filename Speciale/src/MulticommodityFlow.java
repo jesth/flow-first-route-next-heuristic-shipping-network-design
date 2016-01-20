@@ -13,46 +13,37 @@ public class MulticommodityFlow {
 	}
 	
 	public static void run(){
-		BellmanFord.run();
 		int iteration = 1;
 		boolean invalidFlow = true;
-		while (invalidFlow){
+		while (invalidFlow && iteration <= 20){
+			BellmanFord.run();
 			invalidFlow = false;
 			for (Edge e : graph.getEdges()){
 				if(e.getCapacity() < e.getLoad()){
-					System.out.println("Invalid flow on edge " + e.simplePrint());
+					System.out.println("Invalid flow on " + e.simplePrint());
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
 					for(Demand d : e.getShortestPathOD()){
-						if(d.getRate() < lowestProfit){
-							lowestProfit = d.getRate();
+						System.out.println(d);
+						if(d.getLagrangeProfit() < lowestProfit){
+							lowestProfit = d.getLagrangeProfit();
+//							System.out.println("Lowest profit: " + lowestProfit);
 						}
-						
-//						if(d.getLagrangeProfit() <= lowestProfit){
-//							lowestProfit = d.getLagrangeProfit();
-//							String str = "";
-//							if(e.isOmission())
-//								str += "omission";
-//							if(e.isDwell())
-//								str += "dwell";
-//							if(e.isLoadUnload())
-//								str += "loadUnload";
-//							if(e.isSail())
-//								str += "sail";
-//							System.out.println("Lowest profit: " + lowestProfit + " edge-type: " + str + " demandOrigin: " + d.getOrigin().getUNLocode() + " demandDest.: " + d.getDestination().getUNLocode() + " demand " + d.getDemand());
-//						}
 					}
-					System.out.println("Cost was " + e.getCost());
-//					System.out.println(e);
+					e.addLagrange(lowestProfit, iteration);
+					System.out.println();
+					System.out.println("Sending " + e.simplePrint());
+					System.out.println();
 					BellmanFord.relaxEdge(e);
 					e.addLagrange(lowestProfit, iteration);
 //					e.addLagrange(lowestProfit, iteration);
 					System.out.println("Cost is now " + e.getCost());
 				}
 			}
+			System.out.println("Now running BellmanFord in iteration " + iteration);
 			iteration++;
-			BellmanFord.run();
 		}
+		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 	
 	public static void saveODSol(String fileName, ArrayList<Demand> demands){
