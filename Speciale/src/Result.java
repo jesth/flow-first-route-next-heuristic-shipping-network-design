@@ -1,20 +1,16 @@
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class Result extends Graph{
-	private ArrayList<Rotation> rotations;
+public class Result {
+	private static Graph graph;
+	private static ArrayList<Rotation> rotations;
 
-	public Result() throws FileNotFoundException{
-		super();
-	}
-	
-	public Result(ArrayList<Rotation> rotations) throws FileNotFoundException{
-		super();
-		this.rotations = rotations;
+	public static void initialize(Graph inputGraph){
+		graph = inputGraph;
+		rotations = new ArrayList<Rotation>();
 	}
 	
 	public void addRotation(Rotation rotation){
-		this.rotations.add(rotation);
+		rotations.add(rotation);
 	}
 	
 	/**
@@ -66,11 +62,11 @@ public class Result extends Graph{
 		int flowProfit = 0;
 		
 		int flowCost = 0;
-		for (Edge e : super.getEdges()){		
+		for (Edge e : graph.getEdges()){		
 			flowCost += e.getRealCost() * e.getLoad();
 		}
 		int flowRevenue = 0;
-		for (Demand d : super.getData().getDemands()){
+		for (Demand d : graph.getData().getDemands()){
 			flowRevenue += d.getDemand() * d.getRate();
 		}
 		flowProfit = flowRevenue - flowCost;
