@@ -7,6 +7,8 @@ public class Demand {
 	private int demand;
 	private int rate;
 	private int lagrangeProfit;
+	private int realProfit;
+	private int repOmissionFFE;
 	private int maxTransitTime;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	
@@ -28,6 +30,8 @@ public class Demand {
 		this.demand = demand;
 		this.rate = rate;
 		this.lagrangeProfit = 0;
+		this.realProfit = 0;
+		this.repOmissionFFE = 0;
 		this.maxTransitTime = maxTransitTime;
 	}
 
@@ -77,7 +81,31 @@ public class Demand {
 	public void setLagrangeProfit(int lagrangeProfit) {
 		this.lagrangeProfit = lagrangeProfit;
 	}
+	
+	public int getRealProfit() {
+		return realProfit;
+	}
 
+	public void setRealProfit(int realProfit) {
+		this.realProfit = realProfit;
+	}
+	
+	public int getOmissionProfit(){
+		return -rate - 1000;
+	}
+	
+	public int getRepOmissionFFE() {
+		return repOmissionFFE;
+	}
+
+	public void setRepOmissionFFE(int repOmissionFFE) {
+		this.repOmissionFFE = repOmissionFFE;
+	}
+
+	public void resetRepOmissionFFE(){
+		this.repOmissionFFE = 0;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
