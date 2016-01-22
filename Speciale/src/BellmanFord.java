@@ -21,15 +21,16 @@ public class BellmanFord {
 	}
 
 	public static void run(){
+		for(Edge e : graph.getEdges()){
+			e.resetLoad();
+			e.clearShortestPathOD();
+		}
 		while(!unprocessedNodes.isEmpty()){
 			Node u = unprocessedNodes.get(0);
 			relaxAll(u);
 		}
 		System.out.println("All unprocessed nodes processed.");
-		for(Edge e : graph.getEdges()){
-			e.resetLoad();
-			e.clearShortestPathOD();
-		}
+		
 		System.out.println("All edges reset.");
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
@@ -62,9 +63,11 @@ public class BellmanFord {
 	public static void relax(int centroidId, Edge edge){
 		Node u = edge.getFromNode();
 		Node v = edge.getToNode();
-		if(v.getDistance(centroidId) > u.getDistance(centroidId) + edge.getCost()){
-			v.setLabels(centroidId, u.getDistance(centroidId) + edge.getCost(), edge);
-			v.setUnprocessed(centroidId);
+		if(u.getDistance(centroidId) < Integer.MAX_VALUE){
+			if(v.getDistance(centroidId) > u.getDistance(centroidId) + edge.getCost()){
+				v.setLabels(centroidId, u.getDistance(centroidId) + edge.getCost(), edge);
+				v.setUnprocessed(centroidId);
+			}
 		}
 	}
 
@@ -81,8 +84,14 @@ public class BellmanFord {
 	}
 
 	public static void resetNode(int centroidId, Node resetNode){
+		int counter = 0;
 		for(Edge e : resetNode.getOutgoingEdges()){
 			Node toNode = e.getToNode();
+			if(toNode.getPredecessor(centroidId) == null){
+				counter++;
+				System.out.println("nullpointer to centroidId: " + centroidId);
+			}
+				
 			if(toNode.getPredecessor(centroidId) != null){
 				if(toNode.getPredecessor(centroidId).equals(e)){
 					resetNode(centroidId, toNode);
@@ -90,11 +99,12 @@ public class BellmanFord {
 				}
 			}
 		}
+//		System.out.println("number of nullpointers:" + counter);
 		resetNode.setLabels(centroidId, Integer.MAX_VALUE, null);
 		for(Edge e : resetNode.getIngoingEdges()){
 			Node fromNode = e.getFromNode();
 			fromNode.setUnprocessed(centroidId);
-
+			
 		}
 	}
 

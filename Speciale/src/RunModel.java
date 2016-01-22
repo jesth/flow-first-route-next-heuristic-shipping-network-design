@@ -15,8 +15,6 @@ public class RunModel {
 		ports.add(testGraph.getData().getPorts().get("RULED"));
 		
 		testGraph.createRotation(ports, vesselClass, false, false);
-		
-		
 //		BellmanFord.initialize(testGraph);
 //		System.out.println("Intialized");
 //		BellmanFord.run();
