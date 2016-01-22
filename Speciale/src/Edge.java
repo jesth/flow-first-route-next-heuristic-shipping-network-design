@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Edge {
+	private int id;
 	private Node fromNode;
 	private Node toNode;
 	private int cost; 
@@ -18,7 +20,8 @@ public class Edge {
 	private Rotation rotation;
 	private int noInRotation;
 	private ArrayList<Demand> shortestPathOD;
-	
+	private static AtomicInteger idCounter = new AtomicInteger();
+
 	public Edge(){
 	}
 
@@ -30,6 +33,7 @@ public class Edge {
 	 */
 	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime, boolean rotationEdge, Rotation rotation, int noInRotation){
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = cost;
@@ -71,6 +75,7 @@ public class Edge {
 	 */
 	public Edge(Node fromNode, Node toNode, int revenue){
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = 1000 + revenue;
@@ -91,6 +96,10 @@ public class Edge {
 		shortestPathOD = new ArrayList<Demand>();
 	}
 	
+	public int getId(){
+		return id;
+	}
+
 	/**
 	 * @return the fromNode
 	 */
@@ -111,10 +120,22 @@ public class Edge {
 	public int getCost() {
 		return cost;
 	}
-	
+
 	public void addLagrange(int lagrangeInput, int iteration){
-		this.lagrangeMultiplier = lagrangeInput;
-		this.lagrange += (int) (lagrangeInput * 1.0 / (double) iteration) + 1;
+		if(!this.dwell){ //Dwell edges can never be restricting.
+			this.lagrangeMultiplier = lagrangeInput;
+			this.lagrange += (int) (lagrangeInput * 1.0 / (double) iteration) + 1;
+//			System.out.println("Lagrange input " + lagrangeInput + " in iteration " + iteration + " leads to Lagrange " + this.lagrange);
+			this.cost = this.realCost+this.lagrange;
+		}
+	}
+
+	public int getLagrange(){
+		return lagrange;
+	}
+	
+	public void setLagrange(int lagrange){
+		this.lagrange = lagrange;
 		this.cost = this.realCost+this.lagrange;
 	}
 
@@ -138,7 +159,7 @@ public class Edge {
 	public boolean isOmission() {
 		return omission;
 	}
-	
+
 	public boolean isSail() {
 		return sail;
 	}
@@ -158,49 +179,61 @@ public class Edge {
 	public double getTravelTime() {
 		return travelTime;
 	}
-	
+
 	public void resetLoad(){
 		load = 0;
 	}
-	
+
 	public void addLoad(int load){
 		this.load += load;
+	}
+
+	public void setLoad(int load){
+		this.load = load;
 	}
 
 	public int getLoad() {
 		return load;
 	}
-	
+
 	public String getFromPortUNLo(){
 		return fromNode.getPort().getUNLocode();
 	}
-	
+
 	public String getToPortUNLo(){
 		return toNode.getPort().getUNLocode();
 	}
-	
+
 	public Rotation getRotation(){
 		return this.rotation;
 	}
-	
+
 	public int getNoInRotation(){
 		return this.noInRotation;
 	}
-	
+
 	public void clearShortestPathOD(){
 		shortestPathOD.clear();
 	}
-	
+
 	public void addShortestPathOD(Demand newOD){
 		shortestPathOD.add(newOD);
 	}
-	
+
 	public ArrayList<Demand> getShortestPathOD(){
 		return shortestPathOD;
 	}
 
-	public int getLagrangeMultiplier() {
-		return lagrangeMultiplier;
+//	public int getLagrangeMultiplier() {
+//		return lagrangeMultiplier;
+//	}
+	
+	public int getRepLoad(){
+		int repLoad = 0;
+		for(Demand d : shortestPathOD){
+			repLoad += (d.getDemand() - d.getRepOmissionFFE());
+		}
+		return repLoad;
 	}
 
 	public String simplePrint(){
@@ -225,5 +258,5 @@ public class Edge {
 		return "Edge [fromNode=" + fromNode + ", toNode=" + toNode + ", cost=" + cost + ", capacity=" + capacity
 				+ ", omission=" + omission + "]";
 	}
-	
+
 }

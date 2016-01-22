@@ -6,16 +6,21 @@ import java.util.ArrayList;
 
 public class MulticommodityFlow {
 	private static Graph graph;
-	
+	private static int[] bestLagranges;
+	private static int bestFlowProfit;
+
 	public static void initialize(Graph inputGraph){
 		graph = inputGraph;
 		BellmanFord.initialize(graph);
 	}
-	
+
 	public static void run(){
+		bestFlowProfit = Integer.MIN_VALUE;
+		bestLagranges = new int[graph.getEdges().size()];
 		int iteration = 1;
 		boolean invalidFlow = true;
 		while (invalidFlow){
+			findRepairFlow();
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			System.out.println();
 			BellmanFord.run();
@@ -31,18 +36,93 @@ public class MulticommodityFlow {
 						}
 					}
 					int wasCost = e.getCost();
-					e.addLagrange(lowestProfit, iteration);
+					e.addLagrange(lowestProfit+1000, iteration);
 					BellmanFord.relaxEdge(e);
 					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 					System.out.println();
 				}
 			}
+			int flowProfit = Result.getFlowProfit;
+			if(!invalidFlow && flowProfit > bestFlowProfit){
+				updateBestFlow(flowProfit);
+			}
+			implementBestFlow();
 			System.out.println();
 			iteration++;
 		}
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
+
+	private static int findRepairFlow(){
+		for(Demand d : graph.getData().getDemands()){
+			d.resetRepOmissionFFE();
+		}
+		int flowProfitPrev = Result.getFlowProfit();
+		int flowProfit = flowProfitPrev;
+		boolean invalidFlow = true;
+		while(invalidFlow){
+			invalidFlow = false;
+			for(Edge e : graph.getEdges()){
+				int overflow = e.getRepLoad() - e.getCapacity();
+				if(e.isSail() && overflow > 0){
+					invalidFlow = true;
+					int lowestProfit = Integer.MAX_VALUE;
+					Demand lowestProfitOD;
+					for(Demand d : e.getShortestPathOD()){
+						if(d.getLagrangeProfit() < lowestProfit){
+							lowestProfit = d.getLagrangeProfit();
+							lowestProfitOD = d;
+						}
+					}
+					int repOmissionFFE = Math.min(lowestProfitOD.getDemand(), overflow);
+					lowestProfitOD.setRepOmissionFFE(repOmissionFFE);
+					flowProfit -= lowestProfitOD.getRealProfit() * repOmissionFFE;
+					flowProfit += lowestProfitOD.getOmissionProfit() * repOmissionFFE;
+				}
+			}
+		}
+		if(flowProfit > flowProfitPrev){
+			throw new RuntimeException("Repair flow result invalid.");
+		}
+		if(flowProfit > bestFlowProfit){
+			updateBestFlow(flowProfit);
+		}
+		return flowProfit;
+	}
 	
+	private static void updateBestFlow(int bestFlowProfitIn){
+		for(Edge e : graph.getEdges()){
+			bestLagranges[e.getId()] = e.getLagrange();
+		}
+		bestFlowProfit = bestFlowProfitIn;
+	}
+
+	public static void implementBestFlow(){
+		for(Edge e : graph.getEdges()){
+			int bestLagrange = bestLagranges[e.getId()];
+			e.setLagrange(bestLagrange);
+		}
+		BellmanFord.reset();
+		BellmanFord.run();
+		findRepairFlow();
+		for(Edge e : graph.getEdges()){
+			e.setLoad(e.getRepLoad());
+		}
+		for(Demand d : graph.getData().getDemands()){
+			Node fromNode = d.getOrigin().getCentroidNode();
+			Node toNode = d.getDestination().getCentroidNode();
+			for(Edge e : fromNode.getOutgoingEdges()){
+				if(e.getToNode().equals(toNode) && e.isOmission()){
+					if(e.getLoad() != 0){
+						throw new RuntimeException("Setting load on omission edge that already has a load.");
+					}
+					e.setLoad(d.getRepOmissionFFE());
+					break;
+				}
+			}
+		}
+	}
+
 	public static void saveODSol(String fileName, ArrayList<Demand> demands){
 		try {
 			File fileOut = new File(fileName);

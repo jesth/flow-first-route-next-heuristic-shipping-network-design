@@ -9,6 +9,10 @@ public class BellmanFord {
 	 */
 	public static void initialize(Graph inputGraph){
 		graph = inputGraph;
+		reset();
+	}
+	
+	public static void reset(){
 		for(Node i : graph.getNodes()){
 			for(int j = 0; j < i.getDistances().length; j++){
 				i.setLabels(j, Integer.MAX_VALUE, null);
@@ -37,13 +41,16 @@ public class BellmanFord {
 		for(Demand d : demands){
 			//TODO: Add 1000 to lagrangeProfit???
 			int lagrangeProfit = d.getRate();
+			int realProfit = d.getRate();
 			ArrayList<Edge> route = getRoute(d);
 			for(Edge e : route){
 				e.addLoad(d.getDemand());
 				e.addShortestPathOD(d);
 				lagrangeProfit -= e.getCost();
+				realProfit -= e.getRealCost();
 			}
 			d.setLagrangeProfit(lagrangeProfit);
+			d.setRealProfit(realProfit);
 		}
 	}
 
