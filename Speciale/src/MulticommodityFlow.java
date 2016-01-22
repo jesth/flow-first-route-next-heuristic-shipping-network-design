@@ -67,7 +67,7 @@ public class MulticommodityFlow {
 				if(e.isSail() && overflow > 0){
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
-					Demand lowestProfitOD;
+					Demand lowestProfitOD = null;
 					for(Demand d : e.getShortestPathOD()){
 						if(d.getLagrangeProfit() < lowestProfit){
 							lowestProfit = d.getLagrangeProfit();

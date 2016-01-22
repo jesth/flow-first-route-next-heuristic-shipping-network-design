@@ -58,7 +58,7 @@ public class Result {
 		return objCost;
 	}
 	
-	public int getFlowProfit(){
+	public static int getFlowProfit(){
 		int flowProfit = 0;
 		
 		int flowCost = 0;
