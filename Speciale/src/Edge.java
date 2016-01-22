@@ -18,26 +18,35 @@ public class Edge {
 	private Rotation rotation;
 	private int noInRotation;
 	private ArrayList<Demand> shortestPathOD;
+	private int distanceKM;
+	private boolean suez;
+	private boolean panama;
 	
 	public Edge(){
 	}
 
-	/** Constructor for rotation, load/unload and transshipment edges, i.e. not omission edges. 
+	/** Constructor for rotation, load/unload and transshipment edges, i.e. not omission edges.
 	 * @param fromNode
 	 * @param toNode
+	 * @param distance
 	 * @param cost
 	 * @param capacity
+	 * @param rotationEdge
+	 * @param rotation
+	 * @param noInRotation
+	 * @param suez
+	 * @param panama
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, double travelTime, boolean rotationEdge, Rotation rotation, int noInRotation){
+	public Edge(Node fromNode, Node toNode, int distance, int cost, int capacity, boolean rotationEdge, Rotation rotation, int noInRotation, boolean suez, boolean panama){
 		super();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
+		this.distanceKM = distance;
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
 		this.lagrangeMultiplier = 0;
 		this.capacity = capacity;
-		this.travelTime = travelTime;
 		this.omission = false;
 		this.sail = false;	
 		this.dwell = false;
@@ -46,13 +55,20 @@ public class Edge {
 		this.rotation = rotation;
 		this.noInRotation = noInRotation;
 		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
-			this.sail = true;	
+			this.sail = true;
+			this.travelTime = distance/rotation.getVesselClass().getDesignSpeed();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
+			//TODO hard-code
+			this.travelTime = 24;
 		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge) {
 			this.transshipment = true;
+			// TODO hard-code
+			this.travelTime = 24;
 		} else if(fromNode.isArrival() && toNode.isCentroid() || fromNode.isCentroid() && toNode.isDeparture()){
 			this.loadUnload = true;
+			// TODO hard-code
+			this.travelTime = 0;
 		} else {
 			throw new RuntimeException("Tried to construct an edge that does not fit "
 					+ "with either sail, dwell, transshipment or load/unload definitions.");
@@ -60,6 +76,8 @@ public class Edge {
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 		shortestPathOD = new ArrayList<Demand>();
+		this.suez = suez;
+		this.panama = panama;
 	}
 
 	/** Constructor for omission edges.
@@ -74,7 +92,7 @@ public class Edge {
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = 1000 + revenue;
-		this.realCost = 1000;
+		this.realCost = 1000 + revenue;
 		this.lagrange = 0;
 		this.lagrangeMultiplier = 0;
 		this.capacity = Integer.MAX_VALUE;
@@ -89,6 +107,9 @@ public class Edge {
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 		shortestPathOD = new ArrayList<Demand>();
+		this.distanceKM = 0;
+		this.suez = false;
+		this.panama = false;
 	}
 	
 	/**
@@ -153,6 +174,20 @@ public class Edge {
 
 	public boolean isLoadUnload() {
 		return loadUnload;
+	}
+
+	/**
+	 * @return the suez
+	 */
+	public boolean isSuez() {
+		return suez;
+	}
+
+	/**
+	 * @return the panama
+	 */
+	public boolean isPanama() {
+		return panama;
 	}
 
 	public double getTravelTime() {
