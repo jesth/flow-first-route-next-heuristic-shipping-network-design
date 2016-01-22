@@ -42,7 +42,7 @@ public class MulticommodityFlow {
 					System.out.println();
 				}
 			}
-			int flowProfit = Result.getFlowProfit;
+			int flowProfit = Result.getFlowProfit();
 			if(!invalidFlow && flowProfit > bestFlowProfit){
 				updateBestFlow(flowProfit);
 			}

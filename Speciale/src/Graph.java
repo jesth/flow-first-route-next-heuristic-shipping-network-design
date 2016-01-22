@@ -53,24 +53,25 @@ public class Graph {
 		Node firstNode = createRotationNode(ports.get(0), rotation, true);
 		Node depNode = firstNode;
 		Node arrNode;
+		int distanceKM;
 		for(int i = 1; i < ports.size(); i++){
 			arrNode  = createRotationNode(ports.get(i), rotation, false);
 			Distance distance = data.getDistance(depNode.getPortId(), arrNode.getPortId());
-			double travelTime = (double) distance.getDistance(suez, panama) / vesselClass.getDesignSpeed();
-			createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime, i);
+			distanceKM = distance.getDistance(suez, panama);
+			createRotationEdge(rotation, depNode, arrNode, distanceKM, 0, vesselClass.getCapacity(), i, suez, panama);
 			depNode = createRotationNode(ports.get(i), rotation, true);
-			createRotationEdge(rotation, arrNode, depNode, 0, vesselClass.getCapacity(), data.getPortStay(), -1);
+			createRotationEdge(rotation, arrNode, depNode, distanceKM, 0, vesselClass.getCapacity(), -1, suez, panama);
 		}
 		//Rotation closed at port 0 outside of for loop.
 		arrNode  = createRotationNode(ports.get(0), rotation, false);
 		Distance distance = data.getDistance(depNode.getPortId(), arrNode.getPortId());
-		double travelTime = (double) distance.getDistance(suez, panama) / vesselClass.getDesignSpeed();
-		createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), travelTime, ports.size());
-		createRotationEdge(rotation, arrNode, firstNode, 0, vesselClass.getCapacity(), data.getPortStay(), -1);
+		distanceKM = distance.getDistance(suez, panama); 
+		createRotationEdge(rotation, depNode, arrNode, distanceKM, 0, vesselClass.getCapacity(), ports.size(), suez, panama);
+		createRotationEdge(rotation, arrNode, firstNode, distanceKM, 0, vesselClass.getCapacity(), -1, suez, panama);
 	}
 	
-	private void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, double travelTime, int noInRotation){
-		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, travelTime, true, rotation, noInRotation);
+	private void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int distanceKM, int cost, int capacity, int noInRotation, boolean suez, boolean panama){
+		Edge newEdge = new Edge(fromNode, toNode, distanceKM, cost, capacity, true, rotation, noInRotation, suez, panama);
 		rotation.addRotationEdge(newEdge);
 		edges.add(newEdge);
 	}
@@ -89,7 +90,7 @@ public class Graph {
 	
 	private void createLoadUnloadEdge(Node fromNode, Node toNode){
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
-		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, 0, false, null, -1);
+		Edge newEdge = new Edge(fromNode, toNode, 0, loadUnloadCost, Integer.MAX_VALUE, false, null, -1, false, false);
 		edges.add(newEdge);
 	}
 

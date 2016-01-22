@@ -9,6 +9,7 @@ public class Rotation {
 	private double rotationTime;
 	private int noVessels;
 	private static AtomicInteger idCounter = new AtomicInteger();
+	private boolean active;
 	
 	public Rotation(){
 	}
@@ -21,6 +22,7 @@ public class Rotation {
 		this.rotationEdges = new ArrayList<Edge>();
 		this.rotationTime = 0;
 		this.noVessels = 0;
+		this.active = true;
 	}
 	
 	public double calculateRotationTime(){
@@ -62,6 +64,37 @@ public class Rotation {
 	
 	public int getId(){
 		return id;
+	}
+
+	/**
+	 * @return active or not
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+
+	/**
+	 * Set rotation to active
+	 */
+	public void setActive() {
+		this.active = true;
+	}
+
+	
+	/**
+	 * Set rotation to inactive
+	 */
+	public void setInactive(){
+		this.active = false;
+	}
+	
+	
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override
