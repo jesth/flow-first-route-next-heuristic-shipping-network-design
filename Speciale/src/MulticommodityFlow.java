@@ -15,7 +15,9 @@ public class MulticommodityFlow {
 	public static void run(){
 		int iteration = 1;
 		boolean invalidFlow = true;
-		while (invalidFlow && iteration <= 20){
+		while (invalidFlow){
+			System.out.println("Now running BellmanFord in iteration " + iteration);
+			System.out.println();
 			BellmanFord.run();
 			invalidFlow = false;
 			for (Edge e : graph.getEdges()){
@@ -24,23 +26,18 @@ public class MulticommodityFlow {
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
 					for(Demand d : e.getShortestPathOD()){
-						System.out.println(d);
 						if(d.getLagrangeProfit() < lowestProfit){
 							lowestProfit = d.getLagrangeProfit();
-//							System.out.println("Lowest profit: " + lowestProfit);
 						}
 					}
-					System.out.println("Cost was " + e.getCost());
-//					System.out.println(e);
+					int wasCost = e.getCost();
 					e.addLagrange(lowestProfit, iteration);
-					System.out.println();
-					System.out.println("Sending " + e.simplePrint());
-					System.out.println();
 					BellmanFord.relaxEdge(e);
-					System.out.println("Cost is now " + e.getCost());
+					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+					System.out.println();
 				}
 			}
-			System.out.println("Now running BellmanFord in iteration " + iteration);
+			System.out.println();
 			iteration++;
 		}
 		System.out.println("Exiting while loop after iteration " + iteration);
