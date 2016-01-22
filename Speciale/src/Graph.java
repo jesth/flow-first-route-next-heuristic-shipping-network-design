@@ -8,6 +8,7 @@ public class Graph {
 	
 	public Graph() throws FileNotFoundException {
 		data = new Data("Demand_Baltic.csv", "fleet_Baltic.csv");
+		Result.initialize(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		createCentroids();
