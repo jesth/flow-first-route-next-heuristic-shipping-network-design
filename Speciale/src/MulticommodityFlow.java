@@ -9,11 +9,23 @@ public class MulticommodityFlow {
 	private static int[] bestLagranges;
 	private static int bestFlowProfit;
 
+	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
+	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
+	 */
 	public static void initialize(Graph inputGraph){
 		graph = inputGraph;
 		BellmanFord.initialize(graph);
 	}
 
+	/** Runs the multicommodity flow algorithm by:
+	 * <br>1) Running the Bellman Ford-algorithm.
+	 * <br>2) If the flow is illegal: 
+	 * <br>&nbsp&nbsp&nbsp a) Lagrange values are computed.
+	 * <br>&nbsp&nbsp&nbsp b) The illegal edges are relaxed by BellmanFord.relaxEdge(e).
+	 * <br>&nbsp&nbsp&nbsp c) The flow is repaired by findRepairFlow().
+	 * <br>&nbsp&nbsp&nbsp d) The process is repeated from step 1).
+	 * <br>3) If the flow is legal, the best found flow is implemented.
+	 */
 	public static void run(){
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestLagranges = new int[graph.getEdges().size()];
@@ -53,6 +65,16 @@ public class MulticommodityFlow {
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 
+	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
+	 * <br>1) Running through all edges in unprioritized order.
+	 * <br>2) Only sail edges are considered, as these are the only ones that can 
+	 * have a restricting capacity (dwell edges can never be restricting).
+	 * <br>3) If the capacity is violated, the profit per container of each of the serviced OD pairs is considered.
+	 * <br>4) The OD pair with the lowest profit is chosen for removal to omission edges.
+	 * <br>5) Containers are removed down to the capacity limit, or until all containers of the OD pair have been removed.
+	 * <br>6) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
+	 * @return The profit of the repaired flow.
+	 */
 	private static int findRepairFlow(){
 		for(Demand d : graph.getData().getDemands()){
 			d.resetRepOmissionFFE();
@@ -90,6 +112,9 @@ public class MulticommodityFlow {
 		return flowProfit;
 	}
 
+	/** Updates the best flow to the current flow. Saves the Lagranges and objective value of the current flow. 
+	 * @param bestFlowProfitIn - the profit of the current flow that is to be saved as the best flow.
+	 */
 	private static void updateBestFlow(int bestFlowProfitIn){
 		for(Edge e : graph.getEdges()){
 			bestLagranges[e.getId()] = e.getLagrange();
@@ -97,6 +122,13 @@ public class MulticommodityFlow {
 		bestFlowProfit = bestFlowProfitIn;
 	}
 
+	/** Implements the saved best flow by:  
+	 * <br>1) Resetting the labels saved by previous runs of the Bellman-Ford algorithm.
+	 * <br>2) Setting the Lagrange values to the saved best values.
+	 * <br>3) Running Bellman-Ford again to obtain the corresponding flow.
+	 * <br>4) Running the findRepairFlow()-function to find the number of excess containers on all edges.
+	 * <br>5) Setting the load on all edges to the feasible load found by the findRepairFlow()-function.
+	 */
 	public static void implementBestFlow(){
 		for(Edge e : graph.getEdges()){
 			int bestLagrange = bestLagranges[e.getId()];
@@ -120,6 +152,10 @@ public class MulticommodityFlow {
 		}
 	}
 
+	/** Saves the routes of all demand pairs in csv-format for easy handling in Excel.
+	 * @param fileName - the complete path or name of the file to be saved. End on .csv.
+	 * @param demands - the list of demands to be saved.
+	 */
 	public static void saveODSol(String fileName, ArrayList<Demand> demands){
 		try {
 			File fileOut = new File(fileName);
