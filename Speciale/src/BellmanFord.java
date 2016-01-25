@@ -39,10 +39,6 @@ public class BellmanFord {
 			Node u = unprocessedNodes.get(0);
 			relaxAll(u);
 		}
-		for(Edge e : graph.getEdges()){
-			e.resetLoad();
-			e.clearShortestPathOD();
-		}
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
 			//TODO: Add 1000 to lagrangeProfit???

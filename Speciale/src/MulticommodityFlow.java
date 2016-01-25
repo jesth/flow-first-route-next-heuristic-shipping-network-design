@@ -89,7 +89,7 @@ public class MulticommodityFlow {
 		}
 		return flowProfit;
 	}
-	
+
 	private static void updateBestFlow(int bestFlowProfitIn){
 		for(Edge e : graph.getEdges()){
 			bestLagranges[e.getId()] = e.getLagrange();
@@ -113,9 +113,6 @@ public class MulticommodityFlow {
 			Node toNode = d.getDestination().getCentroidNode();
 			for(Edge e : fromNode.getOutgoingEdges()){
 				if(e.getToNode().equals(toNode) && e.isOmission()){
-					if(e.getLoad() != 0){
-						throw new RuntimeException("Setting load on omission edge that already has a load.");
-					}
 					e.setLoad(d.getRepOmissionFFE());
 					break;
 				}
@@ -131,24 +128,34 @@ public class MulticommodityFlow {
 			out.newLine();
 			for(Demand d : demands){
 				ArrayList<Edge> route = BellmanFord.getRoute(d);
-				for(Edge e : route){
-					if(e.isSail() || e.isOmission()){
-						if(e.isOmission()){
-							out.write(";;");
-						} else {
-							out.write(e.getRotation().getId()+";"+e.getNoInRotation()+";");
+				if(d.getDemand() > d.getRepOmissionFFE()){
+					for(Edge e : route){
+						if(e.isSail() || e.isOmission()){
+							if(e.isOmission()){
+								out.write(";;");
+							} else {
+								out.write(e.getRotation().getId()+";"+e.getNoInRotation()+";");
+							}
+							out.write(d.getId()+";");
+							out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
+							out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
+							out.write(d.getDemand()-d.getRepOmissionFFE()+";");
+							if(e.isOmission()){
+								out.write("1");
+							} else {
+								out.write("0");
+							}
+							out.newLine();
 						}
-						out.write(d.getId()+";");
-						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
-						out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
-						out.write(d.getDemand()+";");
-						if(e.isOmission()){
-							out.write("1");
-						} else {
-							out.write("0");
-						}
-						out.newLine();
 					}
+				} if(d.getRepOmissionFFE() > 0){
+					out.write(";;");
+					out.write(d.getId()+";");
+					out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
+					out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
+					out.write(d.getRepOmissionFFE()+";");
+					out.write("1");
+					out.newLine();
 				}
 			}
 			out.close();
