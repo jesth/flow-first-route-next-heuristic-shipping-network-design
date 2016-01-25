@@ -12,6 +12,9 @@ public class BellmanFord {
 		reset();
 	}
 	
+	/** Resets the graph, i.e. setting all labels to Integer.MAX_VALUE and null as predecessor.
+	 * Sets centroids to unprocessed.
+	 */
 	public static void reset(){
 		for(Node i : graph.getNodes()){
 			for(int j = 0; j < i.getDistances().length; j++){
@@ -24,13 +27,16 @@ public class BellmanFord {
 		}
 	}
 
+	/** Runs the BellmanFord algorithm.
+	 * Also adds the demand load, shortest path OD relations, lagrange profit and real profit to relevant edges.
+	 */
 	public static void run(){
 		for(Edge e : graph.getEdges()){
 			e.resetLoad();
 			e.clearShortestPathOD();
 		}
 		while(!unprocessedNodes.isEmpty()){
-			Node u = unprocessedNodes.get(0);
+			Node u = unprocessedNodes.remove(0);
 			relaxAll(u);
 		}
 		ArrayList<Demand> demands = graph.getData().getDemands();
@@ -50,6 +56,9 @@ public class BellmanFord {
 		}
 	}
 
+	/** Relaxes outgoing edges for Node u, with respect to all centroids/ports that Node u is unProcessed.
+	 * @param u
+	 */
 	public static void relaxAll(Node u){
 		for(int i = 0; i < u.getDistances().length; i++){
 			if(u.isUnprocessed(i)){
@@ -61,6 +70,10 @@ public class BellmanFord {
 		}
 	}
 
+	/** Relax the edge with respect to a port/centroid.
+	 * @param centroidId - for which centroid the edge should be relaxed.
+	 * @param edge
+	 */
 	public static void relax(int centroidId, Edge edge){
 		Node u = edge.getFromNode();
 		Node v = edge.getToNode();
@@ -72,6 +85,9 @@ public class BellmanFord {
 		}
 	}
 
+	/** Relax an edge and resets all relevant nodes for affected ports/centroid.
+	 * @param edge
+	 */
 	public static void relaxEdge(Edge edge){
 		Node toNode = edge.getToNode();
 		ArrayList<Integer> affectedPorts = new ArrayList<Integer>();
@@ -81,22 +97,34 @@ public class BellmanFord {
 			}
 		}
 		for(int i : affectedPorts){
-			resetNode(i, toNode);
+			resetNodeRecursive(i, toNode);
 		}
 	}
 
-	public static void resetNode(int centroidId, Node resetNode){
+	/** Calls resetNode(int, Node) for this and all further nodes in the shortest path to a centroid.
+	 * @param centroidId - for which centroid the node should be set to unprocessed.
+	 * @param resetNode  - the node that is reset.
+	 */
+	public static void resetNodeRecursive(int centroidId, Node resetNode){
 		//If an outgoing edge is part of a shortest path to the end node of that edge, the end node must be reset.
 		for(Edge e : resetNode.getOutgoingEdges()){
 			if(!e.isOmission()){ //Omission edges are not affected by cost changes for rotation edges.
 				Node toNode = e.getToNode();
 				if(toNode.getPredecessor(centroidId) != null){
 					if(toNode.getPredecessor(centroidId).equals(e)){
-						resetNode(centroidId, toNode);
+						resetNodeRecursive(centroidId, toNode);
 					}
 				}
 			}
 		}
+		resetNode(centroidId, resetNode);
+	}
+
+	/** Resets the labels of a node to Integer.MAX_VALUE in distance and null as predecessor.
+	 * @param centroidId - for which centroid the node should be set to unprocessed.
+	 * @param resetNode - the node that is reset.
+	 */
+	public static void resetNode(int centroidId, Node resetNode){
 		resetNode.setLabels(centroidId, Integer.MAX_VALUE, null);
 		if(resetNode.isCentroid() && centroidId == resetNode.getPortId()){
 			resetNode.setLabels(centroidId, 0, null);
@@ -107,19 +135,11 @@ public class BellmanFord {
 			fromNode.setUnprocessed(centroidId);
 		}
 	}
-
-	public static void addNodes(ArrayList<Node> unprocessedNodes){
-		for(Node i : unprocessedNodes){
-			if(!unprocessedNodes.contains(i)){
-				unprocessedNodes.add(i);
-			}
-		}
-	}
-
-	/** Returns the route from one centroid/port to another centroid/port.
+	
+	/** 
 	 * @param fromNode
 	 * @param toNode
-	 * @return
+	 * @return an ArrayList of edges i.e. a route that a demand uses from origin port/centroid to destination port/centroid.
 	 */
 	public static ArrayList<Edge> getRoute(Demand demand){
 		Node fromNode = demand.getOrigin().getCentroidNode();
@@ -135,6 +155,9 @@ public class BellmanFord {
 		return usedEdges;
 	}
 
+	/** Print the route that a Demand used from origin port/centroid to destination port/centroid.
+	 * @param demand
+	 */
 	public static void printRoute(Demand demand){
 		ArrayList<Edge> usedEdges = getRoute(demand);
 		String str = "Demand of " + demand.getDemand() + " from " + demand.getOrigin().getUNLocode() + " to " + 
@@ -170,7 +193,7 @@ public class BellmanFord {
 		}
 	}
 
-	public static void removeUnprocessedNode(Node unprocessedNode){
-		unprocessedNodes.remove(unprocessedNode);
-	}
+//	public static void removeUnprocessedNode(Node unprocessedNode){
+//		unprocessedNodes.remove(unprocessedNode);
+//	}
 }

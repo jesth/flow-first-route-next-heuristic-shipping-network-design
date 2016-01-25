@@ -9,7 +9,7 @@ public class Result {
 		rotations = new ArrayList<Rotation>();
 	}
 	
-	public void addRotation(Rotation rotation){
+	public static void addRotation(Rotation rotation){
 		rotations.add(rotation);
 	}
 	
