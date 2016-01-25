@@ -36,7 +36,7 @@ public class BellmanFord {
 			e.clearShortestPathOD();
 		}
 		while(!unprocessedNodes.isEmpty()){
-			Node u = unprocessedNodes.get(0);
+			Node u = unprocessedNodes.remove(0);
 			relaxAll(u);
 		}
 		ArrayList<Demand> demands = graph.getData().getDemands();
@@ -193,7 +193,7 @@ public class BellmanFord {
 		}
 	}
 
-	public static void removeUnprocessedNode(Node unprocessedNode){
-		unprocessedNodes.remove(unprocessedNode);
-	}
+//	public static void removeUnprocessedNode(Node unprocessedNode){
+//		unprocessedNodes.remove(unprocessedNode);
+//	}
 }
