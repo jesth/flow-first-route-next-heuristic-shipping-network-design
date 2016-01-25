@@ -46,10 +46,10 @@ public class MulticommodityFlow {
 			if(!invalidFlow && flowProfit > bestFlowProfit){
 				updateBestFlow(flowProfit);
 			}
-			implementBestFlow();
 			System.out.println();
 			iteration++;
 		}
+		implementBestFlow();
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 

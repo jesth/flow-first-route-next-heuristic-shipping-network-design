@@ -14,7 +14,7 @@ public class RunModel {
 		ports.add(testGraph.getData().getPorts().get("DKAAR"));
 		ports.add(testGraph.getData().getPorts().get("RULED"));
 		
-		testGraph.createRotation(ports, vesselClass, false, false);
+		Rotation r = testGraph.createRotation(ports, vesselClass, false, false);
 //		BellmanFord.initialize(testGraph);
 //		System.out.println("Intialized");
 //		BellmanFord.run();
@@ -23,6 +23,8 @@ public class RunModel {
 //			BellmanFord.printRoute(i);
 //		}
 		MulticommodityFlow.initialize(testGraph);
+		Result.initialize(testGraph);
+		Result.addRotation(r);
 		MulticommodityFlow.run();
 		for(Demand i : testGraph.getData().getDemands()){
 //			BellmanFord.printRoute(i);
