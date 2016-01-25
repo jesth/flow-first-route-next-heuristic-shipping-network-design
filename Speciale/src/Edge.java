@@ -21,9 +21,7 @@ public class Edge {
 	private int noInRotation;
 	private ArrayList<Demand> shortestPathOD;
 	private static AtomicInteger idCounter = new AtomicInteger();
-	private int distanceKM;
-	private boolean suez;
-	private boolean panama;
+	private DistanceElement distance;
 	
 	public Edge(){
 	}
@@ -31,21 +29,19 @@ public class Edge {
 	/** Constructor for rotation, load/unload and transshipment edges, i.e. not omission edges.
 	 * @param fromNode
 	 * @param toNode
-	 * @param distance - the distance represented by the edge. 0 if dwell, transshipment or load/unload.
 	 * @param cost - the real cost associated with shipping one FFE on this edge.
 	 * @param capacity - the capacity of the edge, measured in FFE per week (???????????????),
 	 * @param rotationEdge - boolean, true if sail or dwell, false if transshipment or load/unload.
 	 * @param rotation - the rotation represented by the edge. Null if transshipment or load/unload.
 	 * @param noInRotation - the number in the rotation for sail edges only. -1 if dwell, transshipment or load/unload.
-	 * @param suez - boolean, true if sail edge that passes the Suez canal, false otherwise.
-	 * @param panama - boolean, true if sail edge that passes the Panama canal, false otherwise.
+	 * @param distance - the DistanceElement associated with the edge. Null if dwell, transshipment or load/unload.
 	 */
-	public Edge(Node fromNode, Node toNode, int distance, int cost, int capacity, boolean rotationEdge, Rotation rotation, int noInRotation, boolean suez, boolean panama){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, Rotation rotation, int noInRotation, DistanceElement distance){
 		super();
+		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
-		this.distanceKM = distance;
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
@@ -60,7 +56,7 @@ public class Edge {
 		this.noInRotation = noInRotation;
 		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
 			this.sail = true;
-			this.travelTime = distance/rotation.getVesselClass().getDesignSpeed();
+			this.travelTime = this.distance.getDistance()/rotation.getVesselClass().getDesignSpeed();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
 			//TODO hard-code
@@ -80,8 +76,6 @@ public class Edge {
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 		shortestPathOD = new ArrayList<Demand>();
-		this.suez = suez;
-		this.panama = panama;
 	}
 
 	/** Constructor for omission edges.
@@ -112,9 +106,7 @@ public class Edge {
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 		shortestPathOD = new ArrayList<Demand>();
-		this.distanceKM = 0;
-		this.suez = false;
-		this.panama = false;
+		this.distance = null;
 	}
 	
 	/**
@@ -226,14 +218,14 @@ public class Edge {
 	 * @return Whether this edge passes the Suez canal.
 	 */
 	public boolean isSuez() {
-		return suez;
+		return distance.isSuez();
 	}
 
 	/**
 	 * @return Whether this edge passes the Panama canal.
 	 */
 	public boolean isPanama() {
-		return panama;
+		return distance.isPanama();
 	}
 
 	/**
