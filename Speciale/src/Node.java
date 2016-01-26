@@ -113,7 +113,6 @@ public class Node {
 	 * @param centroidId - the centroid <i>from</i> which the shortest path has been processed.
 	 */
 	public void setProcessed(int centroidId){
-//		BellmanFord.removeUnprocessedNode(this);
 		unprocessed[centroidId] = false;
 	}
 	

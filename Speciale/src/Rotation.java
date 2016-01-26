@@ -24,6 +24,8 @@ public class Rotation {
 		this.noVessels = 0;
 		this.active = true;
 	}
+
+
 	
 	public double calculateRotationTime(){
 		double rotationTime = 0;

@@ -9,12 +9,15 @@ public class RunModel {
 //			System.out.println(i.getDistances().length);
 //		}
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(1);
-		ArrayList<Port> ports = new ArrayList<Port>();
-		ports.add(testGraph.getData().getPorts().get("DEBRV"));
-		ports.add(testGraph.getData().getPorts().get("DKAAR"));
-		ports.add(testGraph.getData().getPorts().get("RULED"));
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		DistanceElement leg1 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", false, false);
+		DistanceElement leg2 = testGraph.getData().getDistanceElement("DKAAR", "RULED", false, false);
+		DistanceElement leg3 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
+		distances.add(leg1);
+		distances.add(leg2);
+		distances.add(leg3);
 		
-		Rotation r = testGraph.createRotation(ports, vesselClass, false, false);
+		Rotation r = testGraph.createRotation(distances, vesselClass);
 //		BellmanFord.initialize(testGraph);
 //		System.out.println("Intialized");
 //		BellmanFord.run();
