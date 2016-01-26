@@ -23,7 +23,7 @@ public class Node {
 	/** Constructor for nodes, i.e. not centroids.
 	 * @param port - the port in which the node is located.
 	 * @param rotation - the rotation that the node represents.
-	 * @param departure - boolean, true if departure and false if arrival.
+	 * @param departure - true if departure and false if arrival.
 	 */
 	public Node(Port port, Rotation rotation, boolean departure){
 		super();
@@ -113,7 +113,7 @@ public class Node {
 	 * @param centroidId - the centroid <i>from</i> which the shortest path has been processed.
 	 */
 	public void setProcessed(int centroidId){
-		BellmanFord.removeUnprocessedNode(this);
+//		BellmanFord.removeUnprocessedNode(this);
 		unprocessed[centroidId] = false;
 	}
 	

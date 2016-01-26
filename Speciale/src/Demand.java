@@ -70,38 +70,65 @@ public class Demand {
 		return maxTransitTime;
 	}
 	
+	/**
+	 * @return The Id.
+	 */
 	public int getId(){
 		return this.id;
 	}
 	
+	/**
+	 * @return The lagrange profit of transporting a container given the current route.
+	 */
 	public int getLagrangeProfit() {
 		return lagrangeProfit;
 	}
 
+	/** Set the lagrange profit of transporting a container given the current route.
+	 * @param lagrangeProfit
+	 */
 	public void setLagrangeProfit(int lagrangeProfit) {
 		this.lagrangeProfit = lagrangeProfit;
 	}
 	
+	/**
+	 * @return The real profit of transporting a container given the current route.
+	 */
 	public int getRealProfit() {
 		return realProfit;
 	}
 
+	/** Set the real profit of transporting a container given the current route.
+	 * @param realProfit
+	 */
 	public void setRealProfit(int realProfit) {
 		this.realProfit = realProfit;
 	}
 	
+	/**
+	 * @return The "profit" of using a omission edge for a container.
+	 */
 	public int getOmissionProfit(){
 		return -rate - 1000;
 	}
 	
+	/**
+	 * @return The number of containers to be sent on the omission edge after the <b>findRepairFlow()</b> algorithm is used.
+	 */
 	public int getRepOmissionFFE() {
 		return repOmissionFFE;
 	}
 
+	/** Sets the number of containers to be sent on the omission edge. This is used and set in the <b>findRepairFlow()</b> algorithm.
+	 * @param repOmissionFFE
+	 */
 	public void setRepOmissionFFE(int repOmissionFFE) {
 		this.repOmissionFFE = repOmissionFFE;
 	}
 
+	/**
+	 * Resets the number of containers to be sent on the omission edge, i.e. 0.
+	 */
 	public void resetRepOmissionFFE(){
 		this.repOmissionFFE = 0;
 	}
