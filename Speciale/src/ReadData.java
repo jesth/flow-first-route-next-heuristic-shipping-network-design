@@ -108,19 +108,24 @@ public class ReadData {
 			if(suezInt == 1){
 				suez = true;
 			}
-			distances[origin.getPortId()][destination.getPortId()].setDistanceDraft(distance, draft, suez, panama);
-//			try{
-//				if(suez == false && panama == false){
-//					distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
-//				} else if(suez == true && panama == false){
-//					distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
-//				} else if(suez == false && panama == true){
-//					distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
-//				} else {
-//					distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
-//				}
-//			} catch(NullPointerException e){
-//			}
+			try {
+			Distance currDist = distances[origin.getPortId()][destination.getPortId()];
+			currDist.setPorts(origin, destination);
+			currDist.setDistanceDraft(distance, draft, suez, panama);
+			} catch(NullPointerException e){
+			}
+			//			try{
+			//				if(suez == false && panama == false){
+			//					distances[origin.getPortId()][destination.getPortId()].setNone(distance, draft);
+			//				} else if(suez == true && panama == false){
+			//					distances[origin.getPortId()][destination.getPortId()].setSuez(distance, draft);
+			//				} else if(suez == false && panama == true){
+			//					distances[origin.getPortId()][destination.getPortId()].setPanama(distance, draft);
+			//				} else {
+			//					distances[origin.getPortId()][destination.getPortId()].setSuezPanama(distance, draft);
+			//				}
+			//			} catch(NullPointerException e){
+			//			}
 
 			scanner.nextLine();
 		}

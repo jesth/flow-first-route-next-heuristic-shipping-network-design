@@ -52,7 +52,7 @@ public class Graph {
 		Node firstNode = createRotationNode(depPort, rotation, true);
 		Node depNode = firstNode;
 		Node arrNode;
-		for(int i = 0; i < distances.size(); i++){
+		for(int i = 0; i < distances.size()-1; i++){
 			currDist = distances.get(i);
 			arrPort = currDist.getDestination();
 			arrNode = createRotationNode(arrPort, rotation, false);
@@ -62,10 +62,10 @@ public class Graph {
 			createRotationEdge(rotation, arrNode, depNode, 0, vesselClass.getCapacity(), -1, null);
 		}
 		//Rotation closed at port 0 outside of for loop.
-		currDist = distances.get(distances.size());
+		currDist = distances.get(distances.size()-1);
 		arrPort = currDist.getDestination();
 		arrNode  = createRotationNode(arrPort, rotation, false);
-		createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), distances.size(), currDist);
+		createRotationEdge(rotation, depNode, arrNode, 0, vesselClass.getCapacity(), distances.size()-1, currDist);
 		createRotationEdge(rotation, arrNode, firstNode, 0, vesselClass.getCapacity(), -1, null);
 	}
 	
@@ -91,7 +91,7 @@ public class Graph {
 				throw new RuntimeException("The distances are not compatible.");
 			}
 		}
-		Port lastPort = distances.get(distances.size()).getDestination();
+		Port lastPort = distances.get(distances.size()-1).getDestination();
 		if(firstPort.getPortId() != lastPort.getPortId()){
 			throw new RuntimeException("The rotation is not closed.");
 		}

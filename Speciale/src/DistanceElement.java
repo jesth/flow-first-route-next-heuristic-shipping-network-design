@@ -1,5 +1,5 @@
 
-public class DistanceElement extends Distance {
+public class DistanceElement {
 	private Distance parent;
 	private int distance;
 	private double draft;
@@ -8,6 +8,8 @@ public class DistanceElement extends Distance {
 	
 	public DistanceElement(Distance parent, boolean suez, boolean panama) {
 		super();
+		this.distance = Integer.MAX_VALUE;
+		this.draft = -1;
 		this.parent = parent;
 		this.suez = suez;
 		this.panama = panama;
@@ -47,5 +49,13 @@ public class DistanceElement extends Distance {
 	
 	public boolean isPanama(){
 		return panama;
+	}
+	
+	public Port getOrigin(){
+		return parent.getOrigin();
+	}
+	
+	public Port getDestination(){
+		return parent.getDestination();
 	}
 }
