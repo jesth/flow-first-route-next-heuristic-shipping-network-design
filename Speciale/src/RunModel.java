@@ -18,6 +18,14 @@ public class RunModel {
 		distances.add(leg3);
 		
 		Rotation r = testGraph.createRotation(distances, vesselClass);
+		
+		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
+		DistanceElement leg4 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
+		DistanceElement leg5 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
+		distances2.add(leg4);
+		distances2.add(leg5);
+		
+		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
 //		BellmanFord.initialize(testGraph);
 //		System.out.println("Intialized");
 //		BellmanFord.run();

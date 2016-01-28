@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Demand {
@@ -6,12 +7,13 @@ public class Demand {
 	private Port destination;
 	private int demand;
 	private int rate;
-	private int lagrangeProfit;
-	private int realProfit;
-	private int repOmissionFFE;
+//	private int lagrangeProfit;
+//	private int realProfit;
+	//	private int repOmissionFFE;
+	private ArrayList<Route> routes;
 	private int maxTransitTime;
 	private static AtomicInteger idCounter = new AtomicInteger();
-	
+
 	public Demand(){
 	}
 
@@ -29,9 +31,10 @@ public class Demand {
 		this.destination = destination;
 		this.demand = demand;
 		this.rate = rate;
-		this.lagrangeProfit = 0;
-		this.realProfit = 0;
-		this.repOmissionFFE = 0;
+		//		this.lagrangeProfit = 0;
+		//		this.realProfit = 0;
+		//		this.repOmissionFFE = 0;
+		this.routes = new ArrayList<Route>();
 		this.maxTransitTime = maxTransitTime;
 	}
 
@@ -69,6 +72,7 @@ public class Demand {
 	public int getMaxTransitTime() {
 		return maxTransitTime;
 	}
+
 	
 	/**
 	 * @return The Id.
@@ -78,61 +82,50 @@ public class Demand {
 	}
 	
 	/**
-	 * @return The lagrange profit of transporting a container given the current route.
-	 */
-	public int getLagrangeProfit() {
-		return lagrangeProfit;
-	}
-
-	/** Set the lagrange profit of transporting a container given the current route.
-	 * @param lagrangeProfit
-	 */
-	public void setLagrangeProfit(int lagrangeProfit) {
-		this.lagrangeProfit = lagrangeProfit;
-	}
-	
-	/**
-	 * @return The real profit of transporting a container given the current route.
-	 */
-	public int getRealProfit() {
-		return realProfit;
-	}
-
-	/** Set the real profit of transporting a container given the current route.
-	 * @param realProfit
-	 */
-	public void setRealProfit(int realProfit) {
-		this.realProfit = realProfit;
-	}
-	
-	/**
 	 * @return The "profit" of using a omission edge for a container.
 	 */
 	public int getOmissionProfit(){
 		return -rate - 1000;
 	}
-	
-	/**
-	 * @return The number of containers to be sent on the omission edge after the <b>findRepairFlow()</b> algorithm is used.
-	 */
-	public int getRepOmissionFFE() {
-		return repOmissionFFE;
+
+	public Route createMainRoute(){
+		Route newRoute = new Route(this, false);
+		routes.add(newRoute);
+		newRoute.setFFE(demand);
+		newRoute.setFFErep(demand);
+		return newRoute;
 	}
 
-	/** Sets the number of containers to be sent on the omission edge. This is used and set in the <b>findRepairFlow()</b> algorithm.
-	 * @param repOmissionFFE
-	 */
-	public void setRepOmissionFFE(int repOmissionFFE) {
-		this.repOmissionFFE = repOmissionFFE;
+	public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
+		Route repRoute = new Route(this, true);
+		routes.add(repRoute);
+		repRoute.addProhibitedEdge(prohibitedEdge);
+		if(prevRoute.isRepair()){
+			for(Edge e : prevRoute.getProhibitedEdges()){
+				repRoute.addProhibitedEdge(e);
+			}
+		}
+		repRoute.setFFErep(FFErep);
+		repRoute.findRoute();
+		return repRoute;
 	}
 
-	/**
-	 * Resets the number of containers to be sent on the omission edge, i.e. 0.
-	 */
-	public void resetRepOmissionFFE(){
-		this.repOmissionFFE = 0;
+	public void clearRoutes(){
+		routes.clear();
 	}
 	
+	public ArrayList<Route> getRoutes(){
+		return routes;
+	}
+	
+	public void addRoute(Route addRoute){
+		routes.add(addRoute);
+	}
+	
+	public void removeRoute(Route removeRoute){
+		routes.remove(removeRoute);
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -142,5 +135,5 @@ public class Demand {
 				+ ", maxTransitTime=" + maxTransitTime + "]";
 	}
 
-	
+
 }

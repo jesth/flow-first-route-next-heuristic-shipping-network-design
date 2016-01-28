@@ -23,7 +23,7 @@ public class Result {
 	public int getObjective(){
 		int obj = 0;
 		
-		obj = getFlowProfit();
+		obj = getFlowProfit(false);
 		for(Rotation r : rotations){
 			if(r.isActive()){
 				VesselClass v = r.getVesselClass();
@@ -56,12 +56,16 @@ public class Result {
 		return obj;
 	}
 	
-	public static int getFlowProfit(){
+	public static int getFlowProfit(boolean repair){
 		int flowProfit = 0;
 		
 		int flowCost = 0;
-		for (Edge e : graph.getEdges()){		
-			flowCost += e.getRealCost() * e.getLoad();
+		for (Edge e : graph.getEdges()){
+			if(repair){
+				flowCost += e.getRealCost() * e.getRepLoad();
+			} else {
+				flowCost += e.getRealCost() * e.getLoad();
+			}
 		}
 		int flowRevenue = 0;
 		for (Demand d : graph.getData().getDemands()){
@@ -72,10 +76,43 @@ public class Result {
 		return flowProfit;
 	}
 	
+//	public static Demand[] getNlargestODLosses(int n){
+//		
+//		int largestODLoss = Integer.MAX_VALUE;
+//		for(Demand d : graph.getData().getDemands()){
+//			int odLoss = 0;
+//			for(Route r : d.getRoutes()){
+//				odLoss += r.getRealProfit() *  r.getFFE();
+//			}
+//			SortableDemand sortableOD = new SortableDemand(odLoss, d);
+//			
+//			
+//			if(odLoss < largestODLoss){
+//				largestODLoss = odLoss;
+//				OD = d;
+//			}
+//		}
+//		
+//		Demand[] ODs = new Demand[n];
+//		
+//		return OD;
+//		
+//	}
+	
+	
 	public static Demand getLargestODLoss(){
 		Demand OD = new Demand();
-		
-		
+		int largestODLoss = Integer.MAX_VALUE;
+		for(Demand d : graph.getData().getDemands()){
+			int odLoss = 0;
+			for(Route r : d.getRoutes()){
+				odLoss += r.getRealProfit() *  r.getFFE();
+			}
+			if(odLoss < largestODLoss){
+				largestODLoss = odLoss;
+				OD = d;
+			}
+		}
 		
 		return OD;
 	}

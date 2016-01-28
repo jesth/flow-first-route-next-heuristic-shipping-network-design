@@ -32,9 +32,9 @@ public class Node {
 		this.centroid = false;
 		this.departure = departure;
 		this.arrival = !departure;
-		this.distances = new int[noOfCentroids];
-		this.predecessors = new Edge[noOfCentroids];
-		this.unprocessed = new boolean[noOfCentroids];
+		this.distances = new int[noOfCentroids+1];
+		this.predecessors = new Edge[noOfCentroids+1];
+		this.unprocessed = new boolean[noOfCentroids+1];
 		this.ingoingEdges = new ArrayList<Edge>();
 		this.outgoingEdges = new ArrayList<Edge>();
 	}
@@ -124,6 +124,16 @@ public class Node {
 		return unprocessed[centroidId];
 	}
 	
+
+	public boolean allNodesProcessed() {
+		for(boolean i : unprocessed){
+			if(i){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * @param centroidId - the centroid <i>from</i> where the shortest path originates.
 	 * @return The distance from the input centroid.
@@ -196,5 +206,6 @@ public class Node {
 	public String toString() {
 		return "Node [port=" + port.getName() + ", rotation=" + rotation + ", centroid=" + centroid + "]";
 	}
+
 	
 }
