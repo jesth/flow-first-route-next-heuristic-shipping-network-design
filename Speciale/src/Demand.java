@@ -73,10 +73,45 @@ public class Demand {
 		return maxTransitTime;
 	}
 
+	
+	/**
+	 * @return The Id.
+	 */
 	public int getId(){
 		return this.id;
 	}
+	
+	/**
+	 * @return The lagrange profit of transporting a container given the current route.
+	 */
+	public int getLagrangeProfit() {
+		return lagrangeProfit;
+	}
 
+	/** Set the lagrange profit of transporting a container given the current route.
+	 * @param lagrangeProfit
+	 */
+	public void setLagrangeProfit(int lagrangeProfit) {
+		this.lagrangeProfit = lagrangeProfit;
+	}
+	
+	/**
+	 * @return The real profit of transporting a container given the current route.
+	 */
+	public int getRealProfit() {
+		return realProfit;
+	}
+
+	/** Set the real profit of transporting a container given the current route.
+	 * @param realProfit
+	 */
+	public void setRealProfit(int realProfit) {
+		this.realProfit = realProfit;
+	}
+	
+	/**
+	 * @return The "profit" of using a omission edge for a container.
+	 */
 	public int getOmissionProfit(){
 		return -rate - 1000;
 	}
@@ -118,20 +153,6 @@ public class Demand {
 	public void removeRoute(Route removeRoute){
 		routes.remove(removeRoute);
 	}
-
-	/*
-	public int getRepOmissionFFE() {
-		return repOmissionFFE;
-	}
-
-	public void setRepOmissionFFE(int repOmissionFFE) {
-		this.repOmissionFFE = repOmissionFFE;
-	}
-
-	public void resetRepOmissionFFE(){
-		this.repOmissionFFE = 0;
-	}
-	 */
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

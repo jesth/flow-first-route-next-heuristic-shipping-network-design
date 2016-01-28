@@ -23,7 +23,7 @@ public class Node {
 	/** Constructor for nodes, i.e. not centroids.
 	 * @param port - the port in which the node is located.
 	 * @param rotation - the rotation that the node represents.
-	 * @param departure - boolean, true if departure and false if arrival.
+	 * @param departure - true if departure and false if arrival.
 	 */
 	public Node(Port port, Rotation rotation, boolean departure){
 		super();
