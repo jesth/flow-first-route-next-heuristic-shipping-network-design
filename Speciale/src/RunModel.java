@@ -77,7 +77,10 @@ public class RunModel {
 		Result.addRotation(r);
 		Result.addRotation(r2);
 		Result.addRotation(r3);
+		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
+		long timeUse = System.currentTimeMillis() - time;
+		System.out.println("Running for " + timeUse + " ms");
 		for(Demand i : testGraph.getData().getDemands()){
 //			BellmanFord.printRoute(i);
 		}
