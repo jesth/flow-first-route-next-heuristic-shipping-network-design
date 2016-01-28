@@ -38,6 +38,7 @@ public class MulticommodityFlow {
 			System.out.println();
 			BellmanFord.run();
 			findRepairFlow();
+			System.out.println("Has found repair flow");
 			invalidFlow = false;
 			for (Edge e : graph.getEdges()){
 				if(e.getCapacity() < e.getLoad()){
@@ -68,6 +69,7 @@ public class MulticommodityFlow {
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 
+	//TODO: Update description.
 	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
 	 * <br>1) Running through all edges in unprioritized order.
 	 * <br>2) Only sail edges are considered, as these are the only ones that can 
@@ -79,7 +81,6 @@ public class MulticommodityFlow {
 	 * @return The profit of the repaired flow.
 	 */
 	private static int findRepairFlow(){
-		int flowProfitPrev = Result.getFlowProfit(false);
 		boolean invalidFlow = true;
 		while(invalidFlow){
 			invalidFlow = false;
@@ -103,9 +104,6 @@ public class MulticommodityFlow {
 			}
 		}
 		int flowProfit = Result.getFlowProfit(true);
-		if(flowProfit > flowProfitPrev){
-			throw new RuntimeException("Repair flow result invalid.");
-		}
 		if(flowProfit > bestFlowProfit){
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
@@ -147,28 +145,6 @@ public class MulticommodityFlow {
 				e.addRoute(r);
 			}
 		}
-
-
-		//		for(Edge e : graph.getEdges()){
-		//			int bestLagrange = bestLagranges[e.getId()];
-		//			e.setLagrange(bestLagrange);
-		//		}
-		//		BellmanFord.reset();
-		//		BellmanFord.run();
-		//		findRepairFlow();
-		//		for(Edge e : graph.getEdges()){
-		//			e.setLoad(e.getRepLoad());
-		//		}
-		//		for(Demand d : graph.getData().getDemands()){
-		//			Node fromNode = d.getOrigin().getCentroidNode();
-		//			Node toNode = d.getDestination().getCentroidNode();
-		//			for(Edge e : fromNode.getOutgoingEdges()){
-		//				if(e.getToNode().equals(toNode) && e.isOmission()){
-		//					e.setLoad(d.getRepOmissionFFE());
-		//					break;
-		//				}
-		//			}
-		//		}
 	}
 
 	/** Saves the routes of all demand pairs in csv-format for easy handling in Excel.
@@ -183,8 +159,6 @@ public class MulticommodityFlow {
 			out.newLine();
 			for(Demand d : demands){
 				for(Route r : d.getRoutes()){
-					//					ArrayList<Edge> route = BellmanFord.getRoute(d);
-					//					if(d.getDemand() > d.getRepOmissionFFE()){
 					for(Edge e : r.getRoute()){
 						if(e.isSail() || e.isOmission()){
 							if(e.isOmission()){
@@ -204,15 +178,6 @@ public class MulticommodityFlow {
 							out.newLine();
 						}
 					}
-					//					} if(d.getRepOmissionFFE() > 0){
-					//						out.write(";;");
-					//						out.write(d.getId()+";");
-					//						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
-					//						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
-					//						out.write(d.getRepOmissionFFE()+";");
-					//						out.write("1");
-					//						out.newLine();
-					//					}
 				}
 			}
 			out.close();

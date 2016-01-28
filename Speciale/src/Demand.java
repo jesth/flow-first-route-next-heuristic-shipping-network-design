@@ -105,8 +105,13 @@ public class Demand {
 				repRoute.addProhibitedEdge(e);
 			}
 		}
+//		System.out.println("Prohibited edges:");
+//		for(Edge e : repRoute.getProhibitedEdges()){
+//			System.out.println(e.simplePrint());
+//		}
 		repRoute.setFFErep(FFErep);
 		repRoute.findRoute();
+		System.out.println(repRoute.simplePrint());
 		return repRoute;
 	}
 

@@ -36,7 +36,6 @@ public class BellmanFord {
 		for(Edge e : graph.getEdges()){
 			e.clearRoutes();
 		}
-		System.out.println("Has cleared routes");
 		while(!unprocessedNodes.isEmpty()){
 			Node u = unprocessedNodes.remove(0);
 			relaxAll(u);
@@ -44,6 +43,7 @@ public class BellmanFord {
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
 			d.clearRoutes();
+			//TODO: Incorporate lines 2 and 3 below to the createMainRoute() method.
 			Route r = d.createMainRoute();
 			ArrayList<Edge> route = getRoute(d, false);
 			r.update(route);
@@ -150,7 +150,7 @@ public class BellmanFord {
 		}
 		Edge predecessor = toNode.getPredecessor(arrayPos);
 		usedEdges.add(predecessor);
-//		System.out.println("Getting route from " + demand.getOrigin().getUNLocode() + " to " + demand.getDestination().getUNLocode());
+		//		System.out.println("Getting route from " + demand.getOrigin().getUNLocode() + " to " + demand.getDestination().getUNLocode());
 		if(repRoute){
 			System.out.println("REP ROUTE");
 		}
@@ -206,38 +206,47 @@ public class BellmanFord {
 		while(!unprocessedRepNodes.isEmpty()){
 			Node u = unprocessedRepNodes.remove(0);
 			relaxSingle(u, r.getProhibitedEdges());
-			if(u.allNodesProcessed()){
+			if(u.allCentroidsProcessed()){
 				unprocessedNodes.remove(u);
 			}
+			adjustUnprocessedRepNodes(unprocessedRepNodes);
 		}
+		//TODO: Incorporate the two lines below to the createRepRoute() method.
 		ArrayList<Edge> route = getRoute(r.getDemand(), true);
 		r.update(route);
 	}
 
 	public static void resetSingle(Node origin){
-		int arrayPos = origin.getDistances().length-1;
+		int arrayPos = Node.getNoOfCentroids()-1;
 		for(Node i : graph.getNodes()){
 			i.setLabels(arrayPos, Integer.MAX_VALUE, null);
-			if(i.equals(origin)){
-				i.setLabels(arrayPos, 0, null);
-				i.setUnprocessed(arrayPos);
-			}
 		}
+		origin.setLabels(arrayPos, 0, null);
+		origin.setUnprocessed(arrayPos);
 	}
 
 	public static void relaxSingle(Node u, ArrayList<Edge> prohibitedEdges){
-		int i = u.getDistances().length-1;
-		if(u.isUnprocessed(i)){
+		int arrayPos = Node.getNoOfCentroids()-1;
+		if(u.isUnprocessed(arrayPos)){
 			for(Edge e : u.getOutgoingEdges()){
 				if(!prohibitedEdges.contains(e)){
-					relax(i, e);
+					relax(arrayPos, e);
 				}
 			}
-			u.setProcessed(i);
+			u.setProcessed(arrayPos);
 		}
 	}
-
-	//	public static void removeUnprocessedNode(Node unprocessedNode){
-	//		unprocessedNodes.remove(unprocessedNode);
-	//	}
+	
+	public static void adjustUnprocessedRepNodes(ArrayList<Node> unprocessedRepNodes){
+		int arrayPos = Node.getNoOfCentroids()-1;
+		for(Node i : unprocessedNodes){
+			if(i.isUnprocessed(arrayPos)){
+				if(!unprocessedRepNodes.contains(i)){
+					unprocessedRepNodes.add(i);
+				}
+			} else {
+				System.out.println("Node " + i.simplePrint() + " already processed ");
+			}
+		}
+	}
 }

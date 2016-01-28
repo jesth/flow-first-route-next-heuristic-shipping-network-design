@@ -9,7 +9,7 @@ public class Route {
 	private boolean repair;
 	private int lagrangeProfit;
 	private int realProfit;
-	
+
 	public Route(Demand demand, boolean repair){
 		this.route = new ArrayList<Edge>();
 		this.demand = demand;
@@ -17,15 +17,17 @@ public class Route {
 		this.prohibitedEdges = new ArrayList<Edge>();
 		this.lagrangeProfit = 0;
 		this.realProfit = 0;
+		this.FFE = 0;
+		this.FFErep = 0;
 	}
-	
+
 	public void findRoute(){
 		if(!route.isEmpty()){
 			throw new RuntimeException("Tried to find a route for a non-empty Route.");
 		}
 		BellmanFord.runSingleRoute(this);
 	}
-	
+
 	public void update(ArrayList<Edge> route){
 		//TODO: Add 1000 to lagrangeProfit???
 		int lagrangeProfit = demand.getRate();
@@ -63,21 +65,21 @@ public class Route {
 	public void setFFErep(int FFErep) {
 		this.FFErep = FFErep;
 	}
-	
+
 	public void adjustFFErep(int adjustFFErep){
 		this.FFErep += adjustFFErep;
 		if(repair && FFErep == 0){
 			deleteRoute();
 		}
 	}
-	
+
 	public void deleteRoute(){
 		for(Edge e : route){
 			e.removeRoute(this);
 		}
 		demand.removeRoute(this);
 	}
-	
+
 	public void setRoute(ArrayList<Edge> route){
 		this.route = route;
 	}
@@ -93,8 +95,8 @@ public class Route {
 	public boolean isRepair() {
 		return repair;
 	}
-	
-	
+
+
 	public int getLagrangeProfit() {
 		return lagrangeProfit;
 	}
@@ -102,7 +104,7 @@ public class Route {
 	public void setLagrangeProfit(int lagrangeProfit) {
 		this.lagrangeProfit = lagrangeProfit;
 	}
-	
+
 	public int getRealProfit() {
 		return realProfit;
 	}
@@ -110,6 +112,31 @@ public class Route {
 	public void setRealProfit(int realProfit) {
 		this.realProfit = realProfit;
 	}
-	
-	
+
+	public String simplePrint(){
+		String str = "Demand of " + FFErep + " from " + demand.getOrigin().getUNLocode() + " to " + 
+				demand.getDestination().getUNLocode() + " uses route: \n";
+		int counter = 1;
+		boolean wasDwell = false;
+		str += "Leg " + counter + ": ";
+		for(Edge e : route){
+			if(e.isSail() && !wasDwell){
+				str += e.getFromPortUNLo() + "-" + e.getToPortUNLo();
+			} else if(e.isSail() && wasDwell){
+				str += "-" + e.getToPortUNLo();
+				wasDwell = false;
+			} else if(e.isDwell()){
+				wasDwell = true;
+			} else if(e.isTransshipment()){
+				wasDwell = false;
+				counter++;
+				str += "\nLeg " + counter + ": ";
+			} else if(e.isOmission()){
+				str += e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " via omission edge";
+			} 
+			counter++;
+		}
+		str += "\n";
+		return str;
+	}
 }

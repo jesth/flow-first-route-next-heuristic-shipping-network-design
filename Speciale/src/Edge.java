@@ -346,8 +346,12 @@ public class Edge {
 			if(omission){
 				str+= " omission";
 			}
+		} else if(dwell){
+			str+= "Dwell in " + fromNode.getPort().getUNLocode();
+		} else if(loadUnload){
+			str+= "Load/unload in " + fromNode.getPort().getUNLocode();
 		} else {
-			str+= "internal in " + fromNode.getPort().getUNLocode();
+			str+="??????";
 		}
 //		str +=  " with load: " + load + " and capacity: " + capacity;
 		return str;

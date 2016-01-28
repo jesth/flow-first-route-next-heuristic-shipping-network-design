@@ -125,7 +125,7 @@ public class Node {
 	}
 	
 
-	public boolean allNodesProcessed() {
+	public boolean allCentroidsProcessed() {
 		for(boolean i : unprocessed){
 			if(i){
 				return false;
@@ -197,6 +197,23 @@ public class Node {
 	 */
 	public int getPortId(){
 		return port.getPortId();
+	}
+	
+	public static int getNoOfCentroids() {
+		return noOfCentroids;
+	}
+	
+	public String simplePrint(){
+		String str = "";
+		if(centroid){
+			str += "Centroid ";
+		} else if(departure){
+			str += "Departure ";
+		} else if(arrival){
+			str += "Arrival ";
+		}
+		str += "at port " + port.getUNLocode();
+		return str;
 	}
 
 	/* (non-Javadoc)
