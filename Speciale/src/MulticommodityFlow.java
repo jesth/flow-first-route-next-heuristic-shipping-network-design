@@ -33,28 +33,41 @@ public class MulticommodityFlow {
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 1;
 		boolean invalidFlow = true;
-		while (invalidFlow){
+
+		//TODO hardcoded 100 iterations...
+		while (iteration < 101){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			System.out.println();
 			BellmanFord.run();
+			if(iteration == 1){
+				startLagrange();
+			}
 			findRepairFlow();
 			System.out.println("Has found repair flow");
 			invalidFlow = false;
+			//TODO maybe stupid??
 			for (Edge e : graph.getEdges()){
+				if(!e.isSail())
+					continue;
 				if(e.getCapacity() < e.getLoad()){
-					System.out.println("Invalid flow on " + e.simplePrint());
-					invalidFlow = true;
-					int lowestProfit = Integer.MAX_VALUE;
-					for(Route r : e.getRoutes()){
-						if(r.getLagrangeProfit() < lowestProfit){
-							lowestProfit = r.getLagrangeProfit();
-						}
+					// if we initially didn't use the edge we set the lagrange to -1,
+					// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
+					if(e.getLagrange() < 0 && !e.getRoutes().isEmpty()){
+						e.resetLagrange();
 					}
 					int wasCost = e.getCost();
-					e.addLagrange(lowestProfit+1000, iteration);
+					e.adjustLagrange(iteration, true);
 					BellmanFord.relaxEdge(e);
 					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 					System.out.println();
+				} else if(e.getCapacity() > e.getLoad()){
+					int wasCost = e.getCost();
+					e.adjustLagrange(iteration, false);
+					BellmanFord.relaxEdge(e);
+					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+					System.out.println();
+				} else {
+					System.out.println("Nothing to adjust");
 				}
 			}
 			int flowProfit = Result.getFlowProfit(false);
@@ -70,6 +83,27 @@ public class MulticommodityFlow {
 	}
 
 	//TODO: Update description.
+	private static void startLagrange() {
+		for (Edge e : graph.getEdges()){
+			//TODO only sail edges are relevant right?
+			if(!e.isSail())
+				continue;
+			//TODO if lagrange is already set (from previously) we reuse it
+			if(e.getLagrange() > 0)
+				continue;
+			int lowestProfit = Integer.MAX_VALUE;
+			for(Route r : e.getRoutes()){
+				if(r.getLagrangeProfit() < lowestProfit){
+					lowestProfit = r.getLagrangeProfit();
+				}
+			}
+			if(lowestProfit == Integer.MAX_VALUE){
+				lowestProfit = -1001;
+			}
+			e.addLagrange(lowestProfit+1000);
+		}
+	}
+	
 	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
 	 * <br>1) Running through all edges in unprioritized order.
 	 * <br>2) Only sail edges are considered, as these are the only ones that can 

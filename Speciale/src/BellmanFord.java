@@ -50,8 +50,8 @@ public class BellmanFord {
 		}
 	}
 
-	/** Relaxes outgoing edges for Node u, with respect to all centroids/ports that Node u is unProcessed.
-	 * @param u
+	/** Relaxes outgoing edges for Node u, with respect to all centroids/ports that is unProcessed for this node.
+	 * @param u - The node to relax outgoing edges from.
 	 */
 	public static void relaxAll(Node u){
 		for(int i = 0; i < u.getDistances().length-1; i++){
