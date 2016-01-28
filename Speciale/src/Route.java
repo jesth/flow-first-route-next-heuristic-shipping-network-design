@@ -68,7 +68,7 @@ public class Route {
 
 	public void adjustFFErep(int adjustFFErep){
 		this.FFErep += adjustFFErep;
-		if(repair && FFErep == 0){
+		if(FFErep == 0){
 			deleteRoute();
 		}
 	}

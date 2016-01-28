@@ -20,7 +20,7 @@ public class Result {
 		return rotations;
 	}
 
-	public int getObjective(){
+	public static int getObjective(){
 		int obj = 0;
 		
 		obj = getFlowProfit(false);

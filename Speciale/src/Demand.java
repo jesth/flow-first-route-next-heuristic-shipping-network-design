@@ -97,6 +97,9 @@ public class Demand {
 	}
 
 	public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
+		if(FFErep == 0){
+			throw new RuntimeException("Creating route without any demand for OD-pair " + origin.getUNLocode() + "-" + destination.getUNLocode());
+		}
 		Route repRoute = new Route(this, true);
 		routes.add(repRoute);
 		repRoute.addProhibitedEdge(prohibitedEdge);
