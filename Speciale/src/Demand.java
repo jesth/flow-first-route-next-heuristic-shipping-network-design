@@ -7,8 +7,8 @@ public class Demand {
 	private Port destination;
 	private int demand;
 	private int rate;
-	private int lagrangeProfit;
-	private int realProfit;
+//	private int lagrangeProfit;
+//	private int realProfit;
 	//	private int repOmissionFFE;
 	private ArrayList<Route> routes;
 	private int maxTransitTime;
@@ -79,34 +79,6 @@ public class Demand {
 	 */
 	public int getId(){
 		return this.id;
-	}
-	
-	/**
-	 * @return The lagrange profit of transporting a container given the current route.
-	 */
-	public int getLagrangeProfit() {
-		return lagrangeProfit;
-	}
-
-	/** Set the lagrange profit of transporting a container given the current route.
-	 * @param lagrangeProfit
-	 */
-	public void setLagrangeProfit(int lagrangeProfit) {
-		this.lagrangeProfit = lagrangeProfit;
-	}
-	
-	/**
-	 * @return The real profit of transporting a container given the current route.
-	 */
-	public int getRealProfit() {
-		return realProfit;
-	}
-
-	/** Set the real profit of transporting a container given the current route.
-	 * @param realProfit
-	 */
-	public void setRealProfit(int realProfit) {
-		this.realProfit = realProfit;
 	}
 	
 	/**
