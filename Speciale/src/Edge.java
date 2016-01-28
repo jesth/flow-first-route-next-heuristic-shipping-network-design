@@ -8,7 +8,7 @@ public class Edge {
 	private int cost; 
 	private int realCost;
 	private int lagrange;
-	private int lagrangeMultiplier;
+	private int lagrangeStart;
 	private int capacity;
 	private int load;
 	private double travelTime;
@@ -45,7 +45,7 @@ public class Edge {
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
-		this.lagrangeMultiplier = 0;
+		this.lagrangeStart = 0;
 		this.capacity = capacity;
 		this.omission = false;
 		this.sail = false;	
@@ -93,7 +93,7 @@ public class Edge {
 		this.cost = 1000 + rate;
 		this.realCost = 1000 + rate;
 		this.lagrange = 0;
-		this.lagrangeMultiplier = 0;
+		this.lagrangeStart = 0;
 		this.capacity = Integer.MAX_VALUE;
 		this.travelTime = 0;
 		this.omission = true;
@@ -137,15 +137,32 @@ public class Edge {
 		return cost;
 	}
 
-	/** The Lagrange input is divided by the iteration number and added to the Lagrange cost.
-	 * @param lagrangeInput - the input to be divided by the iteration number.
-	 * @param iteration - the iteration number of the multicommodity flow problem.
-	 */
-	public void addLagrange(int lagrangeInput, int iteration){
+	public void addLagrange(int lagrangeInput){
 		if(!this.dwell){ //Dwell edges can never be restricting.
-			this.lagrangeMultiplier = lagrangeInput;
-			this.lagrange += (int) (lagrangeInput * 1.0 / (double) iteration) + 1;
-//			System.out.println("Lagrange input " + lagrangeInput + " in iteration " + iteration + " leads to Lagrange " + this.lagrange);
+			this.lagrangeStart = lagrangeInput;
+		}
+	}
+	
+	public void resetLagrange(){
+		int lowestProfit = Integer.MAX_VALUE;
+		for(Demand d : getShortestPathOD()){
+			if(d.getLagrangeProfit() < lowestProfit){
+				lowestProfit = d.getLagrangeProfit();
+			}
+		}
+		if(lowestProfit == Integer.MAX_VALUE)
+			lowestProfit = -1001;
+		addLagrange(lowestProfit + 1000);
+	}
+	
+	public void adjustLagrange(int iteration, boolean overCapacity){
+		int adjust = (int) Math.max(this.lagrangeStart * 1.0 / iteration * 1.0, 1);
+		if(!this.dwell){
+			if(overCapacity){
+				this.lagrange = Math.max(this.lagrange + adjust, 0);
+			} else {
+				this.lagrange = Math.max(this.lagrange - adjust, 0);
+			}
 			this.cost = this.realCost+this.lagrange;
 		}
 	}
