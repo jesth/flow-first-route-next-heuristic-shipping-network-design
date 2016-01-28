@@ -146,7 +146,7 @@ public class BellmanFord {
 		if(!repRoute){
 			arrayPos = fromNode.getPortId();
 		} else {
-			arrayPos = fromNode.getDistances().length-1;
+			arrayPos = Node.getNoOfCentroids()-1;
 		}
 		Edge predecessor = toNode.getPredecessor(arrayPos);
 		usedEdges.add(predecessor);
