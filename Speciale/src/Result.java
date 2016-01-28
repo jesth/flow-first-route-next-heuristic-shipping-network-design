@@ -23,7 +23,7 @@ public class Result {
 	public int getObjectiveCost(){
 		int objCost = 0;
 		
-		objCost = getFlowProfit();
+		objCost = getFlowProfit(false);
 		for(Rotation r : rotations){
 			if(r.isActive()){
 				VesselClass v = r.getVesselClass();
@@ -58,12 +58,16 @@ public class Result {
 		return objCost;
 	}
 	
-	public static int getFlowProfit(){
+	public static int getFlowProfit(boolean repair){
 		int flowProfit = 0;
 		
 		int flowCost = 0;
-		for (Edge e : graph.getEdges()){		
-			flowCost += e.getRealCost() * e.getLoad();
+		for (Edge e : graph.getEdges()){
+			if(repair){
+				flowCost += e.getRealCost() * e.getRepLoad();
+			} else {
+				flowCost += e.getRealCost() * e.getLoad();
+			}
 		}
 		int flowRevenue = 0;
 		for (Demand d : graph.getData().getDemands()){

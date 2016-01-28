@@ -6,8 +6,9 @@ import java.util.ArrayList;
 
 public class MulticommodityFlow {
 	private static Graph graph;
-	private static int[] bestLagranges;
+	//	private static int[] bestLagranges;
 	private static int bestFlowProfit;
+	private static ArrayList<Route> bestRoutes;
 
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
@@ -28,23 +29,24 @@ public class MulticommodityFlow {
 	 */
 	public static void run(){
 		bestFlowProfit = Integer.MIN_VALUE;
-		bestLagranges = new int[graph.getEdges().size()];
+		//		bestLagranges = new int[graph.getEdges().size()];
+		bestRoutes = new ArrayList<Route>();
 		int iteration = 1;
 		boolean invalidFlow = true;
 		while (invalidFlow){
-			findRepairFlow();
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			System.out.println();
 			BellmanFord.run();
+			findRepairFlow();
 			invalidFlow = false;
 			for (Edge e : graph.getEdges()){
 				if(e.getCapacity() < e.getLoad()){
 					System.out.println("Invalid flow on " + e.simplePrint());
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
-					for(Demand d : e.getShortestPathOD()){
-						if(d.getLagrangeProfit() < lowestProfit){
-							lowestProfit = d.getLagrangeProfit();
+					for(Route r : e.getRoutes()){
+						if(r.getLagrangeProfit() < lowestProfit){
+							lowestProfit = r.getLagrangeProfit();
 						}
 					}
 					int wasCost = e.getCost();
@@ -54,8 +56,9 @@ public class MulticommodityFlow {
 					System.out.println();
 				}
 			}
-			int flowProfit = Result.getFlowProfit();
+			int flowProfit = Result.getFlowProfit(false);
 			if(!invalidFlow && flowProfit > bestFlowProfit){
+				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
 			System.out.println();
@@ -76,11 +79,7 @@ public class MulticommodityFlow {
 	 * @return The profit of the repaired flow.
 	 */
 	private static int findRepairFlow(){
-		for(Demand d : graph.getData().getDemands()){
-			d.resetRepOmissionFFE();
-		}
-		int flowProfitPrev = Result.getFlowProfit();
-		int flowProfit = flowProfitPrev;
+		int flowProfitPrev = Result.getFlowProfit(false);
 		boolean invalidFlow = true;
 		while(invalidFlow){
 			invalidFlow = false;
@@ -89,24 +88,26 @@ public class MulticommodityFlow {
 				if(e.isSail() && overflow > 0){
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
-					Demand lowestProfitOD = null;
-					for(Demand d : e.getShortestPathOD()){
-						if(d.getLagrangeProfit() < lowestProfit){
-							lowestProfit = d.getLagrangeProfit();
-							lowestProfitOD = d;
+					Route lowestProfitRoute = null;
+					for(Route r : e.getRoutes()){
+						if(r.getLagrangeProfit() < lowestProfit){
+							lowestProfit = r.getLagrangeProfit();
+							lowestProfitRoute = r;
 						}
 					}
-					int repOmissionFFE = Math.min(lowestProfitOD.getDemand(), overflow);
-					lowestProfitOD.setRepOmissionFFE(repOmissionFFE);
-					flowProfit -= lowestProfitOD.getRealProfit() * repOmissionFFE;
-					flowProfit += lowestProfitOD.getOmissionProfit() * repOmissionFFE;
+					Demand repDemand = lowestProfitRoute.getDemand();
+					int FFErep = Math.min(lowestProfitRoute.getFFErep(), overflow);
+					lowestProfitRoute.adjustFFErep(-FFErep);
+					repDemand.createRepRoute(lowestProfitRoute, e, FFErep);
 				}
 			}
 		}
+		int flowProfit = Result.getFlowProfit(true);
 		if(flowProfit > flowProfitPrev){
 			throw new RuntimeException("Repair flow result invalid.");
 		}
 		if(flowProfit > bestFlowProfit){
+			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
 		}
 		return flowProfit;
@@ -116,8 +117,11 @@ public class MulticommodityFlow {
 	 * @param bestFlowProfitIn - the profit of the current flow that is to be saved as the best flow.
 	 */
 	private static void updateBestFlow(int bestFlowProfitIn){
-		for(Edge e : graph.getEdges()){
-			bestLagranges[e.getId()] = e.getLagrange();
+		bestRoutes.clear();
+		for(Demand d : graph.getData().getDemands()){
+			for(Route r : d.getRoutes()){
+				bestRoutes.add(r);
+			}
 		}
 		bestFlowProfit = bestFlowProfitIn;
 	}
@@ -130,26 +134,41 @@ public class MulticommodityFlow {
 	 * <br>5) Setting the load on all edges to the feasible load found by the findRepairFlow()-function.
 	 */
 	public static void implementBestFlow(){
-		for(Edge e : graph.getEdges()){
-			int bestLagrange = bestLagranges[e.getId()];
-			e.setLagrange(bestLagrange);
-		}
-		BellmanFord.reset();
-		BellmanFord.run();
-		findRepairFlow();
-		for(Edge e : graph.getEdges()){
-			e.setLoad(e.getRepLoad());
-		}
 		for(Demand d : graph.getData().getDemands()){
-			Node fromNode = d.getOrigin().getCentroidNode();
-			Node toNode = d.getDestination().getCentroidNode();
-			for(Edge e : fromNode.getOutgoingEdges()){
-				if(e.getToNode().equals(toNode) && e.isOmission()){
-					e.setLoad(d.getRepOmissionFFE());
-					break;
-				}
+			d.clearRoutes();
+		}
+		for(Edge e : graph.getEdges()){
+			e.clearRoutes();
+		}
+		for(Route r : bestRoutes){
+			r.setFFE(r.getFFErep());
+			r.getDemand().addRoute(r);
+			for(Edge e : r.getRoute()){
+				e.addRoute(r);
 			}
 		}
+
+
+		//		for(Edge e : graph.getEdges()){
+		//			int bestLagrange = bestLagranges[e.getId()];
+		//			e.setLagrange(bestLagrange);
+		//		}
+		//		BellmanFord.reset();
+		//		BellmanFord.run();
+		//		findRepairFlow();
+		//		for(Edge e : graph.getEdges()){
+		//			e.setLoad(e.getRepLoad());
+		//		}
+		//		for(Demand d : graph.getData().getDemands()){
+		//			Node fromNode = d.getOrigin().getCentroidNode();
+		//			Node toNode = d.getDestination().getCentroidNode();
+		//			for(Edge e : fromNode.getOutgoingEdges()){
+		//				if(e.getToNode().equals(toNode) && e.isOmission()){
+		//					e.setLoad(d.getRepOmissionFFE());
+		//					break;
+		//				}
+		//			}
+		//		}
 	}
 
 	/** Saves the routes of all demand pairs in csv-format for easy handling in Excel.
@@ -163,9 +182,10 @@ public class MulticommodityFlow {
 			out.write("RotationId;NoInRotation;ODId;ODFrom;ODTo;LegFrom;LegTo;#FFE;Omission"); 
 			out.newLine();
 			for(Demand d : demands){
-				ArrayList<Edge> route = BellmanFord.getRoute(d);
-				if(d.getDemand() > d.getRepOmissionFFE()){
-					for(Edge e : route){
+				for(Route r : d.getRoutes()){
+					//					ArrayList<Edge> route = BellmanFord.getRoute(d);
+					//					if(d.getDemand() > d.getRepOmissionFFE()){
+					for(Edge e : r.getRoute()){
 						if(e.isSail() || e.isOmission()){
 							if(e.isOmission()){
 								out.write(";;");
@@ -175,7 +195,7 @@ public class MulticommodityFlow {
 							out.write(d.getId()+";");
 							out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
 							out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
-							out.write(d.getDemand()-d.getRepOmissionFFE()+";");
+							out.write(r.getFFE()+";");
 							if(e.isOmission()){
 								out.write("1");
 							} else {
@@ -184,14 +204,15 @@ public class MulticommodityFlow {
 							out.newLine();
 						}
 					}
-				} if(d.getRepOmissionFFE() > 0){
-					out.write(";;");
-					out.write(d.getId()+";");
-					out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
-					out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
-					out.write(d.getRepOmissionFFE()+";");
-					out.write("1");
-					out.newLine();
+					//					} if(d.getRepOmissionFFE() > 0){
+					//						out.write(";;");
+					//						out.write(d.getId()+";");
+					//						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
+					//						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
+					//						out.write(d.getRepOmissionFFE()+";");
+					//						out.write("1");
+					//						out.newLine();
+					//					}
 				}
 			}
 			out.close();

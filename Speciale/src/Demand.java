@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Demand {
@@ -8,10 +9,11 @@ public class Demand {
 	private int rate;
 	private int lagrangeProfit;
 	private int realProfit;
-	private int repOmissionFFE;
+	//	private int repOmissionFFE;
+	private ArrayList<Route> routes;
 	private int maxTransitTime;
 	private static AtomicInteger idCounter = new AtomicInteger();
-	
+
 	public Demand(){
 	}
 
@@ -29,9 +31,10 @@ public class Demand {
 		this.destination = destination;
 		this.demand = demand;
 		this.rate = rate;
-		this.lagrangeProfit = 0;
-		this.realProfit = 0;
-		this.repOmissionFFE = 0;
+		//		this.lagrangeProfit = 0;
+		//		this.realProfit = 0;
+		//		this.repOmissionFFE = 0;
+		this.routes = new ArrayList<Route>();
 		this.maxTransitTime = maxTransitTime;
 	}
 
@@ -69,31 +72,54 @@ public class Demand {
 	public int getMaxTransitTime() {
 		return maxTransitTime;
 	}
-	
+
 	public int getId(){
 		return this.id;
 	}
-	
-	public int getLagrangeProfit() {
-		return lagrangeProfit;
-	}
 
-	public void setLagrangeProfit(int lagrangeProfit) {
-		this.lagrangeProfit = lagrangeProfit;
-	}
-	
-	public int getRealProfit() {
-		return realProfit;
-	}
-
-	public void setRealProfit(int realProfit) {
-		this.realProfit = realProfit;
-	}
-	
 	public int getOmissionProfit(){
 		return -rate - 1000;
 	}
+
+	public Route createMainRoute(){
+		Route newRoute = new Route(this, false);
+		routes.add(newRoute);
+		newRoute.setFFE(demand);
+		newRoute.setFFErep(demand);
+		return newRoute;
+	}
+
+	public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
+		Route repRoute = new Route(this, true);
+		routes.add(repRoute);
+		repRoute.addProhibitedEdge(prohibitedEdge);
+		if(prevRoute.isRepair()){
+			for(Edge e : prevRoute.getProhibitedEdges()){
+				repRoute.addProhibitedEdge(e);
+			}
+		}
+		repRoute.setFFErep(FFErep);
+		repRoute.findRoute();
+		return repRoute;
+	}
+
+	public void clearRoutes(){
+		routes.clear();
+	}
 	
+	public ArrayList<Route> getRoutes(){
+		return routes;
+	}
+	
+	public void addRoute(Route addRoute){
+		routes.add(addRoute);
+	}
+	
+	public void removeRoute(Route removeRoute){
+		routes.remove(removeRoute);
+	}
+
+	/*
 	public int getRepOmissionFFE() {
 		return repOmissionFFE;
 	}
@@ -105,7 +131,8 @@ public class Demand {
 	public void resetRepOmissionFFE(){
 		this.repOmissionFFE = 0;
 	}
-	
+	 */
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -115,5 +142,5 @@ public class Demand {
 				+ ", maxTransitTime=" + maxTransitTime + "]";
 	}
 
-	
+
 }

@@ -10,7 +10,7 @@ public class Edge {
 	private int lagrange;
 	private int lagrangeMultiplier;
 	private int capacity;
-	private int load;
+//	private int load;
 	private double travelTime;
 	private boolean omission;
 	private boolean sail;
@@ -19,7 +19,7 @@ public class Edge {
 	private boolean loadUnload;
 	private Rotation rotation;
 	private int noInRotation;
-	private ArrayList<Demand> shortestPathOD;
+	private ArrayList<Route> routes;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
 	
@@ -75,7 +75,7 @@ public class Edge {
 		}
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
-		shortestPathOD = new ArrayList<Demand>();
+		routes = new ArrayList<Route>();
 	}
 
 	/** Constructor for omission edges.
@@ -105,7 +105,7 @@ public class Edge {
 		this.noInRotation = -1;
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
-		shortestPathOD = new ArrayList<Demand>();
+		routes = new ArrayList<Route>();
 		this.distance = null;
 	}
 	
@@ -238,30 +238,24 @@ public class Edge {
 	/** Sets the load of the edge to 0.
 	 * 
 	 */
-	public void resetLoad(){
-		load = 0;
-	}
+//	public void resetLoad(){
+//		load = 0;
+//	}
 
 	/** Adds the input to the current load.
 	 * @param load - the load to be added.
 	 */
-	public void addLoad(int load){
-		this.load += load;
-	}
+//	public void addLoad(int load){
+//		this.load += load;
+//	}
 
 	/** Sets the load to the input.
 	 * @param load - the load to be set.
 	 */
-	public void setLoad(int load){
-		this.load = load;
-	}
+//	public void setLoad(int load){
+//		this.load = load;
+//	}
 
-	/**
-	 * @return The load.
-	 */
-	public int getLoad() {
-		return load;
-	}
 
 	/**
 	 * @return The UNLo-code of the from port.
@@ -294,22 +288,26 @@ public class Edge {
 	/** Removes all demands from the shortestPathOD.
 	 * 
 	 */
-	public void clearShortestPathOD(){
-		shortestPathOD.clear();
+	public void clearRoutes(){
+		routes.clear();
+	}
+	
+	public void removeRoute(Route removeRoute){
+		routes.remove(removeRoute);
 	}
 
-	/** Adds the input to the list of shortestPathOD.
-	 * @param newOD - the demand to be added to shortestPathOD.
+	/** Adds the input to the list of routes.
+	 * @param newRoute - the route to be added.
 	 */
-	public void addShortestPathOD(Demand newOD){
-		shortestPathOD.add(newOD);
+	public void addRoute(Route newRoute){
+		routes.add(newRoute);
 	}
 
 	/**
-	 * @return The list of demands that has the shortest path through this edge.
+	 * @return The list of routes that has the shortest path through this edge.
 	 */
-	public ArrayList<Demand> getShortestPathOD(){
-		return shortestPathOD;
+	public ArrayList<Route> getRoutes(){
+		return routes;
 	}
 
 //	public int getLagrangeMultiplier() {
@@ -321,12 +319,23 @@ public class Edge {
 	 */
 	public int getRepLoad(){
 		int repLoad = 0;
-		for(Demand d : shortestPathOD){
-			repLoad += (d.getDemand() - d.getRepOmissionFFE());
+		for(Route r : routes){
+			repLoad += r.getFFErep();
 		}
 		return repLoad;
 	}
 
+	/**
+	 * @return The load.
+	 */
+	public int getLoad() {
+		int load = 0;
+		for(Route r : routes){
+			load += r.getFFE();
+		}
+		return load;
+	}
+	
 	/**
 	 * @return A simple print of the edge.
 	 */
@@ -340,7 +349,7 @@ public class Edge {
 		} else {
 			str+= "internal in " + fromNode.getPort().getUNLocode();
 		}
-		str +=  " with load: " + load + " and capacity: " + capacity;
+//		str +=  " with load: " + load + " and capacity: " + capacity;
 		return str;
 	}
 
