@@ -7,6 +7,7 @@ public class Rotation {
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
 	private double rotationTime;
+
 	private int noVessels;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private boolean active;
@@ -26,11 +27,14 @@ public class Rotation {
 	}
 
 	public double calculateRotationTime(){
-		this.rotationTime = 0;
+		double designRotationTime = 0;
 		for(Edge i : rotationEdges){
-			this.rotationTime += i.getTravelTime();
+			designRotationTime += i.getTravelTime();
 		}
-		return this.rotationTime;
+		this.rotationTime = designRotationTime;
+		designRotationTime = Math.ceil(designRotationTime/168.0);
+		designRotationTime = designRotationTime*7;
+		return designRotationTime;
 	}
 	
 	public int calculateNoVessels(){
@@ -61,6 +65,61 @@ public class Rotation {
 		return rotationEdges;
 	}
 
+	/**
+	 * @return the rotationTime
+	 */
+	public double getRotationTime() {
+		return rotationTime;
+	}
+	
+	public int calcCost(){
+		int obj = 0;
+		VesselClass v = this.getVesselClass();
+		ArrayList<Edge> rotationEdges = this.getRotationEdges();
+		double sailingTime = 0;
+		double idleTime = 0;
+		int portCost = 0;
+		double distance = 0;
+		int suezCost = 0;
+		int panamaCost = 0;
+		for (Edge e : rotationEdges){
+			if(e.isSail()){
+				sailingTime += e.getTravelTime();
+				distance += e.getDistance().getDistance();
+				Port p = e.getToNode().getPort();
+				portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
+				if(e.isSuez()){
+					suezCost += v.getSuezFee();
+				}
+				if(e.isPanama()){
+					panamaCost += v.getPanamaFee();
+				}
+			}
+			if(e.isDwell()){
+				idleTime += e.getTravelTime();
+			}
+		}
+		//TODO USD per metric tons fuel = 600
+		double sailingBunkerCost = (int) Math.ceil(sailingTime/24.0) * v.getFuelConsumptionDesign() * 600;
+		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * 600;
+		
+		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
+		int TCCost = rotationDays * v.getTCRate();
+		
+		System.out.println("Rotation number "+ this.id);
+		System.out.println("Voyage duration in nautical miles " + distance);
+		System.out.println(this.calculateNoVessels() + " ships needed for rotationTime of " + this.getRotationTime());
+		System.out.println("Port call cost " + portCost);
+		System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
+		System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
+		System.out.println("Total TC cost " + TCCost);
+		System.out.println();
+		
+		obj -= sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
+		
+		return obj;
+	}
+	
 	public int getNoVessels() {
 		return noVessels;
 	}
