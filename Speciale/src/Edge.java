@@ -245,6 +245,13 @@ public class Edge {
 	}
 
 	/**
+	 * @return the distance
+	 */
+	public DistanceElement getDistance() {
+		return distance;
+	}
+
+	/**
 	 * @return The travel time.
 	 */
 	public double getTravelTime() {
