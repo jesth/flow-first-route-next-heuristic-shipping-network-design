@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Port {
 	private String UNLocode;
@@ -12,7 +13,10 @@ public class Port {
 	private int transshipCost;
 	private int fixedCallCost;
 	private int varCallCost;
-	private Node centroidNode;
+	private Node fromCentroidNode;
+	private Node toCentroidNode;
+	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
+	private ArrayList<Node> departureNodes = new ArrayList<Node>();
 	private int portId;
 	
 	public Port(){
@@ -48,7 +52,8 @@ public class Port {
 		this.transshipCost = transshipCost;
 		this.fixedCallCost = fixedCallCost;
 		this.varCallCost = varCallCost;
-		this.centroidNode = null;
+		this.fromCentroidNode = null;
+		this.toCentroidNode = null;
 		this.portId = portId;
 	}
 
@@ -112,15 +117,39 @@ public class Port {
 		return varCallCost;
 	}
 	
-	public Node getCentroidNode() {
-		return centroidNode;
+	public Node getFromCentroidNode() {
+		return fromCentroidNode;
+	}
+	
+	public Node getToCentroidNode() {
+		return toCentroidNode;
+	}
+	
+	public ArrayList<Node> getArrivalNodes(){
+		return arrivalNodes;
+	}
+	
+	public ArrayList<Node> getDepartureNodes(){
+		return departureNodes;
+	}
+	
+	public void addArrivalNode(Node arrivalNode){
+		arrivalNodes.add(arrivalNode);
+	}
+	
+	public void addDepartureNode(Node departureNode){
+		departureNodes.add(departureNode);
 	}
 	
 	public int getPortId(){
 		return portId;
 	}
 
-	public void setCentroidNode(Node centroidNode) {
-		this.centroidNode = centroidNode;
+	public void setFromCentroidNode(Node fromCentroidNode) {
+		this.fromCentroidNode = fromCentroidNode;
+	}
+
+	public void setToCentroidNode(Node toCentroidNode) {
+		this.toCentroidNode = toCentroidNode;
 	}
 }

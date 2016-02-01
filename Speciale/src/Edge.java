@@ -64,7 +64,7 @@ public class Edge {
 			this.transshipment = true;
 			// TODO hard-code
 			this.travelTime = 24;
-		} else if(fromNode.isArrival() && toNode.isCentroid() || fromNode.isCentroid() && toNode.isDeparture()){
+		} else if(fromNode.isArrival() && toNode.isToCentroid() || fromNode.isFromCentroid() && toNode.isDeparture()){
 			this.loadUnload = true;
 			// TODO hard-code
 			this.travelTime = 0;
@@ -286,13 +286,16 @@ public class Edge {
 		return this.noInRotation;
 	}
 
-	/** Removes all demands from the shortestPathOD.
+	/** Removes all routes from the routes array.
 	 * 
 	 */
 	public void clearRoutes(){
 		routes.clear();
 	}
 	
+	/**
+	 * @param removeRoute - the route to be removed from the routes array.
+	 */
 	public void removeRoute(Route removeRoute){
 		routes.remove(removeRoute);
 	}
@@ -312,7 +315,7 @@ public class Edge {
 	}
 
 	/**
-	 * @return The repaired load, i.e. the true load subtracted by the number of containers that have to be moved to an omission edge. This is decided by the findRepairFlow()-function.
+	 * @return The repaired load, i.e. the sum of all FFErep for the routes of this edge.
 	 */
 	public int getRepLoad(){
 		int repLoad = 0;
@@ -323,7 +326,7 @@ public class Edge {
 	}
 
 	/**
-	 * @return The load.
+	 * @return The load, i.e. the sum of all FFE for the routes of this edge.
 	 */
 	public int getLoad() {
 		int load = 0;

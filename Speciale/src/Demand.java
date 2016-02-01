@@ -93,6 +93,8 @@ public class Demand {
 		routes.add(newRoute);
 		newRoute.setFFE(demand);
 		newRoute.setFFErep(demand);
+		ArrayList<Edge> route = BellmanFord.getRoute(this, false);
+		newRoute.update(route);
 		return newRoute;
 	}
 
@@ -108,13 +110,10 @@ public class Demand {
 				repRoute.addProhibitedEdge(e);
 			}
 		}
-//		System.out.println("Prohibited edges:");
-//		for(Edge e : repRoute.getProhibitedEdges()){
-//			System.out.println(e.simplePrint());
-//		}
 		repRoute.setFFErep(FFErep);
 		repRoute.findRoute();
-		System.out.println(repRoute.simplePrint());
+		ArrayList<Edge> route = BellmanFord.getRoute(this, true);
+		repRoute.update(route);
 		return repRoute;
 	}
 
