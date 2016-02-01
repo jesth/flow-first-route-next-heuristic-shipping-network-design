@@ -6,7 +6,7 @@ public class Rotation {
 	private VesselClass vesselClass;
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
-	private double rotationTime;
+	private double speed;
 	private int noVessels;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private boolean active;
@@ -20,12 +20,15 @@ public class Rotation {
 		this.vesselClass = vesselClass;
 		this.rotationNodes = new ArrayList<Node>();
 		this.rotationEdges = new ArrayList<Edge>();
-		this.rotationTime = 0;
-		this.noVessels = 0;
 		this.active = true;
+		calculateSpeed();
 	}
 
-
+	public void calculateSpeed(){
+		int distance = getDistance();
+		int lbNoVessels = 
+		
+	}
 	
 	public double calculateRotationTime(){
 		double rotationTime = 0;
@@ -35,10 +38,17 @@ public class Rotation {
 		return rotationTime;
 	}
 	
-	public int calculateNoVessels(){
-		//168 hours per week.
-		return 1 + (int) rotationTime / 168;
+	public int getDistance(){
+		int distance = 0;
+		for(Edge e : rotationEdges){
+			distance += e.g
+		}
 	}
+	
+//	public int calculateNoVessels(){
+//		//168 hours per week.
+//		return 1 + (int) rotationTime / 168;
+//	}
 
 	public VesselClass getVesselClass() {
 		return vesselClass;
