@@ -4,47 +4,13 @@ import java.util.ArrayList;
 public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		Graph testGraph = new Graph();
-//		for(Node i : testGraph.getNodes()){
-//			System.out.println(i.getDistances().length);
-//		}
-		/*
-		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(1);
-		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("DKAAR", "RULED", false, false);
-		DistanceElement leg3 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
-		distances.add(leg1);
-		distances.add(leg2);
-		distances.add(leg3);
-		Rotation r = testGraph.createRotation(distances, vesselClass);
 		
-		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
-		distances2.add(leg4);
-		distances2.add(leg5);
-		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		*/
-		
-	
-		
-		
-		
-//		BellmanFord.initialize(testGraph);
-//		System.out.println("Intialized");
-//		BellmanFord.run();
-//		System.out.println("Done");
-//		for(Demand i : testGraph.getData().getDemands()){
-//			BellmanFord.printRoute(i);
-//		}
-		
-//		testBaltic(testGraph);
-		
-		testMed(testGraph);
+		testBaltic();
+
 	}
 	
-	public static void testBaltic(Graph testGraph){
+	public static void testBaltic() throws FileNotFoundException{
+		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = testGraph.getData().getDistanceElement("RULED", "FIKTK", false, false);
@@ -98,7 +64,8 @@ public class RunModel {
 		System.out.println("Flow profit " + Result.getFlowProfit(false));
 	}
 	
-	public static void testMed(Graph testGraph){
+	public static void testMed() throws FileNotFoundException{
+		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = testGraph.getData().getDistanceElement("ESALG", "TRAMB", false, false);

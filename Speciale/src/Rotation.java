@@ -115,9 +115,34 @@ public class Rotation {
 		System.out.println("Total TC cost " + TCCost);
 		System.out.println();
 		
-		obj -= sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
+		obj += sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
 		
 		return obj;
+	}
+
+	public int calcPortCost(){
+		int portCost = 0;
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				Port p = e.getToNode().getPort();
+				portCost += p.getFixedCallCost() + vesselClass.getCapacity() * p.getVarCallCost();
+			}
+		}
+		
+		return portCost;
+	}
+	
+	public int calcIdleFuelCost(){
+		int idleTime = 0;
+		for(Edge e : rotationEdges){
+			if(e.isDwell()){
+				idleTime += e.getTravelTime();
+			}
+		}
+		//TODO hardCode fuelprice = 600
+		int idleCost = (int) (Math.ceil(idleTime/24.0) * vesselClass.getFuelConsumptionIdle() * 600);
+		
+		return idleCost;
 	}
 	
 	public int getNoVessels() {

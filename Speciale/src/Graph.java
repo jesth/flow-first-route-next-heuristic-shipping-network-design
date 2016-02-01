@@ -6,8 +6,8 @@ public class Graph {
 	private ArrayList<Edge> edges;
 	private Data data;
 
-	public Graph() throws FileNotFoundException {
-		data = new Data("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+	public Graph(String demandFileName, String fleetFileName) throws FileNotFoundException {
+		data = new Data(demandFileName, fleetFileName);
 		Result.initialize(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
