@@ -24,9 +24,11 @@ public class Rotation {
 		this.active = true;
 		this.speed = 0;
 		this.noOfVessels = 0;
-//		calculateSpeed();
+		this.distance = 0;
+		//		calculateSpeed();
 	}
 
+	//TODO: Function produces spurious results.
 	public void calcOptimalSpeed(){
 		double bestSpeed = 0;
 		int bestNoOfVessels = 0;
@@ -50,7 +52,7 @@ public class Rotation {
 		this.speed = bestSpeed;
 		this.noOfVessels = bestNoOfVessels;
 	}
-	
+
 	public double calculateSpeed(int noOfVessels){
 		double availableTime = 168 * noOfVessels - 24 * getNoOfPortStays();
 		return distance / availableTime;
@@ -97,7 +99,9 @@ public class Rotation {
 
 	public void addRotationEdge(Edge edge){
 		rotationEdges.add(edge);
-		distance += edge.getDistance().getDistance();
+		if(edge.isSail()){
+			distance += edge.getDistance().getDistance();
+		}
 	}
 
 	public ArrayList<Node> getRotationNodes() {
@@ -149,7 +153,7 @@ public class Rotation {
 		System.out.println("Total TC cost " + TCCost);
 		System.out.println();
 		obj += sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
-		
+
 		return obj;
 	}
 
@@ -161,10 +165,10 @@ public class Rotation {
 				portCost += p.getFixedCallCost() + vesselClass.getCapacity() * p.getVarCallCost();
 			}
 		}
-		
+
 		return portCost;
 	}
-	
+
 	public int calcIdleFuelCost(){
 		int idleTime = 0;
 		for(Edge e : rotationEdges){
@@ -174,10 +178,10 @@ public class Rotation {
 		}
 		//TODO hardCode fuelprice = 600
 		int idleCost = (int) (Math.ceil(idleTime/24.0) * vesselClass.getFuelConsumptionIdle() * 600);
-		
+
 		return idleCost;
 	}
-	
+
 	public int calcSailingBunkerCost(double speed, int noOfVessels){
 		double fuelConsumption = vesselClass.getFuelConsumption(speed);
 		double sailTimeDays = (distance / speed) / 24.0;
@@ -213,7 +217,7 @@ public class Rotation {
 		}
 		return ports;
 	}
-	
+
 	public int getNoOfPortStays(){
 		int counter = 0;
 		for(Edge e : rotationEdges){
