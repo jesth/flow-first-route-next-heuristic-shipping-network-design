@@ -21,7 +21,7 @@ public class BellmanFord {
 			for(int j = 0; j < i.getDistances().length-1; j++){
 				i.setLabels(j, Integer.MAX_VALUE, null);
 			}
-			if(i.isCentroid()){
+			if(i.isFromCentroid()){
 				i.setLabels(i.getPortId(), 0, null);
 				i.setUnprocessed(i.getPortId());
 			}
@@ -119,7 +119,7 @@ public class BellmanFord {
 	 */
 	public static void resetNode(int centroidId, Node resetNode){
 		resetNode.setLabels(centroidId, Integer.MAX_VALUE, null);
-		if(resetNode.isCentroid() && centroidId == resetNode.getPortId()){
+		if(resetNode.isFromCentroid() && centroidId == resetNode.getPortId()){
 			resetNode.setLabels(centroidId, 0, null);
 		}
 		//All nodes connected by edges to the reset node must be processed again to get the reset node relaxed correctly.
@@ -135,8 +135,8 @@ public class BellmanFord {
 	 * @return A list of edges used in the route of the specified demand element.
 	 */
 	public static ArrayList<Edge> getRoute(Demand demand, boolean repRoute){
-		Node fromNode = demand.getOrigin().getCentroidNode();
-		Node toNode = demand.getDestination().getCentroidNode();
+		Node fromNode = demand.getOrigin().getFromCentroidNode();
+		Node toNode = demand.getDestination().getToCentroidNode();
 		ArrayList<Edge> usedEdges = new ArrayList<Edge>();
 		int arrayPos;
 		if(!repRoute){
@@ -202,7 +202,7 @@ public class BellmanFord {
 	 * @param r - the route element that the shortest path is to be determined for.
 	 */
 	public static void runSingleRoute(Route r){
-		Node origin = r.getDemand().getOrigin().getCentroidNode();
+		Node origin = r.getDemand().getOrigin().getFromCentroidNode();
 		resetSingle(origin);
 		ArrayList<Node> unprocessedRepNodes = new ArrayList<Node>(unprocessedNodes);
 		while(!unprocessedRepNodes.isEmpty()){

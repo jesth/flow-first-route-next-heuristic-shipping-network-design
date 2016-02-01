@@ -64,7 +64,7 @@ public class Edge {
 			this.transshipment = true;
 			// TODO hard-code
 			this.travelTime = 24;
-		} else if(fromNode.isArrival() && toNode.isCentroid() || fromNode.isCentroid() && toNode.isDeparture()){
+		} else if(fromNode.isArrival() && toNode.isToCentroid() || fromNode.isFromCentroid() && toNode.isDeparture()){
 			this.loadUnload = true;
 			// TODO hard-code
 			this.travelTime = 0;

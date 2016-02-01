@@ -7,7 +7,7 @@ public class Graph {
 	private Data data;
 
 	public Graph() throws FileNotFoundException {
-		data = new Data("Demand_Baltic.csv", "fleet_Baltic.csv");
+		data = new Data("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		Result.initialize(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
@@ -19,15 +19,17 @@ public class Graph {
 		//Sets the number of centroids in the Node class once and for all, and is then garbage collected.
 		new Node(data.getPorts().size());
 		for(Port i : data.getPorts().values()){
-			Node newCentroid = new Node(i);
-			nodes.add(newCentroid);
+			Node fromCentroid = new Node(i, true);
+			Node toCentroid = new Node(i, false);
+			nodes.add(fromCentroid);
+			nodes.add(toCentroid);
 		}
 	}
 
 	private void createOmissionEdges(){
 		for(Demand i : data.getDemands()){
-			Node fromCentroid = i.getOrigin().getCentroidNode();
-			Node toCentroid = i.getDestination().getCentroidNode();
+			Node fromCentroid = i.getOrigin().getFromCentroidNode();
+			Node toCentroid = i.getDestination().getToCentroidNode();
 			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, i.getRate());
 			edges.add(newOmissionEdge);
 		}
@@ -125,9 +127,9 @@ public class Graph {
 	private void createLoadUnloadEdges(Rotation rotation){
 		for(Node i : rotation.getRotationNodes()){
 			if(i.isArrival()){
-				createLoadUnloadEdge(i, i.getPort().getCentroidNode());
+				createLoadUnloadEdge(i, i.getPort().getToCentroidNode());
 			} else if(i.isDeparture()){
-				createLoadUnloadEdge(i.getPort().getCentroidNode(), i);
+				createLoadUnloadEdge(i.getPort().getFromCentroidNode(), i);
 			} else {
 				throw new RuntimeException("Tried to create load/unload edge that does not match definition.");
 			}

@@ -3,7 +3,8 @@ import java.util.ArrayList;
 public class Node {
 	private Port port;
 	private Rotation rotation;
-	private boolean centroid;
+	private boolean fromCentroid;
+	private boolean toCentroid;
 	private boolean departure;
 	private boolean arrival;
 	private int[] distances;
@@ -34,7 +35,8 @@ public class Node {
 			port.addArrivalNode(this);
 		}
 		this.rotation = rotation;
-		this.centroid = false;
+		this.fromCentroid = false;
+		this.toCentroid = false;
 		this.departure = departure;
 		this.arrival = !departure;
 		this.distances = new int[noOfCentroids+1];
@@ -46,13 +48,19 @@ public class Node {
 	
 	/** Constructor for centroids.
 	 * @param port - the port that the node represents.
+	 * @param fromCentroid - whether this is a fromCentroid.
 	 */
-	public Node(Port port){
+	public Node(Port port, boolean fromCentroid){
 		super();
 		this.port = port;
-		this.port.setCentroidNode(this);
 		this.rotation = null;
-		this.centroid = true;
+		this.fromCentroid = fromCentroid;
+		this.toCentroid = !fromCentroid;
+		if(fromCentroid){
+			this.port.setFromCentroidNode(this);
+		} else {
+			this.port.setToCentroidNode(this);
+		}
 		this.departure = false;
 		this.arrival = false;
 		this.distances = new int[noOfCentroids];
@@ -77,10 +85,17 @@ public class Node {
 	}
 
 	/**
-	 * @return Whether this is a centroid node.
+	 * @return Whether this is a fromCentroid node.
 	 */
-	public boolean isCentroid() {
-		return centroid;
+	public boolean isFromCentroid() {
+		return fromCentroid;
+	}
+	
+	/**
+	 * @return Whether this is a toCentroid node.
+	 */
+	public boolean isToCentroid() {
+		return toCentroid;
 	}
 	
 	/**
@@ -214,8 +229,10 @@ public class Node {
 	
 	public String simplePrint(){
 		String str = "";
-		if(centroid){
-			str += "Centroid ";
+		if(fromCentroid){
+			str += "fromCentroid ";
+		} else if(toCentroid){
+			str += "toCentroid ";
 		} else if(departure){
 			str += "Departure ";
 		} else if(arrival){
@@ -224,14 +241,5 @@ public class Node {
 		str += "at port " + port.getUNLocode();
 		return str;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Node [port=" + port.getName() + ", rotation=" + rotation + ", centroid=" + centroid + "]";
-	}
-
 	
 }

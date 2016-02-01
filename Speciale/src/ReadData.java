@@ -59,10 +59,12 @@ public class ReadData {
 			String destinationUNLo = scanner.next();
 			Port destination = ports.get(destinationUNLo);
 			String textIn = scanner.next();
+			textIn = textIn.replaceAll("\\s+","");	
 			int demand = Integer.parseInt(textIn);	
 			textIn = scanner.next();
 			int rate = Integer.parseInt(textIn);	
 			textIn = scanner.next();
+			textIn = textIn.replaceAll("\\s+","");	
 			int maxTransitTime = Integer.parseInt(textIn);
 			Demand newDemand = new Demand(origin, destination, demand, rate, maxTransitTime);
 			demands.add(newDemand);
