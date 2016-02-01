@@ -14,8 +14,8 @@ public class Port {
 	private int fixedCallCost;
 	private int varCallCost;
 	private Node centroidNode;
-	private ArrayList<Node> arrivalNodes;
-	private ArrayList<Node> departureNodes;
+	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
+	private ArrayList<Node> departureNodes = new ArrayList<Node>();
 	private int portId;
 	
 	public Port(){
