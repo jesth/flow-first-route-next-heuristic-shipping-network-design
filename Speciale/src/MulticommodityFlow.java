@@ -109,9 +109,10 @@ public class MulticommodityFlow {
 	 * <br>2) Only sail edges are considered, as these are the only ones that can 
 	 * have a restricting capacity (dwell edges can never be restricting).
 	 * <br>3) If the capacity is violated, the profit per container of each of the serviced OD pairs is considered.
-	 * <br>4) The OD pair with the lowest profit is chosen for removal to omission edges.
-	 * <br>5) Containers are removed down to the capacity limit, or until all containers of the OD pair have been removed.
-	 * <br>6) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
+	 * <br>4) The OD pair with the lowest profit is chosen for computation of an alternative repair route.
+	 * <br>5) The repair route is computed.
+	 * <br>6) Containers are removed down to the capacity limit, or until all containers of the OD pair have been removed.
+	 * <br>7) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
 	 * @return The profit of the repaired flow.
 	 */
 	private static int findRepairFlow(){
@@ -146,7 +147,7 @@ public class MulticommodityFlow {
 		return flowProfit;
 	}
 
-	/** Updates the best flow to the current flow. Saves the Lagranges and objective value of the current flow. 
+	/** Updates the best flow to the current flow. Saves the best routes and objective value of the current flow. 
 	 * @param bestFlowProfitIn - the profit of the current flow that is to be saved as the best flow.
 	 */
 	private static void updateBestFlow(int bestFlowProfitIn){
@@ -160,11 +161,8 @@ public class MulticommodityFlow {
 	}
 
 	/** Implements the saved best flow by:  
-	 * <br>1) Resetting the labels saved by previous runs of the Bellman-Ford algorithm.
-	 * <br>2) Setting the Lagrange values to the saved best values.
-	 * <br>3) Running Bellman-Ford again to obtain the corresponding flow.
-	 * <br>4) Running the findRepairFlow()-function to find the number of excess containers on all edges.
-	 * <br>5) Setting the load on all edges to the feasible load found by the findRepairFlow()-function.
+	 * <br>1) Clearing all routes from all demand and edge elements.
+	 * <br>2) Adding the best routes to all demand and edge elements.
 	 */
 	public static void implementBestFlow(){
 		for(Demand d : graph.getData().getDemands()){

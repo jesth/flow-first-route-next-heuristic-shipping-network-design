@@ -125,6 +125,9 @@ public class Node {
 	}
 	
 
+	/**
+	 * @return Whether all spaces of the unprocessed array has been processed in the Bellman-Ford algorithm.
+	 */
 	public boolean allCentroidsProcessed() {
 		for(boolean i : unprocessed){
 			if(i){

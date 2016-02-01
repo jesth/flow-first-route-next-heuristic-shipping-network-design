@@ -42,10 +42,7 @@ public class BellmanFord {
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
 			d.clearRoutes();
-			//TODO: Incorporate lines 2 and 3 below to the createMainRoute() method.
-			Route r = d.createMainRoute();
-			ArrayList<Edge> route = getRoute(d, false);
-			r.update(route);
+			d.createMainRoute();
 		}
 	}
 
@@ -132,10 +129,10 @@ public class BellmanFord {
 		}
 	}
 
-	/** 
-	 * @param fromNode
-	 * @param toNode
-	 * @return an ArrayList of edges i.e. a route that a demand uses from origin port/centroid to destination port/centroid.
+	/**
+	 * @param demand - the demand for which the route is to be returned.
+	 * @param repRoute - whether the route to be returned is a repair route.
+	 * @return A list of edges used in the route of the specified demand element.
 	 */
 	public static ArrayList<Edge> getRoute(Demand demand, boolean repRoute){
 		Node fromNode = demand.getOrigin().getCentroidNode();
@@ -192,12 +189,18 @@ public class BellmanFord {
 		//TODO: Not finished - needs rotation information for non-omission edges.
 	}
 
+	/**
+	 * @param unprocessedNode - the unprocessed node to be added to the unprocessedNodes array.
+	 */
 	public static void addUnprocessedNode(Node unprocessedNode){
 		if(!unprocessedNodes.contains(unprocessedNode)){
 			unprocessedNodes.add(unprocessedNode);
 		}
 	}
 
+	/** Finds the shortest path for the route element given as input.
+	 * @param r - the route element that the shortest path is to be determined for.
+	 */
 	public static void runSingleRoute(Route r){
 		Node origin = r.getDemand().getOrigin().getCentroidNode();
 		resetSingle(origin);
@@ -210,11 +213,11 @@ public class BellmanFord {
 			}
 			adjustUnprocessedRepNodes(unprocessedRepNodes);
 		}
-		//TODO: Incorporate the two lines below to the createRepRoute() method.
-		ArrayList<Edge> route = getRoute(r.getDemand(), true);
-		r.update(route);
 	}
 
+	/** Resets the "single route" position of the distance and predecessor arrays (the last position) to Integer.MAX_VALUE and null, respectively.
+	 * @param origin - the node from which the shortest path is to be determined.
+	 */
 	public static void resetSingle(Node origin){
 		int arrayPos = Node.getNoOfCentroids()-1;
 		for(Node i : graph.getNodes()){
@@ -224,6 +227,10 @@ public class BellmanFord {
 		origin.setUnprocessed(arrayPos);
 	}
 
+	/** Relaxes a node for the "single route" position of the distance and predecessor arrays only.
+	 * @param u - the node to be relaxed.
+	 * @param prohibitedEdges - the edges that cannot be used in the route element for which the shortest path is determined.
+	 */
 	public static void relaxSingle(Node u, ArrayList<Edge> prohibitedEdges){
 		int arrayPos = Node.getNoOfCentroids()-1;
 		if(u.isUnprocessed(arrayPos)){
@@ -236,6 +243,9 @@ public class BellmanFord {
 		}
 	}
 	
+	/** Bookkeeping for the separate array unprocessedRepNodes - updates this array with the relevant changes to the "official" array unprocessedNodes.
+	 * @param unprocessedRepNodes - the array to be updated.
+	 */
 	public static void adjustUnprocessedRepNodes(ArrayList<Node> unprocessedRepNodes){
 		int arrayPos = Node.getNoOfCentroids()-1;
 		for(Node i : unprocessedNodes){
