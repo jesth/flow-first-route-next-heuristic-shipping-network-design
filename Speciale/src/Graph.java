@@ -40,6 +40,7 @@ public class Graph {
 		createRotationEdges(distances, rotation, vesselClass);
 		createLoadUnloadEdges(rotation);
 		createTransshipmentEdges(rotation);
+		rotation.calcOptimalSpeed();
 		return rotation;
 	}
 

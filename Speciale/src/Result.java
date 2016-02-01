@@ -65,7 +65,7 @@ public class Result {
 				
 				System.out.println("Rotation number "+ rotationNumber);
 				System.out.println("Voyage duration in nautical miles " + distance);
-				System.out.println(r.calculateNoVessels() + " ships needed for rotationTime of " + r.getRotationTime());
+				System.out.println(r.getNoOfVessels() + " ships needed for rotationTime of " + r.getRotationTime());
 				System.out.println("Port call cost " + portCost);
 				System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
 				System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
