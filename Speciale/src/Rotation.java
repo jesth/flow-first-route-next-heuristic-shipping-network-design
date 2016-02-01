@@ -25,19 +25,20 @@ public class Rotation {
 		this.active = true;
 	}
 
-
-	
 	public double calculateRotationTime(){
-		double rotationTime = 0;
+		this.rotationTime = 0;
 		for(Edge i : rotationEdges){
-			rotationTime += i.getTravelTime();
+			this.rotationTime += i.getTravelTime();
 		}
-		return rotationTime;
+		return this.rotationTime;
 	}
 	
 	public int calculateNoVessels(){
-		//168 hours per week.
-		return 1 + (int) rotationTime / 168;
+		//TODO hardcoded 168 hours per week.
+		// also runs calculateRotationTime() every time number of vessels are needed. smart? 
+		calculateRotationTime();
+		this.noVessels = (int) Math.ceil(rotationTime/168.0);
+		return this.noVessels;
 	}
 
 	public VesselClass getVesselClass() {
@@ -66,6 +67,28 @@ public class Rotation {
 	
 	public int getId(){
 		return id;
+	}
+	
+	public double getSailTime(){
+		double sailTime = 0;
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				sailTime += e.getTravelTime();
+			}
+		}
+		
+		return sailTime;
+	}
+	
+	public ArrayList<Port> getPorts(){
+		ArrayList<Port> ports = new ArrayList<Port>();
+		for(Edge e : rotationEdges){
+			if(e.getToNode().isArrival()){
+				ports.add(e.getToNode().getPort());
+			}
+		}
+		
+		return ports;
 	}
 
 	/**
