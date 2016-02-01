@@ -28,6 +28,11 @@ public class Node {
 	public Node(Port port, Rotation rotation, boolean departure){
 		super();
 		this.port = port;
+		if(departure){
+			port.addDepartureNode(this);
+		} else {
+			port.addArrivalNode(this);
+		}
 		this.rotation = rotation;
 		this.centroid = false;
 		this.departure = departure;
@@ -45,6 +50,7 @@ public class Node {
 	public Node(Port port){
 		super();
 		this.port = port;
+		this.port.setCentroidNode(this);
 		this.rotation = null;
 		this.centroid = true;
 		this.departure = false;

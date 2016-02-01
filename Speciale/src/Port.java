@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Port {
 	private String UNLocode;
@@ -13,6 +14,8 @@ public class Port {
 	private int fixedCallCost;
 	private int varCallCost;
 	private Node centroidNode;
+	private ArrayList<Node> arrivalNodes;
+	private ArrayList<Node> departureNodes;
 	private int portId;
 	
 	public Port(){
@@ -114,6 +117,22 @@ public class Port {
 	
 	public Node getCentroidNode() {
 		return centroidNode;
+	}
+	
+	public ArrayList<Node> getArrivalNodes(){
+		return arrivalNodes;
+	}
+	
+	public ArrayList<Node> getDepartureNodes(){
+		return departureNodes;
+	}
+	
+	public void addArrivalNode(Node arrivalNode){
+		arrivalNodes.add(arrivalNode);
+	}
+	
+	public void addDepartureNode(Node departureNode){
+		departureNodes.add(departureNode);
 	}
 	
 	public int getPortId(){
