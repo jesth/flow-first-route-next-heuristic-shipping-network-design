@@ -121,6 +121,7 @@ public class MulticommodityFlow {
 			for(Edge e : graph.getEdges()){
 				int overflow = e.getRepLoad() - e.getCapacity();
 				if(e.isSail() && overflow > 0){
+					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for edge " + e.simplePrint());
 					invalidFlow = true;
 					int lowestProfit = Integer.MAX_VALUE;
 					Route lowestProfitRoute = null;
