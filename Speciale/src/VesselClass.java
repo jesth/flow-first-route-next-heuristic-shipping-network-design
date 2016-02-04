@@ -80,7 +80,7 @@ public class VesselClass {
 	
 	public double getFuelConsumption(double speed){
 		double fuelConsumption = Math.pow(speed/designSpeed, 3) * fuelConsumptionDesign;
-		System.out.println("at speed " + speed + " fuel consumpotion is " + fuelConsumption);
+//		System.out.println("at speed " + speed + " fuel consumpotion is " + fuelConsumption);
 		return fuelConsumption;
 	}
 

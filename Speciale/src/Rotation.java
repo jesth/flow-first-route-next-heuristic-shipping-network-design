@@ -28,7 +28,6 @@ public class Rotation {
 		//		calculateSpeed();
 	}
 
-	//TODO: Function produces spurious results.
 	public void calcOptimalSpeed(){
 		double bestSpeed = 0;
 		int bestNoOfVessels = 0;
@@ -37,6 +36,7 @@ public class Rotation {
 		int ubNoVessels = calculateMaxNoVessels();
 		if(lbNoVessels > ubNoVessels){
 			//TODO: Function to distribute extra time when sailing with min speed to port stays.
+//			throw new RuntimeException("lb " + lbNoVessels + " > ub " + ubNoVessels + " for rotation " + this);
 		}
 		for(int i = lbNoVessels; i <= ubNoVessels; i++){
 			double speed = calculateSpeed(i);
@@ -59,13 +59,13 @@ public class Rotation {
 	}
 
 	public int calculateMinNoVessels(){
-		double rotationTime = 24 * getNoOfPortStays() + (distance / vesselClass.getMaxSpeed()) / 168.0;
+		double rotationTime = (24 * getNoOfPortStays() + (distance / vesselClass.getMaxSpeed())) / 168.0;
 		int noVessels = (int) Math.ceil(rotationTime);
 		return noVessels;
 	}
 
 	public int calculateMaxNoVessels(){
-		double rotationTime = 24 * getNoOfPortStays() + (distance / vesselClass.getMinSpeed()) / 168.0;
+		double rotationTime = (24 * getNoOfPortStays() + (distance / vesselClass.getMinSpeed())) / 168.0;
 		int noVessels = (int) Math.floor(rotationTime);
 		return noVessels;
 	}
