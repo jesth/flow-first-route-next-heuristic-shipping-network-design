@@ -28,7 +28,6 @@ public class Rotation {
 		//		calculateSpeed();
 	}
 
-	//TODO: Function produces spurious results.
 	public void calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
@@ -53,10 +52,6 @@ public class Rotation {
 			}
 			setSailTimes();
 		}
-		
-		
-		
-		
 	}
 
 	private void setSailTimes() {
