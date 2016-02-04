@@ -1,6 +1,13 @@
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import Data.DistanceElement;
+import Data.VesselClass;
+import Graph.Graph;
+import Methods.MulticommodityFlow;
+import Results.Result;
+import Results.Rotation;
+
 public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {

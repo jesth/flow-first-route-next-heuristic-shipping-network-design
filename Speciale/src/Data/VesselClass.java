@@ -1,3 +1,4 @@
+package Data;
 
 public class VesselClass {
 	private String name;

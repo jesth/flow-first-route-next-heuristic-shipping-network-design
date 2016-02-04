@@ -1,5 +1,11 @@
+package Results;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import Data.Demand;
+import Graph.Edge;
+import Graph.Graph;
+import Sortables.SortableDemand;
 
 public class Result {
 	private static Graph graph;
@@ -69,39 +75,39 @@ public class Result {
 		return flowProfit;
 	}
 	
-//	public static Demand[] getNlargestDemandLosses(int n){
-//		if(n < 1){
-//			throw new RuntimeException("Cannot find less than 1 Demand");
-//		}
-//		if(n > graph.getData().getDemands().size()){
-//			throw new RuntimeException("Cannot find more than graph.getDemands().size() Demands");
-//		}
-//		
-//		SortableDemand[] sortableDemands = new SortableDemand[n];
-//		for(SortableDemand d : sortableDemands){
-//			d = new SortableDemand(Integer.MAX_VALUE, new Demand());
-//		}
-//		
-//		int largestODLoss = Integer.MAX_VALUE;
-//		for(Demand d : graph.getData().getDemands()){
-//			int odLoss = 0;
-//			for(Route r : d.getRoutes()){
-//				odLoss += r.getRealProfit() *  r.getFFE();
-//			}
-//			if(odLoss < sortableDemands[n-1]){
-//				SortableDemand newSortableDemand = new SortableDemand(odLoss, d);
-//				sortableDemands[n-1] = newSortableDemand;
-//				Collections.sort(sortableDemands);
-//			}
-//		}
-//		
-//		Demand[] demands = new Demand[n];
-//		for(int i=0; i<demands.length-1; i++){
-//			demands[i] = sortableDemands[i].getDemand();
-//		}
-//		
-//		return demands;
-//	}
+	public static Demand[] getNlargestDemandLosses(int n){
+		if(n < 1){
+			throw new RuntimeException("Cannot find less than 1 Demand");
+		}
+		if(n > graph.getData().getDemands().size()){
+			throw new RuntimeException("Cannot find more than graph.getDemands().size() Demands");
+		}
+		
+		SortableDemand[] sortableDemands = new SortableDemand[n];
+		for(SortableDemand d : sortableDemands){
+			d = new SortableDemand(Integer.MAX_VALUE, new Demand());
+		}
+		
+		int largestODLoss = Integer.MAX_VALUE;
+		for(Demand d : graph.getData().getDemands()){
+			int odLoss = 0;
+			for(Route r : d.getRoutes()){
+				odLoss += r.getRealProfit() *  r.getFFE();
+			}
+			if(odLoss < sortableDemands[n-1].getProfit()){
+				SortableDemand newSortableDemand = new SortableDemand(odLoss, d);
+				sortableDemands[n-1] = newSortableDemand;
+				Collections.sort(sortableDemands);
+			}
+		}
+		
+		Demand[] demands = new Demand[n];
+		for(int i=0; i<demands.length-1; i++){
+			demands[i] = sortableDemands[i].getDemand();
+		}
+		
+		return demands;
+	}
 	
 	
 	public static Demand getLargestODLoss(){

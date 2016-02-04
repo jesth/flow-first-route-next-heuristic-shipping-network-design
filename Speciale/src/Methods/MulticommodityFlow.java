@@ -1,8 +1,15 @@
+package Methods;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import Data.Demand;
+import Graph.Edge;
+import Graph.Graph;
+import Results.Result;
+import Results.Route;
 
 public class MulticommodityFlow {
 	private static Graph graph;

@@ -1,3 +1,4 @@
+package Data;
 
 public class DistanceElement {
 	private Distance parent;

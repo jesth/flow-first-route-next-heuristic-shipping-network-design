@@ -1,3 +1,4 @@
+package Data;
 
 public class Distance {
 	private Port origin;
