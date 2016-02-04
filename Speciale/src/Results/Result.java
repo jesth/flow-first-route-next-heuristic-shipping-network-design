@@ -1,6 +1,6 @@
 package Results;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 
 import Data.Demand;
 import Graph.Edge;
@@ -69,7 +69,7 @@ public class Result {
 				}
 			}
 		}
-		System.out.println("flowRevenue " + flowRevenue + ". flowCost " + flowCost + ". omissionCost " + omissionCost);
+//		System.out.println("flowRevenue " + flowRevenue + ". flowCost " + flowCost + ". omissionCost " + omissionCost);
 		flowProfit = flowRevenue - flowCost - omissionCost;
 		
 		return flowProfit;
@@ -97,7 +97,7 @@ public class Result {
 			if(odLoss < sortableDemands[n-1].getProfit()){
 				SortableDemand newSortableDemand = new SortableDemand(odLoss, d);
 				sortableDemands[n-1] = newSortableDemand;
-				Collections.sort(sortableDemands);
+				Arrays.sort(sortableDemands);
 			}
 		}
 		
@@ -111,13 +111,14 @@ public class Result {
 	
 	
 	public static Demand getLargestODLoss(){
-		Demand OD = new Demand();
+		Demand OD = null;
 		int largestODLoss = Integer.MAX_VALUE;
 		for(Demand d : graph.getData().getDemands()){
 			int odLoss = 0;
 			for(Route r : d.getRoutes()){
 				odLoss += r.getRealProfit() *  r.getFFE();
 			}
+//			System.out.println("From " + d.getOrigin().getUNLocode() + " to " + d.getDestination().getUNLocode() + " loss of profit = " + odLoss);
 			if(odLoss < largestODLoss){
 				largestODLoss = odLoss;
 				OD = d;

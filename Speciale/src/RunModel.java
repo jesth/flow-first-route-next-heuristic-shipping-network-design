@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import Data.DistanceElement;
 import Data.VesselClass;
 import Graph.Graph;
+import Methods.ComputeRotations;
 import Methods.MulticommodityFlow;
 import Results.Result;
 import Results.Rotation;
@@ -12,8 +13,30 @@ public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		
-		testBaltic();
+//		testBaltic();
+		testAutomatic();
 
+	}
+	
+	public static void testAutomatic() throws FileNotFoundException{
+		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
+		initialize(testGraph);
+		MulticommodityFlow.run();
+		ComputeRotations.createLargestLossRotation();
+		System.out.println("Rotation created");
+		long time = System.currentTimeMillis();
+		MulticommodityFlow.run();
+		ComputeRotations.createLargestLossRotation();
+		MulticommodityFlow.run();
+		long timeUse = System.currentTimeMillis() - time;
+		System.out.println("Running for " + timeUse + " ms");
+		MulticommodityFlow.saveODSol("test.csv", testGraph.getData().getDemands());
+	}
+	
+	public static void initialize(Graph graph) throws FileNotFoundException{
+		ComputeRotations.intialize(graph);
+		MulticommodityFlow.initialize(graph);
+		Result.initialize(graph);
 	}
 	
 	public static void testBaltic() throws FileNotFoundException{

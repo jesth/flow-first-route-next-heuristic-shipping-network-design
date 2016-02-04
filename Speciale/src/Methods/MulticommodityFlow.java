@@ -13,7 +13,6 @@ import Results.Route;
 
 public class MulticommodityFlow {
 	private static Graph graph;
-	//	private static int[] bestLagranges;
 	private static int bestFlowProfit;
 	private static ArrayList<Route> bestRoutes;
 
@@ -35,6 +34,7 @@ public class MulticommodityFlow {
 	 * <br>3) If the flow is legal, the best found flow is implemented.
 	 */
 	public static void run(){
+		BellmanFord.reset();
 		bestFlowProfit = Integer.MIN_VALUE;
 		//		bestLagranges = new int[graph.getEdges().size()];
 		bestRoutes = new ArrayList<Route>();
@@ -43,14 +43,13 @@ public class MulticommodityFlow {
 
 		//TODO hardcoded 100 iterations...
 		while (iteration < 101){
-			System.out.println("Now running BellmanFord in iteration " + iteration);
-			System.out.println();
+//			System.out.println("Now running BellmanFord in iteration " + iteration);
+//			System.out.println();
 			BellmanFord.run();
 			if(iteration == 1){
 				startLagrange();
 			}
 			findRepairFlow();
-			System.out.println("Has found repair flow");
 			invalidFlow = false;
 			//TODO maybe stupid??
 			for (Edge e : graph.getEdges()){
@@ -65,14 +64,14 @@ public class MulticommodityFlow {
 					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, true);
 					BellmanFord.relaxEdge(e);
-					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-					System.out.println();
+//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+//					System.out.println();
 				} else if(e.getCapacity() > e.getLoad()){
 					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, false);
 					BellmanFord.relaxEdge(e);
-					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-					System.out.println();
+//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+//					System.out.println();
 				} else {
 					System.out.println("Nothing to adjust");
 				}
@@ -82,7 +81,7 @@ public class MulticommodityFlow {
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
-			System.out.println();
+//			System.out.println();
 			iteration++;
 		}
 		implementBestFlow();
