@@ -286,6 +286,13 @@ public class Edge {
 		return this.noInRotation;
 	}
 
+	/**
+	 * @param travelTime the travelTime to set
+	 */
+	public void setTravelTime(double travelTime) {
+		this.travelTime = travelTime;
+	}
+
 	/** Removes all routes from the routes array.
 	 * 
 	 */

@@ -30,27 +30,63 @@ public class Rotation {
 
 	//TODO: Function produces spurious results.
 	public void calcOptimalSpeed(){
-		double bestSpeed = 0;
-		int bestNoOfVessels = 0;
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
 		int ubNoVessels = calculateMaxNoVessels();
 		if(lbNoVessels > ubNoVessels){
-			//TODO: Function to distribute extra time when sailing with min speed to port stays.
+			this.speed = vesselClass.getMinSpeed();
+			this.noOfVessels = lbNoVessels;
+			setSailTimes();
+			setDwellTimes();
+			
+		} else {
+			for(int i = lbNoVessels; i <= ubNoVessels; i++){
+				double speed = calculateSpeed(i);
+				int bunkerCost = calcSailingBunkerCost(speed, i);
+				int TCRate = i * vesselClass.getTCRate();
+				int cost = bunkerCost + TCRate;
+				if(cost < lowestCost){
+					lowestCost = cost;
+					this.speed = speed;
+					this.noOfVessels = i;
+				}
+			}
+			setSailTimes();
 		}
-		for(int i = lbNoVessels; i <= ubNoVessels; i++){
-			double speed = calculateSpeed(i);
-			int bunkerCost = calcSailingBunkerCost(speed, i);
-			int TCRate = i * vesselClass.getTCRate();
-			int cost = bunkerCost + TCRate;
-			if(cost < lowestCost){
-				bestSpeed = speed;
-				lowestCost = cost;
-				bestNoOfVessels = i;
+		
+		
+		
+		
+	}
+
+	private void setSailTimes() {
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				e.setTravelTime(e.getDistance().getDistance()/this.speed);	
 			}
 		}
-		this.speed = bestSpeed;
-		this.noOfVessels = bestNoOfVessels;
+	}
+
+	private void setDwellTimes() {
+		double travelTime = 0;
+		int numDwells = 0;
+		for(Edge e : rotationEdges){
+			travelTime += e.getTravelTime();
+			if(e.isDwell()){
+				numDwells++;
+			}
+		}
+		double diffFromWeek = 168.0*noOfVessels - travelTime;
+		if(diffFromWeek < 0){
+			throw new RuntimeException("invalid dwell times");
+		}
+		double extraDwellTime = diffFromWeek / numDwells;
+		for(Edge e : rotationEdges){
+			if(e.isDwell()){
+				e.setTravelTime(e.getTravelTime()+extraDwellTime);
+			}
+		}
+		
 	}
 
 	public double calculateSpeed(int noOfVessels){
@@ -59,13 +95,13 @@ public class Rotation {
 	}
 
 	public int calculateMinNoVessels(){
-		double rotationTime = 24 * getNoOfPortStays() + (distance / vesselClass.getMaxSpeed()) / 168.0;
+		double rotationTime = (24 * getNoOfPortStays() + (distance / vesselClass.getMaxSpeed())) / 168.0;
 		int noVessels = (int) Math.ceil(rotationTime);
 		return noVessels;
 	}
 
 	public int calculateMaxNoVessels(){
-		double rotationTime = 24 * getNoOfPortStays() + (distance / vesselClass.getMinSpeed()) / 168.0;
+		double rotationTime = (24 * getNoOfPortStays() + (distance / vesselClass.getMinSpeed())) / 168.0;
 		int noVessels = (int) Math.floor(rotationTime);
 		return noVessels;
 	}
