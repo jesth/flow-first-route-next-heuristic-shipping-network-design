@@ -1,7 +1,5 @@
 package Methods;
-
 import java.util.ArrayList;
-
 import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
@@ -33,6 +31,7 @@ public class ComputeRotations {
 		return r;
 	}
 	
+
 	public static void insertBestPort(Rotation rotation){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		double loadFactor = 0;
@@ -55,5 +54,17 @@ public class ComputeRotations {
 		
 		
 		ArrayList<Port> rotationPorts = rotation.getPorts();
+	}
+
+	public static int getDetour(DistanceElement currentLeg, Port addPort){
+		Port port1 = currentLeg.getOrigin();
+		Port port2 = addPort;
+		Port port3 = currentLeg.getDestination();
+		boolean suez = currentLeg.isSuez();
+		boolean panama = currentLeg.isPanama();
+		DistanceElement leg1 = graph.getData().getDistanceElement(port1, port2, suez, panama);
+		DistanceElement leg2 = graph.getData().getDistanceElement(port2, port3, suez, panama);
+		int newDist = leg1.getDistance() + leg2.getDistance();
+		return (newDist - currentLeg.getDistance());
 	}
 }

@@ -40,7 +40,7 @@ public class Rotation {
 		int ubNoVessels = calculateMaxNoVessels();
 		if(lbNoVessels > ubNoVessels){
 			this.speed = vesselClass.getMinSpeed();
-			this.noOfVessels = lbNoVessels;
+			setNoOfVessels(lbNoVessels);
 			setSailTimes();
 			setDwellTimes();
 			
@@ -53,11 +53,17 @@ public class Rotation {
 				if(cost < lowestCost){
 					lowestCost = cost;
 					this.speed = speed;
-					this.noOfVessels = i;
+					setNoOfVessels(i);
 				}
 			}
 			setSailTimes();
 		}
+	}
+	
+	private void setNoOfVessels(int newNoOfVessels){
+		vesselClass.removeNoUsed(noOfVessels);
+		noOfVessels = newNoOfVessels;
+		vesselClass.addNoUsed(newNoOfVessels);
 	}
 
 	private void setSailTimes() {
@@ -110,21 +116,6 @@ public class Rotation {
 	public int getDistance(){
 		return distance;
 	}
-
-	/*
-	public int calculateNoVessels(){
-		//TODO hardcoded 168 hours per week.
-		// also runs calculateRotationTime() every time number of vessels are needed. smart? 
-		calculateRotationTime();
-		this.noVessels = (int) Math.ceil(rotationTime/168.0);
-		return this.noVessels;
-	}
-	 */
-
-	//	public int calculateNoVessels(){
-	//		//168 hours per week.
-	//		return 1 + (int) rotationTime / 168;
-	//	}
 
 	public VesselClass getVesselClass() {
 		return vesselClass;

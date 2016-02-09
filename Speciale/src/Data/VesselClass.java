@@ -13,6 +13,7 @@ public class VesselClass {
 	private int panamaFee;
 	private int suezFee;
 	private int noAvailable;
+	private int noUsed;
 	
 	public VesselClass(){
 	}
@@ -45,6 +46,7 @@ public class VesselClass {
 		this.panamaFee = panamaFee;
 		this.suezFee = suezFee;
 		this.noAvailable = 0;
+		this.noUsed = 0;
 	}
 
 	public String getName() {
@@ -100,9 +102,31 @@ public class VesselClass {
 	public int getNoAvailable() {
 		return noAvailable;
 	}
+	
+	public int getNetNoAvailable(){
+		return (this.noAvailable - this.noUsed);
+	}
 
 	public void setNoAvailable(int noAvailable) {
 		this.noAvailable = noAvailable;
+	}
+
+	public int getNoUsed() {
+		return noUsed;
+	}
+	
+	public void addNoUsed(int noOfVessels){
+		noUsed += noOfVessels;
+		if(noUsed > noAvailable){
+			throw new RuntimeException("Using more vessels than are available for vessel class " + this);
+		}
+	}
+
+	public void removeNoUsed(int noOfVessels) {
+		noUsed -= noOfVessels;
+		if(noUsed < 0){
+			throw new RuntimeException("Negative number of vessels used for vessel class " + this);
+		}
 	}
 
 	@Override
@@ -112,5 +136,6 @@ public class VesselClass {
 				+ designSpeed + ", fuelConsumptionDesign=" + fuelConsumptionDesign + ", fuelConsumptionIdle="
 				+ fuelConsumptionIdle + ", panamaFee=" + panamaFee + ", suezFee=" + suezFee + "]";
 	}
+
 	
 }
