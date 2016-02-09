@@ -118,7 +118,7 @@ public class VesselClass {
 	public void addNoUsed(int noOfVessels){
 		noUsed += noOfVessels;
 		if(noUsed > noAvailable){
-			throw new RuntimeException("Using more vessels than are available for vessel class " + this);
+			throw new RuntimeException("Using more vessels " + noUsed + ">" + noAvailable + " than are available for vessel class " + this);
 		}
 	}
 
