@@ -68,7 +68,7 @@ public class Result {
 				}
 			}
 		}
-		System.out.println("flowRevenue " + flowRevenue + ". flowCost " + flowCost + ". omissionCost " + omissionCost);
+//		System.out.println("flowRevenue " + flowRevenue + ". flowCost " + flowCost + ". omissionCost " + omissionCost);
 		flowProfit = flowRevenue - flowCost - omissionCost;
 		
 		return flowProfit;
@@ -108,13 +108,14 @@ public class Result {
 	}
 	
 	public static Demand getLargestODLoss(){
-		Demand OD = new Demand();
+		Demand OD = null;
 		int largestODLoss = Integer.MAX_VALUE;
 		for(Demand d : graph.getData().getDemands()){
 			int odLoss = 0;
 			for(Route r : d.getRoutes()){
 				odLoss += r.getRealProfit() *  r.getFFE();
 			}
+//			System.out.println("From " + d.getOrigin().getUNLocode() + " to " + d.getDestination().getUNLocode() + " loss of profit = " + odLoss);
 			if(odLoss < largestODLoss){
 				largestODLoss = odLoss;
 				OD = d;
