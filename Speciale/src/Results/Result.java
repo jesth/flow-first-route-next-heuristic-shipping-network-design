@@ -1,7 +1,6 @@
 package Results;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import Data.Demand;
 import Graph.Edge;
 import Graph.Graph;
@@ -84,15 +83,14 @@ public class Result {
 		}
 		
 		SortableDemand[] sortableDemands = new SortableDemand[n];
-		for(SortableDemand d : sortableDemands){
-			d = new SortableDemand(Integer.MAX_VALUE, new Demand());
+		for(int i=0; i<sortableDemands.length; i++){
+			sortableDemands[i] = new SortableDemand(Integer.MAX_VALUE, new Demand());
 		}
 		
-		int largestODLoss = Integer.MAX_VALUE;
 		for(Demand d : graph.getData().getDemands()){
 			int odLoss = 0;
 			for(Route r : d.getRoutes()){
-				odLoss += r.getRealProfit() *  r.getFFE();
+				odLoss -= r.getRealProfit() *  r.getFFE();
 			}
 			if(odLoss < sortableDemands[n-1].getProfit()){
 				SortableDemand newSortableDemand = new SortableDemand(odLoss, d);
@@ -102,13 +100,12 @@ public class Result {
 		}
 		
 		Demand[] demands = new Demand[n];
-		for(int i=0; i<demands.length-1; i++){
+		for(int i=0; i<demands.length; i++){
 			demands[i] = sortableDemands[i].getDemand();
 		}
 		
 		return demands;
 	}
-	
 	
 	public static Demand getLargestODLoss(){
 		Demand OD = null;
