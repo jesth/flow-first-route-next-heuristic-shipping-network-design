@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 public class ReadData {
 
 	public static void readAll(){
@@ -184,7 +186,7 @@ public class ReadData {
 			String textIn = scanner2.next();
 			int noAvailable = Integer.parseInt(textIn);	
 			for(VesselClass i : vesselClasses){
-				if(i.getName()==name){
+				if(i.getName().equals(name)){
 					i.setNoAvailable(noAvailable);
 					break;
 				}
