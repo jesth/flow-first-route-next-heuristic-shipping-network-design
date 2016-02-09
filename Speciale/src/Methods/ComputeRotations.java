@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
+import Graph.Edge;
 import Graph.Graph;
 import Results.Result;
 import Results.Rotation;
@@ -32,4 +33,27 @@ public class ComputeRotations {
 		return r;
 	}
 	
+	public static void insertBestPort(Rotation rotation){
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		double loadFactor = 0;
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
+				//TODO hardcoded 95%
+				if(loadFactor < 0.95){
+					distances.add(e.getDistance());
+				}
+			}
+		}
+		
+		for(Port p : graph.getData().getPorts().values()){
+			
+		}
+		
+		
+		ArrayList<Demand> demands = graph.getData().getDemands();
+		
+		
+		ArrayList<Port> rotationPorts = rotation.getPorts();
+	}
 }
