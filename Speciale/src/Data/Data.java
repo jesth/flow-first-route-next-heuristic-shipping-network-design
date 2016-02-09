@@ -6,15 +6,27 @@ import java.util.HashMap;
 public class Data {
 	private HashMap<String, Port> ports;
 	private Distance[][] distances;
-	private ArrayList<Demand> demands;
+	private Demand[][] demandsArray;
+	private ArrayList<Demand> demandsList;
 	private ArrayList<VesselClass> vesselClasses;
 	private int portStay = 24;
 	
 	public Data(String demandFileName, String vesselNoFileName) throws FileNotFoundException{
 		ports = ReadData.readPorts();
 		distances = ReadData.readDistances(ports);
-		demands = ReadData.readDemands(demandFileName, ports);
+		demandsList = ReadData.readDemands(demandFileName, ports);
+		demandsArray = createDemandsArray();
 		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
+	}
+	
+	public Demand[][] createDemandsArray(){
+		Demand[][] demands = new Demand[ports.size()][ports.size()];
+		for(Demand d : demandsList){
+			int fromPortId = d.getOrigin().getPortId();
+			int toPortId = d.getDestination().getPortId();
+			demands[fromPortId][toPortId] = d;
+		}
+		return demands;
 	}
 	
 	public HashMap<String, Port> getPorts() {
@@ -25,14 +37,24 @@ public class Data {
 		return distances;
 	}
 	
-	public Distance getDistance(int portId1, int portId2){
-		return distances[portId1][portId2];
-	}
-	
 	public Distance getDistance(String port1UNLo, String port2UNLo){
 		int portId1 = ports.get(port1UNLo).getPortId();
 		int portId2 = ports.get(port2UNLo).getPortId();
 		return getDistance(portId1, portId2);
+	}
+	
+	public Distance getDistance(int portId1, int portId2){
+		return distances[portId1][portId2];
+	}
+	
+	public Demand getDemand(Port fromPort, Port toPort){
+		int fromPortId = fromPort.getPortId();
+		int toPortId = toPort.getPortId();
+		return getDemand(fromPortId, toPortId);
+	}
+	
+	public Demand getDemand(int fromPortId, int toPortId){
+		return demandsArray[fromPortId][toPortId];
 	}
 	
 	public DistanceElement getDistanceElement(String port1UNLo, String port2UNLo, boolean suez, boolean panama){
@@ -51,7 +73,7 @@ public class Data {
 	}
 
 	public ArrayList<Demand> getDemands() {
-		return demands;
+		return demandsList;
 	}
 
 	public ArrayList<VesselClass> getVesselClasses() {
