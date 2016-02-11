@@ -210,6 +210,7 @@ public class Rotation {
 		return idleCost;
 	}
 
+	//TODO: Hardcoded 24 & 600.
 	public int calcSailingBunkerCost(double speed, int noOfVessels){
 		double fuelConsumption = vesselClass.getFuelConsumption(speed);
 		double sailTimeDays = (distance / speed) / 24.0;

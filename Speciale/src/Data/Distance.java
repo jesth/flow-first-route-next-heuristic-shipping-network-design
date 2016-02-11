@@ -108,4 +108,8 @@ public class Distance {
 			return distances[3];
 		}
 	}
+	
+	public DistanceElement[] getDistances(){
+		return distances;
+	}
 }
