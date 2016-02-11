@@ -9,6 +9,7 @@ import Data.Demand;
 import Graph.Edge;
 import Graph.Graph;
 import Results.Result;
+import Results.Rotation;
 import Results.Route;
 
 public class MulticommodityFlow {
@@ -43,8 +44,8 @@ public class MulticommodityFlow {
 
 		//TODO hardcoded 100 iterations...
 		while (iteration < 101){
-//			System.out.println("Now running BellmanFord in iteration " + iteration);
-//			System.out.println();
+			//			System.out.println("Now running BellmanFord in iteration " + iteration);
+			//			System.out.println();
 			BellmanFord.run();
 			if(iteration == 1){
 				startLagrange();
@@ -64,14 +65,14 @@ public class MulticommodityFlow {
 					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, true);
 					BellmanFord.relaxEdge(e);
-//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-//					System.out.println();
+					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+					//					System.out.println();
 				} else if(e.getCapacity() > e.getLoad()){
 					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, false);
 					BellmanFord.relaxEdge(e);
-//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-//					System.out.println();
+					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+					//					System.out.println();
 				} else {
 					System.out.println("Nothing to adjust");
 				}
@@ -81,7 +82,7 @@ public class MulticommodityFlow {
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
-//			System.out.println();
+			//			System.out.println();
 			iteration++;
 		}
 		implementBestFlow();
@@ -109,7 +110,7 @@ public class MulticommodityFlow {
 			e.addLagrange(lowestProfit+1000);
 		}
 	}
-	
+
 	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
 	 * <br>1) Running through all edges in unprioritized order.
 	 * <br>2) Only sail edges are considered, as these are the only ones that can 
@@ -216,6 +217,42 @@ public class MulticommodityFlow {
 							}
 							out.newLine();
 						}
+					}
+				}
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveRotationSol(String fileName, ArrayList<Rotation> rotations){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("RotationId;NoInRotation;LegFrom;LegTo;#FFE;LoadingFrom;UnloadingTo"); 
+			out.newLine();
+			for(Rotation r : rotations){
+				for(Edge e : r.getRotationEdges()){
+					if(e.isSail()){
+						out.write(e.getRotation().getId()+";"+e.getNoInRotation()+";");
+						out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
+						out.write(e.getLoad()+";");
+						int loading = 0;
+						for(Edge l : e.getFromNode().getIngoingEdges()){
+							if(!l.isDwell()){
+								loading += l.getLoad();
+							}
+						}
+						int unloading = 0;
+						for(Edge l : e.getToNode().getOutgoingEdges()){
+							if(!l.isDwell()){
+								unloading += l.getLoad();
+							}
+						}
+						out.write(loading+";"+unloading);
+						out.newLine();
 					}
 				}
 			}

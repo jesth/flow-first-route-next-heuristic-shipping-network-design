@@ -54,8 +54,9 @@ public class ComputeRotations {
 		for(Port p : graph.getData().getPorts().values()){
 			for(Edge e : edges){
 				DistanceElement d = e.getDistance();
-				int detour = getDetour(d, p);
-				if(detour < (double) d.getDistance()*0.2){
+				double detour = getDetour(d, p);
+				//TODO: Detour of up to 100 % allowed.
+				if(detour < (double) d.getDistance()){
 					int profit = calcPortInsertProfit(rotation, p, e);
 					if(profit > bestProfit){
 						bestProfit = profit;
@@ -94,6 +95,14 @@ public class ComputeRotations {
 		
 		return profit;
 	}
+	
+	/*
+	public static double getDetourPct(Rotation rotation, DistanceElement currentLeg, Port addPort){
+		double currLength = rotation.getDistance();
+		double detour = getDetour(currentLeg, addPort);
+		return (detour / currLength);
+	}
+	*/
 	
 	public static int getDetour(DistanceElement currentLeg, Port addPort){
 		Port port1 = currentLeg.getOrigin();
