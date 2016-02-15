@@ -22,7 +22,7 @@ public class Result {
 	/**
 	 * @return the rotations
 	 */
-	public ArrayList<Rotation> getRotations() {
+	public static ArrayList<Rotation> getRotations() {
 		return rotations;
 	}
 
