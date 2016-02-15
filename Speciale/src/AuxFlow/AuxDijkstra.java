@@ -32,11 +32,11 @@ public class AuxDijkstra {
 				throw new RuntimeException("Negative remaining demand");
 			}
 		}
-		for(AuxEdge e : graph.getEdges()){
-			if(e.getLoad() > 0){
-				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getLoad());
-			}
-		}
+		//		for(AuxEdge e : graph.getEdges()){
+		//			if(e.getLoad() > 0){
+		//				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getLoad());
+		//			}
+		//		}
 	}
 
 	public static int chooseIndex(int[] remainingDemand, int totRemainingDemand){
@@ -65,6 +65,12 @@ public class AuxDijkstra {
 		heap.reset();
 	}
 
+	public static void convert(int iterations){
+		for(AuxEdge e : graph.getEdges()){
+			e.convertLoad(iterations);
+		}
+	}
+
 	private static void dijkstraSingle (AuxNode source, AuxNode sink){
 		reset();
 		heap.setSource(source);
@@ -73,9 +79,11 @@ public class AuxDijkstra {
 			if (!currentNode.equals(sink)){
 				for (int i = 0; i < currentNode.getOutgoingEdges().size(); i++){
 					AuxEdge currentEdge = currentNode.getOutgoingEdges().get(i);
-					if(currentEdge.getToNode().getHeapIndex() < heap.getSize()){
-						relax(currentNode, currentEdge.getToNode(), currentEdge);
-						heap.bubbleUp(currentEdge.getToNode().getHeapIndex());
+					if(!currentEdge.isFull()){
+						if(currentEdge.getToNode().getHeapIndex() < heap.getSize()){
+							relax(currentNode, currentEdge.getToNode(), currentEdge);
+							heap.bubbleUp(currentEdge.getToNode().getHeapIndex());
+						}
 					}
 				}
 			} else {
