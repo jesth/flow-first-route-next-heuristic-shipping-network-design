@@ -19,7 +19,7 @@ public class Data {
 		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
 	}
 	
-	public Demand[][] createDemandsArray(){
+	private Demand[][] createDemandsArray(){
 		Demand[][] demands = new Demand[ports.size()][ports.size()];
 		for(Demand d : demandsList){
 			int fromPortId = d.getOrigin().getPortId();

@@ -348,6 +348,12 @@ public class Edge {
 		return load;
 	}
 	
+	public void delete(){
+		rotation.getRotationEdges().remove(this);
+		fromNode.getIngoingEdges().remove(this);
+		toNode.getOutgoingEdges().remove(this);
+	}
+	
 	/**
 	 * @return A simple print of the edge.
 	 */
