@@ -106,14 +106,14 @@ public class Graph {
 		createRotationEdge(rotation, arrNode, firstNode, 0, vesselClass.getCapacity(), -1, null);
 	}
 
-	private Node createRotationNode(Port port, Rotation rotation, boolean departure){
+	public Node createRotationNode(Port port, Rotation rotation, boolean departure){
 		Node newNode = new Node(port, rotation, departure);
 		rotation.addRotationNode(newNode);
 		nodes.add(newNode);
 		return newNode;
 	}
 
-	private void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
+	public void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
 		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, rotation, noInRotation, distance);
 		rotation.addRotationEdge(newEdge);
 		edges.add(newEdge);
@@ -146,7 +146,7 @@ public class Graph {
 		}
 	}
 
-	private void createLoadUnloadEdge(Node fromNode, Node toNode){
+	public void createLoadUnloadEdge(Node fromNode, Node toNode){
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
 		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, false, null, -1, null);
 		edges.add(newEdge);

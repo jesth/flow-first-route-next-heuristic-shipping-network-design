@@ -13,8 +13,8 @@ public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		
-		testBaltic();
-//		testAutomatic();
+//		testBaltic();
+		testAutomatic();
 //		testBalticManual();
 
 	}
@@ -23,11 +23,15 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
 		initialize(testGraph);
 		MulticommodityFlow.run();
-		ComputeRotations.createLargestLossRotation();
+		Rotation r1 = ComputeRotations.createLargestLossRotation();
 		System.out.println("Rotation created");
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
-		ComputeRotations.createLargestLossRotation();
+		ComputeRotations.insertBestPort(r1);
+		MulticommodityFlow.run();
+		Rotation r2 = ComputeRotations.createLargestLossRotation();
+		MulticommodityFlow.run();
+		ComputeRotations.insertBestPort(r1);
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
