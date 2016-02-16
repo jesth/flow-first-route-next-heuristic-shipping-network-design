@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import AuxFlow.AuxDijkstra;
 import AuxFlow.AuxGraph;
+import AuxFlow.AuxRun;
 import Data.DistanceElement;
 import Data.VesselClass;
 import Graph.Graph;
@@ -21,13 +22,13 @@ public class RunModel {
 //		testMedManual();
 //		testMed();
 //		testAux();
+		testMedManual2();
 		
 	}
 	
 	public static void testAux() throws FileNotFoundException{
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
-		AuxGraph graph = new AuxGraph(testGraph.getData());
-		AuxDijkstra.run();
+		AuxRun.initialize(testGraph.getData(), 10);
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{
@@ -280,6 +281,7 @@ public class RunModel {
 		distances5.add(leg46);
 		distances5.add(leg47);
 		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
+
 		
 		MulticommodityFlow.initialize(testGraph);
 		Result.initialize(testGraph);
@@ -288,6 +290,157 @@ public class RunModel {
 		Result.addRotation(r3);
 		Result.addRotation(r4);
 		Result.addRotation(r5);
+		long time = System.currentTimeMillis();
+		MulticommodityFlow.run();
+		long timeUse = System.currentTimeMillis() - time;
+		System.out.println("Running for " + timeUse + " ms");
+		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
+		System.out.println();
+		System.out.println("Objective " + Result.getObjective());
+		System.out.println("Flow profit " + Result.getFlowProfit(false));
+	}
+	
+	public static void testMedManual2() throws FileNotFoundException{
+		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(2);
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		DistanceElement leg1 = testGraph.getData().getDistanceElement("EGPSD", "ESALG", false, false);
+		DistanceElement leg8 = testGraph.getData().getDistanceElement("ESALG", "MACAS", false, false);
+		DistanceElement leg2 = testGraph.getData().getDistanceElement("MACAS", "MAAGA", false, false);
+		DistanceElement leg7 = testGraph.getData().getDistanceElement("MAAGA", "PTLEI", false, false);
+		DistanceElement leg3 = testGraph.getData().getDistanceElement("PTLEI", "MAPTM", false, false);
+		DistanceElement leg4 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
+		DistanceElement leg5 = testGraph.getData().getDistanceElement("ESALG", "EGALY", false, false);
+		DistanceElement leg6 = testGraph.getData().getDistanceElement("EGALY", "EGPSD", false, false);
+		distances.add(leg1);
+		distances.add(leg8);
+		distances.add(leg2);
+		distances.add(leg7);
+		distances.add(leg3);
+		distances.add(leg4);
+		distances.add(leg5);
+		distances.add(leg6);
+		Rotation r = testGraph.createRotation(distances, vesselClass);
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(1);
+		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
+		DistanceElement leg10 = testGraph.getData().getDistanceElement("ESALG", "MAPTM", false, false);
+		DistanceElement leg19 = testGraph.getData().getDistanceElement("MAPTM", "DZALG", false, false);
+		DistanceElement leg11 = testGraph.getData().getDistanceElement("DZALG", "TNTUN", false, false);
+		DistanceElement leg12 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
+		DistanceElement leg13 = testGraph.getData().getDistanceElement("ITGIT", "EGPSD", false, false);
+		DistanceElement leg14 = testGraph.getData().getDistanceElement("EGPSD", "EGALY", false, false);
+		DistanceElement leg15 = testGraph.getData().getDistanceElement("EGALY", "GRPIR", false, false);
+		DistanceElement leg16 = testGraph.getData().getDistanceElement("GRPIR", "ITGIT", false, false);
+//		DistanceElement leg17 = testGraph.getData().getDistanceElement("ITGIT", "ITGOA", false, false);
+		DistanceElement leg18 = testGraph.getData().getDistanceElement("ITGIT", "ESBCN", false, false);
+		DistanceElement leg20 = testGraph.getData().getDistanceElement("ESBCN", "ESALG", false, false);
+		distances2.add(leg10);
+		distances2.add(leg19);
+		distances2.add(leg11);
+		distances2.add(leg12);
+		distances2.add(leg13);
+		distances2.add(leg14);
+		distances2.add(leg15);
+		distances2.add(leg16);
+//		distances2.add(leg17);
+		distances2.add(leg18);
+		distances2.add(leg20);
+		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
+		
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(1);
+		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
+		DistanceElement leg30 = testGraph.getData().getDistanceElement("TRAMB", "EGPSD", false, false);
+		DistanceElement leg32 = testGraph.getData().getDistanceElement("EGPSD", "ILASH", false, false);
+		DistanceElement leg33 = testGraph.getData().getDistanceElement("ILASH", "ILHFA", false, false);
+		DistanceElement leg34 = testGraph.getData().getDistanceElement("ILHFA", "EGPSD", false, false);
+		DistanceElement leg35 = testGraph.getData().getDistanceElement("EGPSD", "TRAMB", false, false);
+		distances3.add(leg30);
+		distances3.add(leg32);
+		distances3.add(leg33);
+		distances3.add(leg34);
+		distances3.add(leg35);
+		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(0);
+		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
+		DistanceElement leg40 = testGraph.getData().getDistanceElement("ESALG", "TNTUN", false, false);
+		DistanceElement leg41 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
+		DistanceElement leg42 = testGraph.getData().getDistanceElement("ITGIT", "ITSAL", false, false);
+		DistanceElement leg45 = testGraph.getData().getDistanceElement("ITSAL", "ESVLC", false, false);
+		DistanceElement leg43 = testGraph.getData().getDistanceElement("ESVLC", "ESAGP", false, false);
+		DistanceElement leg44 = testGraph.getData().getDistanceElement("ESAGP", "ESALG", false, false);
+		distances4.add(leg40);
+		distances4.add(leg41);
+		distances4.add(leg42);
+		distances4.add(leg45);
+		distances4.add(leg43);
+		distances4.add(leg44);
+		Rotation r4 = testGraph.createRotation(distances4, vesselClass);
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(0);
+				ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
+		DistanceElement leg50 = testGraph.getData().getDistanceElement("ESALG", "ESAGP", false, false);
+		DistanceElement leg51 = testGraph.getData().getDistanceElement("ESAGP", "DZORN", false, false);
+		DistanceElement leg53 = testGraph.getData().getDistanceElement("DZORN", "ITGIT", false, false);
+		DistanceElement leg54 = testGraph.getData().getDistanceElement("ITGIT", "EGPSD", false, false);
+		DistanceElement leg55 = testGraph.getData().getDistanceElement("EGPSD", "LBBEY", false, false);
+		DistanceElement leg56 = testGraph.getData().getDistanceElement("LBBEY", "TRMER", false, false);
+		DistanceElement leg57 = testGraph.getData().getDistanceElement("TRMER", "EGPSD", false, false);
+		DistanceElement leg59 = testGraph.getData().getDistanceElement("EGPSD", "ESALG", false, false);
+		distances5.add(leg50);
+		distances5.add(leg51);
+		distances5.add(leg53);
+		distances5.add(leg54);
+		distances5.add(leg55);
+		distances5.add(leg56);
+		distances5.add(leg57);
+		distances5.add(leg59);
+		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
+		
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(0);
+		ArrayList<DistanceElement> distances6 = new ArrayList<DistanceElement>();
+		DistanceElement leg60 = testGraph.getData().getDistanceElement("TRAMB", "GEPTI", false, false);
+		DistanceElement leg61 = testGraph.getData().getDistanceElement("GEPTI", "UAODS", false, false);
+		DistanceElement leg62 = testGraph.getData().getDistanceElement("UAODS", "BGVAR", false, false);
+		DistanceElement leg63 = testGraph.getData().getDistanceElement("BGVAR", "TRAMB", false, false);
+		DistanceElement leg64 = testGraph.getData().getDistanceElement("TRAMB", "TRIZM", false, false);
+		DistanceElement leg65 = testGraph.getData().getDistanceElement("TRIZM", "TRAMB", false, false);
+		distances6.add(leg60);
+		distances6.add(leg61);
+		distances6.add(leg62);
+		distances6.add(leg63);
+		distances6.add(leg64);
+		distances6.add(leg65);
+		Rotation r6 = testGraph.createRotation(distances6, vesselClass);
+		
+		
+		vesselClass = testGraph.getData().getVesselClasses().get(1);
+		ArrayList<DistanceElement> distances7 = new ArrayList<DistanceElement>();
+		DistanceElement leg70 = testGraph.getData().getDistanceElement("ESALG", "ESTAR", false, false);
+		DistanceElement leg71 = testGraph.getData().getDistanceElement("ESTAR", "ITGOA", false, false);
+		DistanceElement leg72 = testGraph.getData().getDistanceElement("ITGOA", "ITGIT", false, false);
+		DistanceElement leg73 = testGraph.getData().getDistanceElement("ITGIT", "MAPTM", false, false);
+		DistanceElement leg74 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
+		distances7.add(leg70);
+		distances7.add(leg71);
+		distances7.add(leg72);
+		distances7.add(leg73);
+		distances7.add(leg74);
+		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
+		
+		MulticommodityFlow.initialize(testGraph);
+		Result.initialize(testGraph);
+		Result.addRotation(r);
+		Result.addRotation(r2);
+		Result.addRotation(r3);
+		Result.addRotation(r4);
+		Result.addRotation(r5);
+		Result.addRotation(r6);
+		Result.addRotation(r7);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;

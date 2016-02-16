@@ -50,8 +50,7 @@ public class AuxGraph {
 						AuxNode fromNode = nodes[fromId];
 						int toId = distanceElement.getDestination().getPortId();
 						AuxNode toNode = nodes[toId];
-						AuxEdge newEdge = new AuxEdge(this, fromNode, toNode, distanceElement);
-						edges.add(newEdge);
+						new AuxEdge(this, fromNode, toNode, distanceElement);
 					}
 				}
 			}
@@ -76,6 +75,115 @@ public class AuxGraph {
 
 	public Data getData(){
 		return data;
+	}
+
+	public void addFirstRotationManual() {
+		VesselClass vessel = data.getVesselClasses().get(2);
+		int capacity = vessel.getCapacity();
+		AuxEdge edge1 = findEdge("EGPSD", "MACAS");
+		AuxEdge edge2 = findEdge("MACAS", "MAPTM");
+		AuxEdge edge3 = findEdge("MAPTM", "ESALG");
+		AuxEdge edge4 = findEdge("ESALG", "EGALY");
+		AuxEdge edge5 = findEdge("EGALY", "EGPSD");
+		new AuxEdge(edge1, capacity);
+		new AuxEdge(edge2, capacity);
+		new AuxEdge(edge3, capacity);
+		new AuxEdge(edge4, capacity);
+		new AuxEdge(edge5, capacity);
+	}
+
+	public void addSecondRotationManual() {
+		VesselClass vessel = data.getVesselClasses().get(1);
+		int capacity = vessel.getCapacity();
+		AuxEdge edge1 = findEdge("TRAMB", "EGALY");
+		AuxEdge edge2 = findEdge("EGALY", "EGPSD");
+		AuxEdge edge3 = findEdge("EGPSD", "EGALY");
+		AuxEdge edge4 = findEdge("EGALY", "TRAMB");
+		new AuxEdge(edge1, capacity);
+		new AuxEdge(edge2, capacity);
+		new AuxEdge(edge3, capacity);
+		new AuxEdge(edge4, capacity);
+	}
+
+	public void addThirdRotationManual() {
+		VesselClass vessel = data.getVesselClasses().get(1);
+		int capacity = vessel.getCapacity();
+		AuxEdge edge1 = findEdge("ESALG", "TNTUN");
+		AuxEdge edge2 = findEdge("TNTUN", "ITGIT");
+		AuxEdge edge3 = findEdge("ITGIT", "ITGOA");
+		AuxEdge edge4 = findEdge("ITGOA", "ESALG");
+		new AuxEdge(edge1, capacity);
+		new AuxEdge(edge2, capacity);
+		new AuxEdge(edge3, capacity);
+		new AuxEdge(edge4, capacity);
+	}
+
+	public void addFourthRotationManual() {
+		VesselClass vessel = data.getVesselClasses().get(1);
+		int capacity = vessel.getCapacity();
+		AuxEdge edge1 = findEdge("ESALG", "DZORN");
+		AuxEdge edge2 = findEdge("DZORN", "TNTUN");
+		AuxEdge edge3 = findEdge("TNTUN", "ITGIT");
+		AuxEdge edge4 = findEdge("ITGIT", "EGPSD");
+		AuxEdge edge5 = findEdge("EGPSD", "EGALY");
+		AuxEdge edge6 = findEdge("EGALY", "GRPIR");
+		AuxEdge edge7 = findEdge("GRPIR", "ITGIT");
+		AuxEdge edge8 = findEdge("ITGIT", "ITGOA");
+		AuxEdge edge9 = findEdge("ITGOA", "ESBCN");
+		AuxEdge edge10 = findEdge("ESBCN", "ESVLC");
+		AuxEdge edge11 = findEdge("ESVLC", "ESALG");
+		new AuxEdge(edge1, capacity);
+		new AuxEdge(edge2, capacity);
+		new AuxEdge(edge3, capacity);
+		new AuxEdge(edge4, capacity);
+		new AuxEdge(edge5, capacity);
+		new AuxEdge(edge6, capacity);
+		new AuxEdge(edge7, capacity);
+		new AuxEdge(edge8, capacity);
+		new AuxEdge(edge9, capacity);
+		new AuxEdge(edge10, capacity);
+		new AuxEdge(edge11, capacity);
+	}
+
+	public void addFifthRotationManual() {
+		VesselClass vessel = data.getVesselClasses().get(0);
+		int capacity = vessel.getCapacity();
+		AuxEdge edge1 = findEdge("ESALG", "ESAGP");
+		AuxEdge edge2 = findEdge("ESAGP", "DZORN");
+		AuxEdge edge3 = findEdge("DZORN", "DZALG");
+		AuxEdge edge4 = findEdge("DZALG", "ITGIT");
+		AuxEdge edge5 = findEdge("ITGIT", "EGPSD");
+		AuxEdge edge6 = findEdge("EGPSD", "LBBEY");
+		AuxEdge edge7 = findEdge("LBBEY", "TRMER");
+		AuxEdge edge8 = findEdge("TRMER", "ILHFA");
+		AuxEdge edge9 = findEdge("ILHFA", "EGPSD");
+		AuxEdge edge10 = findEdge("EGPSD", "ESALG");
+		new AuxEdge(edge1, capacity);
+		new AuxEdge(edge2, capacity);
+		new AuxEdge(edge3, capacity);
+		new AuxEdge(edge4, capacity);
+		new AuxEdge(edge5, capacity);
+		new AuxEdge(edge6, capacity);
+		new AuxEdge(edge7, capacity);
+		new AuxEdge(edge8, capacity);
+		new AuxEdge(edge9, capacity);
+		new AuxEdge(edge10, capacity);
+	}
+
+	private AuxEdge findEdge(String fromPort, String toPort){
+		for(AuxEdge e : edges){
+			if(!e.isRotation()){
+				if(e.getFromNode().getPort().getUNLocode().equals(fromPort) && e.getToNode().getPort().getUNLocode().equals(toPort)){
+					return e;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+	public void addEdge(AuxEdge edge){
+		edges.add(edge);
 	}
 
 }

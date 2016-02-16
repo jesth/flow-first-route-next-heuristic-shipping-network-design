@@ -9,33 +9,57 @@ public class AuxEdge {
 	private AuxNode toNode;
 	private int cost;
 	private int load;
+	private double sumLoad;
 	private DistanceElement distance;
+	private boolean rotation;
+	private int capacity;
 	private double a;
 	private double b;
 
 	public AuxEdge(AuxGraph graph, AuxNode fromNode, AuxNode toNode, DistanceElement distance){
 		this.graph = graph;
+		graph.addEdge(this);
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		this.load = 0;
+		this.sumLoad = 0;
 		this.distance = distance;
+		this.rotation = false;
+		this.capacity = Integer.MAX_VALUE;
 		calcCostFunction(10, 0.001);
 		calcCost();
+	}
+	
+	public AuxEdge(AuxEdge copyEdge, int capacity){
+		this.graph = copyEdge.graph;
+		graph.addEdge(this);
+		this.fromNode = copyEdge.fromNode;
+		this.toNode = copyEdge.toNode;
+		fromNode.addOutgoingEdge(this);
+		toNode.addIngoingEdge(this);
+		this.load = 0;
+		this.sumLoad = 0;
+		this.distance = copyEdge.distance;
+		this.rotation = true;
+		this.capacity = capacity;
+		this.cost = 0;
 	}
 
 	public void addFFE(){
 		load++;
 		calcCost();
 	}
-	
+
 	public int getCost(){
 		return cost;
 	}
-	
+
 	private void calcCost(){
-		cost = (int) (a * Math.pow(b, load));
+		if(!rotation){
+			cost = (int) (a * Math.pow(b, load));
+		}
 	}
 
 	private void calcCostFunction(double startMultiplier, double endMultiplier){
@@ -54,7 +78,7 @@ public class AuxEdge {
 		int TCCost = (int) (vessel.getTCRate() * sailTimeDays);
 		int totalCost = fuelCost + portCostFrom + portCostTo + TCCost;
 		int avgCost = totalCost / vessel.getCapacity();
-		
+
 		double startCost = avgCost * startMultiplier;
 		a = startCost;
 		double endCost = avgCost * endMultiplier;
@@ -69,7 +93,28 @@ public class AuxEdge {
 		return toNode;
 	}
 	
+	public void convertLoad(double iterations){
+		sumLoad += ((double) load / iterations);
+		load = 0;
+		calcCost();
+	}
+
 	public int getLoad(){
 		return load;
+	}
+	
+	public boolean isFull(){
+		if(load >= capacity){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isRotation(){
+		return rotation;
+	}
+
+	public double getSumLoad() {
+		return sumLoad;
 	}
 }
