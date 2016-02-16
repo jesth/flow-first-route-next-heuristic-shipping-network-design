@@ -41,6 +41,7 @@ public class ComputeRotations {
 	public static void insertBestPort(Rotation rotation){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		ArrayList<Edge> edges = new ArrayList<Edge>();
+		ArrayList<Port> rotationPorts = rotation.getPorts();
 		double loadFactor = 0;
 		for(Edge e : rotation.getRotationEdges()){
 			if(e.isSail()){
@@ -57,7 +58,7 @@ public class ComputeRotations {
 		Port bestPort = null;
 		Edge bestEdge = null;
 		for(Port p : graph.getData().getPorts().values()){
-			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft())
+			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p))
 			{
 				continue;
 			}
@@ -65,7 +66,7 @@ public class ComputeRotations {
 				DistanceElement d = e.getDistance();
 				double detour = getDetour(d, p);
 				//TODO: Detour of up to 100 % allowed.
-				if(detour < (double) d.getDistance()){
+				if(detour < (double) d.getDistance() * 0.5){
 					int profit = calcPortInsertProfitSmart(rotation, p, e);
 					if(profit > bestProfit){
 						bestProfit = profit;
@@ -89,8 +90,8 @@ public class ComputeRotations {
 		
 		bestEdge.delete();
 		graph.getEdges().remove(bestEdge);
+		rotation.calcOptimalSpeed();
 		
-		//TODO actually insert port
 	}
 
 	public static int calcPortInsertProfitNaive(Rotation rotation, Port insertPort, Edge edge){
@@ -154,6 +155,9 @@ public class ComputeRotations {
 			int fromProfit = (int) (( Math.min(from.getDemand(), roomLeft) * from.getRate()) * Math.pow(0.9, fromPortCounter));
 			
 			Demand to = graph.getData().getDemand(p.getPortId(), insertPortID);
+			if(to == null){
+				continue;
+			}
 			pairNotFound = edge.getToNode().getPortId() != p.getPortId();
 			while (pairNotFound){
 				toEdgeIndex++;

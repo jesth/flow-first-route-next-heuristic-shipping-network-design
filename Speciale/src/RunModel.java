@@ -31,22 +31,31 @@ public class RunModel {
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
+		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		initialize(testGraph);
 		MulticommodityFlow.run();
 		Rotation r1 = ComputeRotations.createLargestLossRotation();
 		System.out.println("Rotation created");
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
-		ComputeRotations.insertBestPort(r1);
-		MulticommodityFlow.run();
+		int counter = 0;
+		while(r1.getNoOfVessels() < 6){
+			ComputeRotations.insertBestPort(r1);
+			MulticommodityFlow.run();
+			counter++;
+		}
+		System.out.println("Did " + counter + " port inserts.");
 		Rotation r2 = ComputeRotations.createLargestLossRotation();
-		MulticommodityFlow.run();
-		ComputeRotations.insertBestPort(r1);
-		MulticommodityFlow.run();
+//		MulticommodityFlow.run();
+//		ComputeRotations.insertBestPort(r1);
+//		MulticommodityFlow.run();
+//		ComputeRotations.insertBestPort(r1);
+//		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("test.csv", testGraph.getData().getDemands());
+		System.out.println(r1);
+		System.out.println(r2);
 	}
 	
 	public static void initialize(Graph graph) throws FileNotFoundException{
