@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import Data.DistanceElement;
+import Methods.BellmanFord;
 import Results.Rotation;
 import Results.Route;
 
@@ -162,10 +163,33 @@ public class Edge {
 		addLagrange(lowestProfit + 1000);
 	}
 	
-	public void adjustLagrange(int iteration, boolean overCapacity){
+	public void lagrangeAdjustment(int iteration){
+		if(capacity < getLoad()){
+			// if we initially didn't use the edge we set the lagrangeStart to -1,
+			// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
+			if(lagrangeStart < 0 && !routes.isEmpty()){
+				resetLagrange();
+			} 
+			adjustLagrange(iteration, true);
+			BellmanFord.relaxEdge(this);
+			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+			//					System.out.println();
+		} else if(capacity > getLoad()){
+			adjustLagrange(iteration, false);
+//			System.out.println(this.simplePrint());
+			BellmanFord.relaxEdge(this);
+			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+			//					System.out.println();
+		} else {
+			System.out.println("Nothing to adjust");
+		}
+	}
+	
+	public void adjustLagrange(int iteration, boolean overflow){
 		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
+//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(!this.dwell){
-			if(overCapacity){
+			if(overflow){
 				this.lagrange = Math.max(this.lagrange + adjust, 0);
 			} else {
 				this.lagrange = Math.max(this.lagrange - adjust, 0);

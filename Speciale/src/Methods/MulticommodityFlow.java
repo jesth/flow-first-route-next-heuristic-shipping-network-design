@@ -37,63 +37,42 @@ public class MulticommodityFlow {
 	public static void run(){
 		BellmanFord.reset();
 		bestFlowProfit = Integer.MIN_VALUE;
-		//		bestLagranges = new int[graph.getEdges().size()];
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 1;
-		int lowerBoundFlow = 0;
+		startLagrange();
 		//TODO hardcoded 100 iterations...
-		while (iteration < 101){
+		while (iteration < 5){
 			//			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
-			if(iteration == 1){
-				startLagrange();
-			}
 			boolean validFlow = findRepairFlow();
+			if(validFlow){
+				System.out.println("Flow is valid");
+			}
 			int flowProfit = Result.getFlowProfit(false);
-			lowerBoundFlow = Result.getFlowProfit(true);
+//			int lowerBoundFlow = Result.getFlowProfit(true);
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
 			
 			//TODO maybe stupid??
-			int sumYSquared = 0;
-			for(Edge e : graph.getEdges()){
-				if(e.isSail()){
-					sumYSquared += Math.pow(e.getCapacity()-e.getLoad(), 2);
-				}
-			}
-			int stepSize = 0;
+//			int sumYSquared = 0;
+//			for(Edge e : graph.getEdges()){
+//				if(e.isSail()){
+//					sumYSquared += Math.pow(e.getCapacity()-e.getLoad(), 2);
+//				}
+//			}
+//			int stepSize = 0;
 			for (Edge e : graph.getEdges()){
-				if(!e.isSail())
-					continue;
-				if(e.getCapacity() < e.getLoad()){
-					// if we initially didn't use the edge we set the lagrange to -1,
-					// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
-					if(e.getLagrange() < 0 && !e.getRoutes().isEmpty()){
-						e.resetLagrange();
-						System.out.println("Lagrange value after resetting: " + e.getLagrange());
-					}
-					e.adjustLagrange(iteration, true);
-					BellmanFord.relaxEdge(e);
-					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-					//					System.out.println();
-				} else if(e.getCapacity() > e.getLoad()){
-					e.adjustLagrange(iteration, false);
-					System.out.println(e.simplePrint());
-					BellmanFord.relaxEdge(e);
-					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-					//					System.out.println();
-				} else {
-					System.out.println("Nothing to adjust");
+				if(e.isSail()){
+					e.lagrangeAdjustment(iteration);
 				}
-				if(e.getFromNode().getPort().getUNLocode().equals("DEBRV") && e.getToNode().getPort().getUNLocode().equals("RULED")){
-					System.out.println("DEBRV -> RULED: lagrange = " + e.getLagrange());
+				if(e.isSail()){
+//				if(e.getFromNode().getPort().getUNLocode().equals("DEBRV") && e.getToNode().getPort().getUNLocode().equals("RULED")){
+					System.out.println(e.simplePrint() + " lagrange = " + e.getLagrange());
 				}
 			}
-			
-			//			System.out.println();
 			iteration++;
 		}
 		implementBestFlow();
@@ -142,7 +121,7 @@ public class MulticommodityFlow {
 			for(Edge e : graph.getEdges()){
 				int overflow = e.getRepLoad() - e.getCapacity();
 				if(e.isSail() && overflow > 0){
-					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for edge " + e.simplePrint());
+					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for " + e.simplePrint());
 					invalidFlow = true;
 					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;
