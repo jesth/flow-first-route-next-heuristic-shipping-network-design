@@ -17,6 +17,7 @@ public class RunModel {
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		testBaltic();
+//		testBaltic();
 //		testAutomatic();
 //		testBalticManual();
 //		testMedManual();

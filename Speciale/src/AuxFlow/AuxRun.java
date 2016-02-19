@@ -9,11 +9,11 @@ public class AuxRun {
 	public static void initialize(Data data, int iterationsIn){
 		graph = new AuxGraph(data);
 		iterations = iterationsIn;
-		graph.addFirstRotationManual();
-		graph.addSecondRotationManual();
-		graph.addThirdRotationManual();
-		graph.addFourthRotationManual();
-		graph.addFifthRotationManual();
+//		graph.addFirstRotationManual();
+//		graph.addSecondRotationManual();
+//		graph.addThirdRotationManual();
+//		graph.addFourthRotationManual();
+//		graph.addFifthRotationManual();
 		run();
 	}
 
@@ -24,7 +24,8 @@ public class AuxRun {
 			AuxDijkstra.convert(iterations);
 		}
 		for(AuxEdge e : graph.getEdges()){
-			if(e.getSumLoad() > 1 || e.isRotation()){
+//			if(e.getSumLoad() > 1 || e.isRotation()){
+			if(e.getFromNode().getPort().getUNLocode().equals("EGPSD")){
 				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getSumLoad() + " and cost " + e.getCost());
 			}
 		}
