@@ -16,13 +16,13 @@ public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		
-//		testBaltic();
-		testAutomatic();
+		testBaltic();
+//		testAutomatic();
 //		testBalticManual();
 //		testMedManual();
 //		testMed();
 //		testAux();
-		testMedManual2();
+//		testMedManual2();
 		
 	}
 	

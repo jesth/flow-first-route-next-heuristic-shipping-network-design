@@ -154,13 +154,16 @@ public class Edge {
 				lowestProfit = r.getLagrangeProfit();
 			}
 		}
-		if(lowestProfit == Integer.MAX_VALUE)
+		if(lowestProfit == Integer.MAX_VALUE){
 			lowestProfit = -1001;
+			throw new RuntimeException("lowestProfit == Integer.MAX_VALUE");
+		}
+			
 		addLagrange(lowestProfit + 1000);
 	}
 	
 	public void adjustLagrange(int iteration, boolean overCapacity){
-		int adjust = (int) Math.max(this.lagrangeStart * 1.0 / iteration * 1.0, 1);
+		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
 		if(!this.dwell){
 			if(overCapacity){
 				this.lagrange = Math.max(this.lagrange + adjust, 0);

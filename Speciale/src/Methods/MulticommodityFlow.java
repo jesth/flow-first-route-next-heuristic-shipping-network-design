@@ -40,8 +40,7 @@ public class MulticommodityFlow {
 		//		bestLagranges = new int[graph.getEdges().size()];
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 1;
-		boolean invalidFlow = true;
-
+		int lowerBoundFlow = 0;
 		//TODO hardcoded 100 iterations...
 		while (iteration < 101){
 			//			System.out.println("Now running BellmanFord in iteration " + iteration);
@@ -50,9 +49,22 @@ public class MulticommodityFlow {
 			if(iteration == 1){
 				startLagrange();
 			}
-			findRepairFlow();
-			invalidFlow = false;
+			boolean validFlow = findRepairFlow();
+			int flowProfit = Result.getFlowProfit(false);
+			lowerBoundFlow = Result.getFlowProfit(true);
+			if(validFlow && flowProfit > bestFlowProfit){
+				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
+				updateBestFlow(flowProfit);
+			}
+			
 			//TODO maybe stupid??
+			int sumYSquared = 0;
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					sumYSquared += Math.pow(e.getCapacity()-e.getLoad(), 2);
+				}
+			}
+			int stepSize = 0;
 			for (Edge e : graph.getEdges()){
 				if(!e.isSail())
 					continue;
@@ -61,27 +73,26 @@ public class MulticommodityFlow {
 					// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
 					if(e.getLagrange() < 0 && !e.getRoutes().isEmpty()){
 						e.resetLagrange();
+						System.out.println("Lagrange value after resetting: " + e.getLagrange());
 					}
-					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, true);
 					BellmanFord.relaxEdge(e);
 					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 					//					System.out.println();
 				} else if(e.getCapacity() > e.getLoad()){
-					int wasCost = e.getCost();
 					e.adjustLagrange(iteration, false);
+					System.out.println(e.simplePrint());
 					BellmanFord.relaxEdge(e);
 					//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 					//					System.out.println();
 				} else {
 					System.out.println("Nothing to adjust");
 				}
+				if(e.getFromNode().getPort().getUNLocode().equals("DEBRV") && e.getToNode().getPort().getUNLocode().equals("RULED")){
+					System.out.println("DEBRV -> RULED: lagrange = " + e.getLagrange());
+				}
 			}
-			int flowProfit = Result.getFlowProfit(false);
-			if(!invalidFlow && flowProfit > bestFlowProfit){
-				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
-				updateBestFlow(flowProfit);
-			}
+			
 			//			System.out.println();
 			iteration++;
 		}
@@ -105,6 +116,7 @@ public class MulticommodityFlow {
 				}
 			}
 			if(lowestProfit == Integer.MAX_VALUE){
+				System.out.println("Setting lagrange to -1");
 				lowestProfit = -1001;
 			}
 			e.addLagrange(lowestProfit+1000);
@@ -122,7 +134,8 @@ public class MulticommodityFlow {
 	 * <br>7) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
 	 * @return The profit of the repaired flow.
 	 */
-	private static int findRepairFlow(){
+	private static boolean findRepairFlow(){
+		boolean firstValid = true;
 		boolean invalidFlow = true;
 		while(invalidFlow){
 			invalidFlow = false;
@@ -131,6 +144,7 @@ public class MulticommodityFlow {
 				if(e.isSail() && overflow > 0){
 					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for edge " + e.simplePrint());
 					invalidFlow = true;
+					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;
 					Route lowestProfitRoute = null;
 					for(Route r : e.getRoutes()){
@@ -151,7 +165,7 @@ public class MulticommodityFlow {
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
 		}
-		return flowProfit;
+		return firstValid;
 	}
 
 	/** Updates the best flow to the current flow. Saves the best routes and objective value of the current flow. 
