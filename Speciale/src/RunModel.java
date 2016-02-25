@@ -16,12 +16,12 @@ public class RunModel {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		
-		testBaltic();
+//		testBaltic();
 //		testBaltic();
 //		testAutomatic();
 //		testBalticManual();
 //		testMedManual();
-//		testMed();
+		testMed();
 //		testAux();
 //		testMedManual2();
 		
@@ -179,6 +179,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + Result.getObjective());
 		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		
+		testGraph.saveOPLData("OPLData.dat");
 	}
 	
 	public static void testMedManual() throws FileNotFoundException{
@@ -300,6 +302,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + Result.getObjective());
 		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		
+		testGraph.saveOPLData("OPLData.dat");
 	}
 	
 	public static void testMedManual2() throws FileNotFoundException{
@@ -451,6 +455,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + Result.getObjective());
 		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		
+		testGraph.saveOPLData("OPLData.dat");
 	}
 
 	
@@ -612,6 +618,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + Result.getObjective());
 		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		
+		testGraph.saveOPLData("OPLData.dat");
 	}
 
 }

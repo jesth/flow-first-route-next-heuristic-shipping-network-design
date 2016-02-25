@@ -19,7 +19,7 @@ public class AuxRun {
 
 	public static void run(){
 		for(int i = 0; i < iterations; i++){
-			System.out.println("Running iteration " + i);
+//			System.out.println("Running iteration " + i);
 			AuxDijkstra.run();
 			AuxDijkstra.convert(iterations);
 		}

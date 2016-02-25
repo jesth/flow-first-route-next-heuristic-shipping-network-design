@@ -41,6 +41,8 @@ public class Demand {
 		//		this.repOmissionFFE = 0;
 		this.routes = new ArrayList<Route>();
 		this.maxTransitTime = maxTransitTime;
+		origin.setActive();
+		destination.setActive();
 	}
 
 	/**

@@ -21,6 +21,7 @@ public class Port {
 	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
 	private ArrayList<Node> departureNodes = new ArrayList<Node>();
 	private int portId;
+	private boolean active;
 	
 	public Port(){
 		
@@ -58,6 +59,7 @@ public class Port {
 		this.fromCentroidNode = null;
 		this.toCentroidNode = null;
 		this.portId = portId;
+		this.active = false;
 	}
 
 
@@ -154,5 +156,13 @@ public class Port {
 
 	public void setToCentroidNode(Node toCentroidNode) {
 		this.toCentroidNode = toCentroidNode;
+	}
+	
+	public void setActive(){
+		active = true;
+	}
+	
+	public boolean isActive(){
+		return active;
 	}
 }

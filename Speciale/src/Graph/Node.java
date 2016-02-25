@@ -1,11 +1,13 @@
 package Graph;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import Data.Port;
 import Methods.BellmanFord;
 import Results.Rotation;
 
 public class Node {
+	private int id;
 	private Port port;
 	private Rotation rotation;
 	private boolean fromCentroid;
@@ -16,6 +18,7 @@ public class Node {
 	private Edge[] predecessors;
 	private boolean[] unprocessed;
 	private static int noOfCentroids;
+	private static AtomicInteger idCounter = new AtomicInteger();
 	private ArrayList<Edge> ingoingEdges;
 	private ArrayList<Edge> outgoingEdges;
 	
@@ -33,6 +36,7 @@ public class Node {
 	 */
 	public Node(Port port, Rotation rotation, boolean departure){
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.port = port;
 		if(departure){
 			port.addDepartureNode(this);
@@ -57,6 +61,7 @@ public class Node {
 	 */
 	public Node(Port port, boolean fromCentroid){
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.port = port;
 		this.rotation = null;
 		this.fromCentroid = fromCentroid;
@@ -226,6 +231,10 @@ public class Node {
 	 */
 	public int getPortId(){
 		return port.getPortId();
+	}
+	
+	public int getId(){
+		return id;
 	}
 	
 	public static int getNoOfCentroids() {

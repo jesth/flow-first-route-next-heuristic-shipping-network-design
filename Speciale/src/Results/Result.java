@@ -1,4 +1,8 @@
 package Results;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import Data.Demand;
@@ -73,6 +77,7 @@ public class Result {
 		
 		return flowProfit;
 	}
+
 	
 	public static Demand[] getNlargestDemandLosses(int n){
 		if(n < 1){

@@ -1,5 +1,9 @@
 package Graph;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import Data.Data;
@@ -28,10 +32,12 @@ public class Graph {
 		//Sets the number of centroids in the Node class once and for all, and is then garbage collected.
 		new Node(data.getPorts().size());
 		for(Port i : data.getPorts().values()){
-			Node fromCentroid = new Node(i, true);
-			Node toCentroid = new Node(i, false);
-			nodes.add(fromCentroid);
-			nodes.add(toCentroid);
+			if(i.isActive()){
+				Node fromCentroid = new Node(i, true);
+				Node toCentroid = new Node(i, false);
+				nodes.add(fromCentroid);
+				nodes.add(toCentroid);
+			}
 		}
 	}
 
@@ -72,7 +78,7 @@ public class Graph {
 			}
 		}
 	}
-	
+
 	private void createTransshipmentEdge(Node fromNode, Node toNode){
 		int transshipCost = fromNode.getPort().getTransshipCost();
 		Edge newEdge = new Edge(fromNode, toNode, transshipCost, Integer.MAX_VALUE, false, null, -1, null);
@@ -150,6 +156,91 @@ public class Graph {
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
 		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, false, null, -1, null);
 		edges.add(newEdge);
+	}
+
+	public void saveOPLData(String fileName){
+		try {
+			int noOfNodes = nodes.size();
+			int noOfDemands = data.getDemands().size();
+			int[][] capacity = new int[noOfNodes][noOfNodes];
+			int[][] cost = new int[noOfNodes][noOfNodes];
+			int[] demandFrom = new int[noOfDemands];
+			int[] demandTo = new int[noOfDemands];
+			int[] demand = new int[noOfDemands];
+
+			for(Edge e : edges){
+				int fromNode = e.getFromNode().getId();
+				int toNode = e.getToNode().getId();
+				capacity[fromNode][toNode] = e.getCapacity();
+				cost[fromNode][toNode] = e.getRealCost();
+			}
+			for(int i = 0; i < noOfDemands; i++){
+				Demand d = data.getDemands().get(i);
+				demandFrom[i] = d.getOrigin().getFromCentroidNode().getId();
+				demandTo[i] = d.getDestination().getToCentroidNode().getId();
+				demand[i] = d.getDemand();
+
+			}
+			File fileOut = new File(fileName);
+			BufferedWriter out;
+
+			out = new BufferedWriter(new FileWriter(fileOut));
+
+			out.write("n = " + noOfNodes + ";");
+			out.newLine();
+			out.write("d = " + noOfDemands + ";");
+			out.newLine();
+			out.newLine();
+
+			out.write("u = [");
+			writeDouble(out, capacity, noOfNodes);
+			out.newLine();
+			out.newLine();
+
+			out.write("c = [");
+			writeDouble(out, cost, noOfNodes);
+			out.newLine();
+			out.newLine();
+
+			out.write("dFrom = [");
+			writeSingle(out, demandFrom, noOfDemands);
+			out.newLine();
+			out.newLine();
+
+			out.write("dTo = [");
+			writeSingle(out, demandTo, noOfDemands);
+			out.newLine();
+			out.newLine();
+
+			out.write("D = [");
+			writeSingle(out, demand, noOfDemands);
+			out.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	}
+
+	private void writeSingle(BufferedWriter out, int[] array, int number) throws IOException{
+		for(int i = 0; i < number; i++){
+			out.write(array[i] + " ");				
+		}
+		out.write("];");
+	}
+
+	private void writeDouble(BufferedWriter out, int[][] array, int number) throws IOException{
+		for(int i = 0; i < number; i++){
+			out.write("[");
+			for(int j = 0; j < number; j++){
+				out.write(array[i][j] + " ");				
+			}
+			out.write("]");
+			if(i < number-1){
+				out.newLine();
+			}
+		}
+		out.write("];");
 	}
 
 	public ArrayList<Node> getNodes() {
