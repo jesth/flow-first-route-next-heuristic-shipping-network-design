@@ -59,22 +59,22 @@ public class Graph {
 		return rotation;
 	}
 	
-	public Rotation createRotationFromPorts(ArrayList<Port> ports, VesselClass vesselClass){
+	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
 		ArrayList<DistanceElement> distances = findDistances(ports);
 		Rotation rotation = createRotation(distances, vesselClass);
 		return rotation;
 	}
 	
-	private ArrayList<DistanceElement> findDistances(ArrayList<Port> ports){
+	private ArrayList<DistanceElement> findDistances(ArrayList<Integer> ports){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		for(int i = 0; i < distances.size() - 1; i++){
-			Port port1 = ports.get(i);
-			Port port2 = ports.get(i+1);
+		for(int i = 0; i < ports.size() - 1; i++){
+			int port1 = ports.get(i);
+			int port2 = ports.get(i+1);
 			//TODO: Hardcoded - no canals.
 			distances.add(data.getDistanceElement(port1, port2, false, false));
 		}
-		Port lastPort = ports.get(ports.size());
-		Port firstPort = ports.get(0);
+		int lastPort = ports.get(ports.size()-1);
+		int firstPort = ports.get(0);
 		distances.add(data.getDistanceElement(lastPort, firstPort, false, false));
 		return distances;
 	}

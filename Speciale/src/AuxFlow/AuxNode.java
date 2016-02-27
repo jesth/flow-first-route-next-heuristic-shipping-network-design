@@ -8,7 +8,7 @@ public class AuxNode implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private transient Port port;
-	private int portID;
+	private int portId;
 	private String UNLocode;
 	private transient int distance;
 	private AuxEdge predecessor;
@@ -18,7 +18,7 @@ public class AuxNode implements Serializable{
 	
 	public AuxNode(Port port){
 		this.port = port;
-		portID = port.getPortId();
+		portId = port.getPortId();
 		UNLocode = port.getUNLocode();
 		this.distance = Integer.MAX_VALUE;
 		this.predecessor = null;
@@ -55,8 +55,8 @@ public class AuxNode implements Serializable{
 		return port;
 	}
 	
-	public int getPortID(){
-		return portID;
+	public int getPortId(){
+		return portId;
 	}
 	
 	public String getUNLocode(){

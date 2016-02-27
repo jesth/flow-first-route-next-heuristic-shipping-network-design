@@ -23,18 +23,30 @@ public class RunModel {
 //		testBalticManual();
 //		testMedManual();
 //		testMed();
-//		testAux();
-		ArrayList<AuxEdge> a = AuxGraph.getSortedAuxEdges();
-		for(AuxEdge e : a){
-			System.out.println(e.getAvgLoad());
-		}
+//		saveAux();
+		testAux();
 //		testMedManual2();
 		
 	}
 	
-	public static void testAux() throws FileNotFoundException{
+	public static void saveAux() throws FileNotFoundException{
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		AuxRun.initialize(testGraph.getData(), 10);
+	}
+	
+	public static void testAux() throws FileNotFoundException{
+		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+		initialize(testGraph);
+		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder800 = testGraph.getData().getVesselClasses().get(1);
+		Rotation r = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		Rotation r2 = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		Result.initialize(testGraph);
+		Result.addRotation(r);
+		Result.addRotation(r2);
+		MulticommodityFlow.run();
+		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{

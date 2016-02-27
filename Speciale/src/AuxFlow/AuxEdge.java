@@ -17,6 +17,7 @@ public class AuxEdge implements Serializable{
 	private transient DistanceElement distance;
 	private transient boolean rotation;
 	private int capacity;
+	private boolean isUsedInRotation;
 	private transient double a;
 	private transient double b;
 
@@ -116,6 +117,14 @@ public class AuxEdge implements Serializable{
 	
 	public boolean isRotation(){
 		return rotation;
+	}
+	
+	public boolean isUsedInRotation(){
+		return isUsedInRotation;
+	}
+	
+	public void setUsedInRotation(){
+		isUsedInRotation = true;
 	}
 
 	public double getAvgLoad() {
