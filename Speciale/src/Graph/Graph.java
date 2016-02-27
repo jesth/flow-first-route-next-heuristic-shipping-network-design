@@ -58,6 +58,26 @@ public class Graph {
 		rotation.calcOptimalSpeed();
 		return rotation;
 	}
+	
+	public Rotation createRotationFromPorts(ArrayList<Port> ports, VesselClass vesselClass){
+		ArrayList<DistanceElement> distances = findDistances(ports);
+		Rotation rotation = createRotation(distances, vesselClass);
+		return rotation;
+	}
+	
+	private ArrayList<DistanceElement> findDistances(ArrayList<Port> ports){
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		for(int i = 0; i < distances.size() - 1; i++){
+			Port port1 = ports.get(i);
+			Port port2 = ports.get(i+1);
+			//TODO: Hardcoded - no canals.
+			distances.add(data.getDistanceElement(port1, port2, false, false));
+		}
+		Port lastPort = ports.get(ports.size());
+		Port firstPort = ports.get(0);
+		distances.add(data.getDistanceElement(lastPort, firstPort, false, false));
+		return distances;
+	}
 
 	private void createTransshipmentEdges(Rotation rotation){
 		ArrayList<Node> rotationNodes = rotation.getRotationNodes();
