@@ -5,11 +5,10 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
 import javax.tools.ToolProvider;
-
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
+import AuxFlow.AuxNode;
 import Data.Demand;
 import Data.Distance;
 import Data.DistanceElement;
@@ -21,13 +20,71 @@ import Graph.Node;
 import Results.Result;
 import Results.Rotation;
 import Results.Route;
-import Sortables.SortableAuxEdge;
 
 public class ComputeRotations {
 	private static Graph graph;
 	
 	public static void intialize(Graph inputGraph){
 		graph = inputGraph;
+	}
+	
+	public static void createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+		int durationHours = durationWeeks * 7 * 24;
+		ArrayList<AuxNode> rotationNodes = new ArrayList<AuxNode>();
+		AuxEdge firstEdge = sortedEdges.remove(0);
+		AuxNode node1 = firstEdge.getFromNode();
+		AuxNode node2 = firstEdge.getToNode();
+		rotationNodes.add(node1);
+		rotationNodes.add(node2);
+		//TODO: Hardcoded - no canals.
+		DistanceElement leg1 = graph.getData().getDistanceElement(node1.getPort(), node2.getPort(), false, false);
+		DistanceElement leg2 = graph.getData().getDistanceElement(node2.getPort(), node1.getPort(), false, false);
+		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed();
+		while(currentDuration < durationHours){
+			addBestLeg(rotationNodes, sortedEdges, vesselClass);
+		}
+		ArrayList<Port> ports = convertAuxNodes(rotationNodes);
+		graph.createRotationFromPorts(ports, vesselClass);
+	}
+	
+	private static void addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+		AuxNode firstNode = rotationNodes.get(0);
+		AuxNode lastNode = rotationNodes.get(rotationNodes.size());
+		double bestRatio = 0;
+		AuxNode bestNode = null;
+		AuxEdge bestEdge = null;
+		for(AuxEdge e : firstNode.getIngoingEdges()){
+			AuxNode newNode = e.getFromNode();
+			double newDemand = e.getAvgLoad();
+			double detourTime = getDetourTime(lastNode.getPort(), firstNode.getPort(), newNode.getPort(), vesselClass);
+			double ratio = newDemand / detourTime;
+			if(ratio > bestRatio){
+				bestRatio = ratio;
+				bestNode = newNode;
+				bestEdge = e;
+			}
+		}
+		for(AuxEdge e : lastNode.getOutgoingEdges()){
+			AuxNode newNode = e.getToNode();
+			double newDemand = e.getAvgLoad();
+			double detourTime = getDetourTime(lastNode.getPort(), firstNode.getPort(), newNode.getPort(), vesselClass);
+			double ratio = newDemand / detourTime;
+			if(ratio > bestRatio){
+				bestRatio = ratio;
+				bestNode = newNode;
+				bestEdge = e;
+			}
+		}
+		rotationNodes.add(bestNode);
+		sortedEdges.remove(bestEdge);
+	}
+	
+	private static ArrayList<Port> convertAuxNodes(ArrayList<AuxNode> nodes){
+		ArrayList<Port> ports = new ArrayList<Port>();
+		for(AuxNode i : nodes){
+			ports.add(i.getPort());
+		}
+		return ports;
 	}
 	
 	public static Rotation createLargestLossRotation(){
@@ -219,11 +276,21 @@ public class ComputeRotations {
 		Port port1 = currentLeg.getOrigin();
 		Port port2 = addPort;
 		Port port3 = currentLeg.getDestination();
-		boolean suez = currentLeg.isSuez();
-		boolean panama = currentLeg.isPanama();
+		//TODO: Hardcoded - no canals.
+		boolean suez = false;
+		boolean panama = false;
+		DistanceElement prevLeg = graph.getData().getDistanceElement(port1, port3, suez, panama);
 		DistanceElement leg1 = graph.getData().getDistanceElement(port1, port2, suez, panama);
 		DistanceElement leg2 = graph.getData().getDistanceElement(port2, port3, suez, panama);
-		int newDist = leg1.getDistance() + leg2.getDistance();
-		return (newDist - currentLeg.getDistance());
+		int extraDist = leg1.getDistance() + leg2.getDistance() - prevLeg.getDistance();
+		return extraDist;
+	}
+	
+	public static double getDetourTime(Port fromPort, Port toPort, Port addPort, VesselClass vesselClass){
+		//TODO: Hardcoded - no canals.
+		DistanceElement prevLeg = graph.getData().getDistanceElement(fromPort, toPort, false, false);
+		double extraDist = getDetour(prevLeg, addPort);
+		double extraTime = extraDist / vesselClass.getDesignSpeed() + 24;
+		return extraTime;
 	}
 }
