@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import AuxFlow.AuxDijkstra;
+import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
 import AuxFlow.AuxRun;
 import Data.DistanceElement;
@@ -21,8 +22,12 @@ public class RunModel {
 //		testAutomatic();
 //		testBalticManual();
 //		testMedManual();
-		testMed();
+//		testMed();
 //		testAux();
+		ArrayList<AuxEdge> a = AuxGraph.getSortedAuxEdges();
+		for(AuxEdge e : a){
+			System.out.println(e.getAvgLoad());
+		}
 //		testMedManual2();
 		
 	}

@@ -155,7 +155,7 @@ public class BellmanFord {
 		usedEdges.add(predecessor);
 		//		System.out.println("Getting route from " + demand.getOrigin().getUNLocode() + " to " + demand.getDestination().getUNLocode());
 		if(repRoute){
-			System.out.println("REP ROUTE");
+//			System.out.println("REP ROUTE");
 		}
 		while(!predecessor.getFromNode().equals(fromNode)){
 			predecessor = predecessor.getFromNode().getPredecessor(arrayPos);

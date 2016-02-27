@@ -1,5 +1,9 @@
 package AuxFlow;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import Data.Data;
 
 public class AuxRun {
@@ -15,6 +19,7 @@ public class AuxRun {
 //		graph.addFourthRotationManual();
 //		graph.addFifthRotationManual();
 		run();
+		graph.serialize();
 	}
 
 	public static void run(){
@@ -23,11 +28,11 @@ public class AuxRun {
 			AuxDijkstra.run();
 			AuxDijkstra.convert(iterations);
 		}
-		for(AuxEdge e : graph.getEdges()){
+//		for(AuxEdge e : graph.getEdges()){
 //			if(e.getSumLoad() > 1 || e.isRotation()){
-			if(e.getFromNode().getPort().getUNLocode().equals("EGPSD")){
-				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getSumLoad() + " and cost " + e.getCost());
-			}
-		}
+//			if(e.getFromNode().getPort().getUNLocode().equals("EGPSD")){
+//				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getAvgLoad() + " and cost " + e.getCost());
+//			}
+//		}
 	}
 }

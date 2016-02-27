@@ -186,13 +186,13 @@ public class Edge {
 	}
 	
 	public void adjustLagrange(int iteration, boolean overflow){
-		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
+//		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
 //		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(!this.dwell){
 			if(overflow){
-				this.lagrange = Math.max(this.lagrange + adjust, 0);
+				this.lagrange = Math.max(this.lagrange + 50, 0);
 			} else {
-				this.lagrange = Math.max(this.lagrange - adjust, 0);
+				this.lagrange = Math.max(this.lagrange - 10, 0);
 			}
 			this.cost = this.realCost+this.lagrange;
 		}

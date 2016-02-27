@@ -1,18 +1,25 @@
 package AuxFlow;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import Data.Port;
 
-public class AuxNode {
-	private Port port;
-	private int distance;
+public class AuxNode implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private transient Port port;
+	private int portID;
+	private String UNLocode;
+	private transient int distance;
 	private AuxEdge predecessor;
 	private ArrayList<AuxEdge> ingoingEdges;
 	private ArrayList<AuxEdge> outgoingEdges;
-	private int heapIndex;
+	private transient int heapIndex;
 	
 	public AuxNode(Port port){
 		this.port = port;
+		portID = port.getPortId();
+		UNLocode = port.getUNLocode();
 		this.distance = Integer.MAX_VALUE;
 		this.predecessor = null;
 		this.ingoingEdges = new ArrayList<AuxEdge>();
@@ -46,6 +53,14 @@ public class AuxNode {
 
 	public Port getPort() {
 		return port;
+	}
+	
+	public int getPortID(){
+		return portID;
+	}
+	
+	public String getUNLocode(){
+		return UNLocode;
 	}
 
 	public ArrayList<AuxEdge> getIngoingEdges() {

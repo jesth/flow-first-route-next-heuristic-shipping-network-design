@@ -1,18 +1,28 @@
 package AuxFlow;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import Data.Data;
 import Data.Distance;
 import Data.DistanceElement;
 import Data.Port;
 import Data.VesselClass;
+import Sortables.SortableAuxEdge;
 
-public class AuxGraph {
-	private VesselClass largestVessel;
+public class AuxGraph implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private transient VesselClass largestVessel;
 	private AuxNode[] nodes;
 	private ArrayList<AuxEdge> edges;
-	private Data data;
+	private transient Data data;
 
 	public AuxGraph(Data data){
 		this.data = data;
@@ -29,7 +39,7 @@ public class AuxGraph {
 		generateEdges();
 		AuxDijkstra.initialize(this);
 	}
-
+	
 	private void generateNodes(){
 		for(Port p : data.getPorts().values()){
 			AuxNode newNode = new AuxNode(p);
@@ -186,4 +196,53 @@ public class AuxGraph {
 		edges.add(edge);
 	}
 
+	public void serialize(){
+		try{
+			FileOutputStream fileOut = new FileOutputStream("AuxGraph.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(this);
+			out.close();
+			fileOut.close();
+			System.out.println("Serialized data is saved in AuxGraph.ser");
+		}catch(IOException i){
+			i.printStackTrace();
+		}
+	}
+	
+	public static AuxGraph deserialize(){
+		AuxGraph auxGraph = null;
+		try{
+			FileInputStream fileIn = new FileInputStream("AuxGraph.ser");
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         auxGraph = (AuxGraph) in.readObject();
+	         in.close();
+	         fileIn.close();
+	    }catch(IOException i){
+	         i.printStackTrace();
+	    }catch(ClassNotFoundException c){
+	         System.out.println("AuxGraph class not found");
+	         c.printStackTrace();
+	    }
+		return auxGraph;
+	}
+	
+	public static ArrayList<AuxEdge> getSortedAuxEdges(){
+		
+		AuxGraph auxGraph = deserialize();
+		ArrayList<SortableAuxEdge> sortableAuxEdges = new ArrayList<SortableAuxEdge>();
+		for(int i=0; i<auxGraph.getEdges().size(); i++){
+			int auxAvgLoad = (int) (auxGraph.getEdges().get(i).getAvgLoad()*1000);
+			if(auxAvgLoad > 0){
+				SortableAuxEdge e = new SortableAuxEdge(auxAvgLoad, auxGraph.getEdges().get(i));
+				sortableAuxEdges.add(e);
+			}
+		}
+		Collections.sort(sortableAuxEdges);
+		
+		ArrayList<AuxEdge> auxEdges = new ArrayList<AuxEdge>(sortableAuxEdges.size());
+		for(int i=0; i<sortableAuxEdges.size(); i++){
+			auxEdges.add(sortableAuxEdges.get(i).getAuxEdge());
+		}
+		return auxEdges;
+	}
 }

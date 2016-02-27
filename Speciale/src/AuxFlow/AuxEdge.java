@@ -1,20 +1,24 @@
 package AuxFlow;
 
+import java.io.Serializable;
+
 import Data.DistanceElement;
 import Data.VesselClass;
 
-public class AuxEdge {
-	private AuxGraph graph;
+public class AuxEdge implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private transient AuxGraph graph;
 	private AuxNode fromNode;
 	private AuxNode toNode;
 	private int cost;
 	private int load;
-	private double sumLoad;
-	private DistanceElement distance;
-	private boolean rotation;
+	private double avgLoad;
+	private transient DistanceElement distance;
+	private transient boolean rotation;
 	private int capacity;
-	private double a;
-	private double b;
+	private transient double a;
+	private transient double b;
 
 	public AuxEdge(AuxGraph graph, AuxNode fromNode, AuxNode toNode, DistanceElement distance){
 		this.graph = graph;
@@ -24,7 +28,7 @@ public class AuxEdge {
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		this.load = 0;
-		this.sumLoad = 0;
+		this.avgLoad = 0;
 		this.distance = distance;
 		this.rotation = false;
 		this.capacity = Integer.MAX_VALUE;
@@ -40,7 +44,7 @@ public class AuxEdge {
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		this.load = 0;
-		this.sumLoad = 0;
+		this.avgLoad = 0;
 		this.distance = copyEdge.distance;
 		this.rotation = true;
 		this.capacity = capacity;
@@ -94,7 +98,7 @@ public class AuxEdge {
 	}
 	
 	public void convertLoad(double iterations){
-		sumLoad += ((double) load / iterations);
+		avgLoad += ((double) load / iterations);
 		load = 0;
 		calcCost();
 	}
@@ -114,7 +118,7 @@ public class AuxEdge {
 		return rotation;
 	}
 
-	public double getSumLoad() {
-		return sumLoad;
+	public double getAvgLoad() {
+		return avgLoad;
 	}
 }
