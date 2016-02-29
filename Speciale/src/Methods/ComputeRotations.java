@@ -27,6 +27,13 @@ public class ComputeRotations {
 	public static void intialize(Graph inputGraph){
 		graph = inputGraph;
 	}
+	
+	public static void createRotations(int[] durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+		for(int i = 0; i < durationWeeks.length; i++){
+			createAuxFlowRotation(durationWeeks[i], sortedEdges, vesselClass);
+		}
+	
+	}
 
 	public static Rotation createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
 		int durationHours = durationWeeks * 7 * 24;
@@ -43,7 +50,6 @@ public class ComputeRotations {
 		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed();
 		while(currentDuration < durationHours){
 			currentDuration += addBestLeg(rotationNodes, sortedEdges, vesselClass);
-			System.out.println("Whiling");
 		}
 		ArrayList<Integer> ports = convertAuxNodes(rotationNodes);
 		return graph.createRotationFromPorts(ports, vesselClass);
@@ -66,8 +72,8 @@ public class ComputeRotations {
 		AuxEdge bestEdge = null;
 		double extraDuration = 0;
 		for(AuxEdge e : firstNode.getIngoingEdges()){
-			if(!e.isUsedInRotation()){
-				AuxNode newNode = e.getFromNode();
+			AuxNode newNode = e.getFromNode();
+			if(!e.isUsedInRotation() && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -80,8 +86,8 @@ public class ComputeRotations {
 			}
 		}
 		for(AuxEdge e : lastNode.getOutgoingEdges()){
-			if(!e.isUsedInRotation()){
-				AuxNode newNode = e.getToNode();
+			AuxNode newNode = e.getToNode();
+			if(!e.isUsedInRotation() && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -107,7 +113,7 @@ public class ComputeRotations {
 	}
 
 	public static Rotation createLargestLossRotation(){
-		Demand od = Result.getLargestODLoss();
+		Demand od = graph.getResult().getLargestODLoss();
 		Port org = od.getOrigin();
 		Port dest = od.getDestination();
 		DistanceElement headLeg = graph.getData().getDistanceElement(org, dest, false, false);
@@ -116,7 +122,6 @@ public class ComputeRotations {
 		distances.add(headLeg);
 		distances.add(backLeg);
 		Rotation r = graph.createRotation(distances, graph.getData().getVesselClasses().get(1));
-		Result.addRotation(r);
 		System.out.println(r);
 
 		return r;
@@ -142,7 +147,7 @@ public class ComputeRotations {
 		int bestProfit = -Integer.MAX_VALUE/2;
 		Port bestPort = null;
 		Edge bestEdge = null;
-		for(Port p : graph.getData().getPorts().values()){
+		for(Port p : graph.getData().getPortsMap().values()){
 			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p))
 			{
 				continue;

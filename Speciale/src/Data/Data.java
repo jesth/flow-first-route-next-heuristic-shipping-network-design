@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Data {
-	private HashMap<String, Port> ports;
+	private HashMap<String, Port> portsMap;
+	private Port[] ports;
 	private Distance[][] distances;
 	private Demand[][] demandsArray;
 	private ArrayList<Demand> demandsList;
@@ -12,15 +13,16 @@ public class Data {
 	private int portStay = 24;
 	
 	public Data(String demandFileName, String vesselNoFileName) throws FileNotFoundException{
-		ports = ReadData.readPorts();
-		distances = ReadData.readDistances(ports);
-		demandsList = ReadData.readDemands(demandFileName, ports);
+		portsMap = ReadData.readPorts();
+		convertPortsMap();
+		distances = ReadData.readDistances(portsMap);
+		demandsList = ReadData.readDemands(demandFileName, portsMap);
 		demandsArray = createDemandsArray();
 		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
 	}
 	
 	private Demand[][] createDemandsArray(){
-		Demand[][] demands = new Demand[ports.size()][ports.size()];
+		Demand[][] demands = new Demand[portsMap.size()][portsMap.size()];
 		for(Demand d : demandsList){
 			int fromPortId = d.getOrigin().getPortId();
 			int toPortId = d.getDestination().getPortId();
@@ -29,8 +31,23 @@ public class Data {
 		return demands;
 	}
 	
-	public HashMap<String, Port> getPorts() {
+	private void convertPortsMap(){
+		ports = new Port[portsMap.size()];
+		for(Port p : portsMap.values()){
+			ports[p.getPortId()] = p;
+		}
+	}
+	
+	public HashMap<String, Port> getPortsMap() {
+		return portsMap;
+	}
+	
+	public Port[] getPorts(){
 		return ports;
+	}
+	
+	public Port getPort(int portId){
+		return ports[portId];
 	}
 
 	public Distance[][] getDistances() {
@@ -38,8 +55,8 @@ public class Data {
 	}
 	
 	public Distance getDistance(String port1UNLo, String port2UNLo){
-		int portId1 = ports.get(port1UNLo).getPortId();
-		int portId2 = ports.get(port2UNLo).getPortId();
+		int portId1 = portsMap.get(port1UNLo).getPortId();
+		int portId2 = portsMap.get(port2UNLo).getPortId();
 		return getDistance(portId1, portId2);
 	}
 	

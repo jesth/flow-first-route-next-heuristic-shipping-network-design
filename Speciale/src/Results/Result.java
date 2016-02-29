@@ -11,26 +11,26 @@ import Graph.Graph;
 import Sortables.SortableAuxEdge;
 
 public class Result {
-	private static Graph graph;
-	private static ArrayList<Rotation> rotations;
-
-	public static void initialize(Graph inputGraph){
+	private Graph graph;
+	private ArrayList<Rotation> rotations;
+	
+	public Result(Graph inputGraph){
 		graph = inputGraph;
 		rotations = new ArrayList<Rotation>();
 	}
 	
-	public static void addRotation(Rotation rotation){
+	public void addRotation(Rotation rotation){
 		rotations.add(rotation);
 	}
 	
 	/**
 	 * @return the rotations
 	 */
-	public static ArrayList<Rotation> getRotations() {
+	public ArrayList<Rotation> getRotations() {
 		return rotations;
 	}
 
-	public static int getObjective(){
+	public int getObjective(){
 		int obj = 0;
 		obj = getFlowProfit(false);
 		for(Rotation r : rotations){
@@ -42,7 +42,7 @@ public class Result {
 		return obj;
 	}
 	
-	public static int getFlowProfit(boolean repair){
+	public int getFlowProfit(boolean repair){
 		int flowProfit = 0;
 		int omissionCost = 0;
 		int flowCost = 0;
@@ -78,7 +78,7 @@ public class Result {
 		return flowProfit;
 	}
 	
-	public static Demand getLargestODLoss(){
+	public Demand getLargestODLoss(){
 		Demand OD = null;
 		int largestODLoss = Integer.MAX_VALUE;
 		for(Demand d : graph.getData().getDemands()){

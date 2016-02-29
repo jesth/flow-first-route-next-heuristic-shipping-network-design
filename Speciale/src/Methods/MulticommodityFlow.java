@@ -49,7 +49,7 @@ public class MulticommodityFlow {
 			if(validFlow){
 				System.out.println("Flow is valid");
 			}
-			int flowProfit = Result.getFlowProfit(false);
+			int flowProfit = graph.getResult().getFlowProfit(false);
 //			int lowerBoundFlow = Result.getFlowProfit(true);
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
@@ -139,7 +139,7 @@ public class MulticommodityFlow {
 				}
 			}
 		}
-		int flowProfit = Result.getFlowProfit(true);
+		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
