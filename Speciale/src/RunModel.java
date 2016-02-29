@@ -25,6 +25,7 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 		testAux();
+		
 //		testMedManual2();
 		
 	}
@@ -47,6 +48,10 @@ public class RunModel {
 		MulticommodityFlow.run();
 		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
+		
+		for(VesselClass v : testGraph.getData().getVesselClasses()){
+			System.out.println(v);
+		}
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{

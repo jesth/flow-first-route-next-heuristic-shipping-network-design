@@ -124,27 +124,16 @@ public class ComputeRotations {
 
 
 	public static void insertBestPort(Rotation rotation){
-		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+		
+		//TODO hardcoded 95%
+		ArrayList<Edge> edges = findPotentialEdges(rotation, 0.95);
 		ArrayList<Port> rotationPorts = rotation.getPorts();
-		double loadFactor = 0;
-		for(Edge e : rotation.getRotationEdges()){
-			if(e.isSail()){
-				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
-				//TODO hardcoded 95%
-				if(loadFactor < 0.95){
-					distances.add(e.getDistance());
-					edges.add(e);
-				}
-			}
-		}
 
 		int bestProfit = -Integer.MAX_VALUE/2;
 		Port bestPort = null;
 		Edge bestEdge = null;
 		for(Port p : graph.getData().getPorts().values()){
-			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p))
-			{
+			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p)){
 				continue;
 			}
 			for(Edge e : edges){
@@ -178,7 +167,24 @@ public class ComputeRotations {
 		rotation.calcOptimalSpeed();
 
 	}
-
+	
+	public static ArrayList<Edge> findPotentialEdges(Rotation rotation, double maxLoadFactor){
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		double loadFactor = 0;
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
+				if(loadFactor < maxLoadFactor){
+					distances.add(e.getDistance());
+					edges.add(e);
+				}
+			}
+		}
+		
+		return edges;
+	}
+	
 	public static int calcPortInsertProfitNaive(Rotation rotation, Port insertPort, Edge edge){
 		Port fromPort = edge.getFromNode().getPort();
 		Port toPort = edge.getToNode().getPort();
