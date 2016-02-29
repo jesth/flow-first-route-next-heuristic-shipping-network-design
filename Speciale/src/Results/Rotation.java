@@ -123,6 +123,9 @@ public class Rotation {
 
 	public void addRotationNode(Node node){
 		rotationNodes.add(node);
+		if(node.isDeparture()){
+			node.getPort().addRotation(this);
+		}
 	}
 
 	public void addRotationEdge(Edge edge){
@@ -300,5 +303,14 @@ public class Rotation {
 		}
 		return print;
 	}
+
+	public void incrementNoInRotation(int fromNo) {
+		for(Edge e : rotationEdges){
+			if(e.getNoInRotation() > fromNo){
+				e.incrementNoInRotation();
+			}
+		}
+	}
+
 
 }

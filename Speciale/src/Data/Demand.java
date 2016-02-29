@@ -43,6 +43,8 @@ public class Demand {
 		this.maxTransitTime = maxTransitTime;
 		origin.setActive();
 		destination.setActive();
+		origin.addDemand(demand, rate);
+		destination.addDemand(demand, rate);
 	}
 
 	/**

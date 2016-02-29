@@ -83,6 +83,17 @@ public class Graph {
 
 	private void createTransshipmentEdges(Rotation rotation){
 		ArrayList<Node> rotationNodes = rotation.getRotationNodes();
+		createTransshipmentEdges(rotationNodes, rotation);
+	}
+	
+	private void createTransshipmentEdges(Edge e){
+		ArrayList<Node> rotationNodes = new ArrayList<Node>();
+		rotationNodes.add(e.getFromNode());
+		rotationNodes.add(e.getToNode());
+		createTransshipmentEdges(rotationNodes, e.getRotation());
+	}
+	
+	private void createTransshipmentEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotationNodes){
 			Port p = i.getPort();
 			if(i.isDeparture()){
@@ -141,10 +152,34 @@ public class Graph {
 		return newNode;
 	}
 
-	public void createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
+	public Edge createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
 		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, rotation, noInRotation, distance);
 		rotation.addRotationEdge(newEdge);
 		edges.add(newEdge);
+		return newEdge;
+	}
+	
+
+	public void insertPort(Rotation r, Edge e, Port p) {
+		Node fromNode = e.getFromNode();
+		Node toNode = e.getToNode();
+		r.incrementNoInRotation(e.getNoInRotation());
+		deleteEdge(e);
+		Node newArrNode = createRotationNode(p, r, false);
+		Node newDepNode = createRotationNode(p, r, true);
+		//TODO: Hardcoded - no canals.
+		DistanceElement newIngoing = data.getDistanceElement(fromNode.getPort(), newArrNode.getPort(), false, false);
+		DistanceElement newOutgoing = data.getDistanceElement(newDepNode.getPort(), toNode.getPort(), false, false);
+		createRotationEdge(r, fromNode, newArrNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation(), newIngoing);
+		Edge dwell = createRotationEdge(r, newArrNode, newDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
+		createRotationEdge(r, newDepNode, toNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+1, newOutgoing);
+		createTransshipmentEdges(dwell);
+		createLoadUnloadEdges(dwell);
+	}
+	
+	public void deleteEdge(Edge e){
+		e.delete();
+		edges.remove(e);
 	}
 
 	private void checkDistances(ArrayList<DistanceElement> distances, VesselClass vesselClass){
@@ -174,6 +209,17 @@ public class Graph {
 	}
 
 	private void createLoadUnloadEdges(Rotation rotation){
+		createLoadUnloadEdges(rotation.getRotationNodes(), rotation);
+	}
+	
+	private void createLoadUnloadEdges(Edge edge){
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		nodes.add(edge.getFromNode());
+		nodes.add(edge.getToNode());
+		createLoadUnloadEdges(nodes, edge.getRotation());
+	}
+	
+	private void createLoadUnloadEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotation.getRotationNodes()){
 			if(i.isArrival()){
 				createLoadUnloadEdge(i, i.getPort().getToCentroidNode());

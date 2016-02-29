@@ -36,9 +36,9 @@ public class ComputeRotations {
 	}
 
 	public static Rotation createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
-		int durationHours = durationWeeks * 7 * 24;
+		int durationHours = (durationWeeks-1) * 7 * 24;
 		ArrayList<AuxNode> rotationNodes = new ArrayList<AuxNode>();
-		AuxEdge firstEdge = getFirstUnusedEdge(sortedEdges);
+		AuxEdge firstEdge = getFirstUnusedEdge(sortedEdges, vesselClass);
 		firstEdge.setUsedInRotation();
 		AuxNode node1 = firstEdge.getFromNode();
 		AuxNode node2 = firstEdge.getToNode();
@@ -47,7 +47,8 @@ public class ComputeRotations {
 		//TODO: Hardcoded - no canals.
 		DistanceElement leg1 = graph.getData().getDistanceElement(node1.getPortId(), node2.getPortId(), false, false);
 		DistanceElement leg2 = graph.getData().getDistanceElement(node2.getPortId(), node1.getPortId(), false, false);
-		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed();
+		//TODO: Port stay hardcoded at 24 hrs.
+		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed() + 2 * 24;
 		while(currentDuration < durationHours){
 			currentDuration += addBestLeg(rotationNodes, sortedEdges, vesselClass);
 		}
@@ -55,9 +56,11 @@ public class ComputeRotations {
 		return graph.createRotationFromPorts(ports, vesselClass);
 	}
 	
-	private static AuxEdge getFirstUnusedEdge(ArrayList<AuxEdge> sortedEdges){
+	private static AuxEdge getFirstUnusedEdge(ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
 		for(AuxEdge e : sortedEdges){
-			if(!e.isUsedInRotation()){
+			Port fromPort = graph.getPort(e.getFromNode().getPortId());
+			Port toPort = graph.getPort(e.getToNode().getPortId());
+			if(!e.isUsedInRotation() && fromPort.getDraft() >= vesselClass.getDraft() && toPort.getDraft() >= vesselClass.getDraft()){
 				return e;
 			}
 		}
@@ -102,6 +105,42 @@ public class ComputeRotations {
 		rotationNodes.add(bestNode);
 		bestEdge.setUsedInRotation();
 		return extraDuration;
+	}
+	
+	public static void addPorts(){
+		ArrayList<Port> unservicedPorts = findUnservicedPorts();
+		for(Port p : unservicedPorts){
+			int profitPotential = p.getTotalProfitPotential();
+			Rotation bestRotation = null;
+			Edge bestEdge = null;
+			int bestProfit = 0;
+			for(Rotation r : graph.getResult().getRotations()){
+				for(Edge e : r.getRotationEdges()){
+					if(e.isSail()){ //determine how many ships are needed
+						int detourCost = calcCostOfPortInsert(r, e.getDistance(), p);
+						int profit = profitPotential - detourCost;
+						if(profit > bestProfit){
+							bestProfit = profit;
+							bestRotation = r;
+							bestEdge = e;
+						}
+					}
+				}
+			}
+			if(bestRotation != null){
+				graph.insertPort(bestRotation, bestEdge, p);
+			}
+		}
+	}
+	
+	private static ArrayList<Port> findUnservicedPorts(){
+		ArrayList<Port> unservicedPorts = new ArrayList<Port>();
+		for(Port p : graph.getData().getPorts()){
+			if(p.isActive() && p.getRotations().isEmpty() && p.getTotalDemand() > 0){
+				unservicedPorts.add(p);
+			}
+		}
+		return unservicedPorts;
 	}
 
 	private static ArrayList<Integer> convertAuxNodes(ArrayList<AuxNode> nodes){

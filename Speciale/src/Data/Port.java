@@ -2,6 +2,7 @@ package Data;
 import java.util.ArrayList;
 
 import Graph.Node;
+import Results.Rotation;
 
 public class Port {
 	private String UNLocode;
@@ -22,6 +23,9 @@ public class Port {
 	private ArrayList<Node> departureNodes = new ArrayList<Node>();
 	private int portId;
 	private boolean active;
+	private ArrayList<Rotation> rotations = new ArrayList<Rotation>();
+	private int totalDemand = 0;
+	private int totalProfitPotential = 0;
 	
 	public Port(){
 		
@@ -164,5 +168,34 @@ public class Port {
 	
 	public boolean isActive(){
 		return active;
+	}
+	
+	public void addRotation(Rotation rotation){
+		this.rotations.add(rotation);
+	}
+	
+	public ArrayList<Rotation> getRotations(){
+		return rotations;
+	}
+	
+	public int getTotalDemand(){
+		return totalDemand;
+	}
+	
+	public void addTotalDemand(int addDemand){
+		totalDemand += addDemand;
+	}
+	
+	public int getTotalProfitPotential(){
+		return totalProfitPotential;
+	}
+	
+	public void addTotalProfitPotential(int potentialProfit){
+		totalProfitPotential += potentialProfit;
+	}
+	
+	public void addDemand(int demand, int rate){
+		addTotalDemand(demand);
+		addTotalProfitPotential(demand*rate);
 	}
 }

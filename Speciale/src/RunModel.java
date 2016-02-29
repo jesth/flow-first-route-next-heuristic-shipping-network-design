@@ -38,12 +38,20 @@ public class RunModel {
 		Graph graph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
 		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
-		Rotation r = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
-		Rotation r2 = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		MulticommodityFlow.run();
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{

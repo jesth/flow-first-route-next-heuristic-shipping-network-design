@@ -61,6 +61,7 @@ public class Edge {
 		this.noInRotation = noInRotation;
 		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
 			this.sail = true;
+			this.lagrange = 1;
 			this.travelTime = this.distance.getDistance()/rotation.getVesselClass().getDesignSpeed();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
@@ -188,11 +189,11 @@ public class Edge {
 	public void adjustLagrange(int iteration, boolean overflow){
 //		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
 //		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
-		if(!this.dwell){
+		if(this.sail){
 			if(overflow){
-				this.lagrange = Math.max(this.lagrange + 50, 0);
+				this.lagrange = Math.max(this.lagrange + 50, 1);
 			} else {
-				this.lagrange = Math.max(this.lagrange - 10, 0);
+				this.lagrange = Math.max(this.lagrange - 10, 1);
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -351,6 +352,14 @@ public class Edge {
 	 */
 	public ArrayList<Route> getRoutes(){
 		return routes;
+	}
+	
+	public void incrementNoInRotation(){
+		noInRotation++;
+	}
+	
+	public void decrementNoInRotation(){
+		noInRotation--;
 	}
 
 	/**
