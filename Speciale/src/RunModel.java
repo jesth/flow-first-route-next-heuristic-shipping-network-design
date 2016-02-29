@@ -25,6 +25,7 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 		testAux();
+		
 //		testMedManual2();
 		
 	}

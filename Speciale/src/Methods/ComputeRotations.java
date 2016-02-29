@@ -27,12 +27,12 @@ public class ComputeRotations {
 	public static void intialize(Graph inputGraph){
 		graph = inputGraph;
 	}
-	
+
 	public static void createRotations(int[] durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
 		for(int i = 0; i < durationWeeks.length; i++){
 			createAuxFlowRotation(durationWeeks[i], sortedEdges, vesselClass);
 		}
-	
+
 	}
 
 	public static Rotation createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
@@ -168,27 +168,16 @@ public class ComputeRotations {
 
 
 	public static void insertBestPort(Rotation rotation){
-		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+
+		//TODO hardcoded 95%
+		ArrayList<Edge> edges = findPotentialEdges(rotation, 0.95);
 		ArrayList<Port> rotationPorts = rotation.getPorts();
-		double loadFactor = 0;
-		for(Edge e : rotation.getRotationEdges()){
-			if(e.isSail()){
-				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
-				//TODO hardcoded 95%
-				if(loadFactor < 0.95){
-					distances.add(e.getDistance());
-					edges.add(e);
-				}
-			}
-		}
 
 		int bestProfit = -Integer.MAX_VALUE/2;
 		Port bestPort = null;
 		Edge bestEdge = null;
 		for(Port p : graph.getData().getPortsMap().values()){
-			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p))
-			{
+			if(p.getDraft() + 0.0001 < rotation.getVesselClass().getDraft() || rotationPorts.contains(p)){
 				continue;
 			}
 			for(Edge e : edges){
@@ -221,6 +210,23 @@ public class ComputeRotations {
 		graph.getEdges().remove(bestEdge);
 		rotation.calcOptimalSpeed();
 
+	}
+
+	public static ArrayList<Edge> findPotentialEdges(Rotation rotation, double maxLoadFactor){
+		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		double loadFactor = 0;
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
+				if(loadFactor < maxLoadFactor){
+					distances.add(e.getDistance());
+					edges.add(e);
+				}
+			}
+		}
+
+		return edges;
 	}
 
 	public static int calcPortInsertProfitNaive(Rotation rotation, Port insertPort, Edge edge){
@@ -355,5 +361,74 @@ public class ComputeRotations {
 		double extraDist = getDetour(prevLeg, addPortId);
 		double extraTime = extraDist / vesselClass.getDesignSpeed() + 24;
 		return extraTime;
+	}
+
+	public static double costOfCallingPort(Rotation rotation, int portId){
+		double cost = 0;
+		Edge preEdge = null;
+		Edge postEdge = null;
+		Edge currentEdge = null;
+		for(int i=0; i<rotation.getRotationEdges().size(); i++){
+			currentEdge = rotation.getRotationEdges().get(i);
+			if(currentEdge.isDwell()){
+				continue;
+			}
+			if(currentEdge.getFromNode().getPortId() == portId){
+				preEdge = currentEdge;
+				postEdge = rotation.getRotationEdges().get(i+2);
+				break;
+			}
+		}
+		int prePortId = preEdge.getFromNode().getPortId();
+		int postPortId = postEdge.getFromNode().getPortId();
+		DistanceElement leg = graph.getData().getDistanceElement(prePortId, postPortId, false, false);
+		Port port = graph.getData().getPort(portId);
+		cost = calcCostOfPortInsert(rotation, leg, port);
+
+		return cost;
+	}
+
+	public static int calcNumberOfVessels(ArrayList<Port> ports, VesselClass vesselClass){
+		int distance = getRotationLength(ports);
+		
+		double minRotationTime = (24 * ports.size()+ (distance / vesselClass.getMaxSpeed())) / 168.0;
+		int lbNoVessels = (int) Math.ceil(minRotationTime);
+		double maxRotationTime = (24 * ports.size()+ (distance / vesselClass.getMinSpeed())) / 168.0;
+		int ubNoVessels = (int) Math.ceil(maxRotationTime);
+		
+		int lowestCost = Integer.MAX_VALUE;
+		int noVessels = Integer.MAX_VALUE;
+		if(lbNoVessels > ubNoVessels){
+			return lbNoVessels;
+		} else {
+			for(int i = lbNoVessels; i <= ubNoVessels; i++){
+				double availableTime = 168 * i - 24 * ports.size();
+				double speed = distance/availableTime;
+				double fuelConsumption = vesselClass.getFuelConsumption(speed);
+				double sailTimeDays = (distance / speed) / 24;
+				double bunkerConsumption = sailTimeDays * fuelConsumption;
+				int bunkerCost = (int) (bunkerConsumption * 600);
+				int TCRate = i * vesselClass.getTCRate();
+				int cost = bunkerCost + TCRate;
+				if(cost < lowestCost){
+					lowestCost = cost;
+					noVessels = i;
+				}
+			}
+		}
+		
+		return noVessels;
+	}
+	
+	public static int getRotationLength(ArrayList<Port> ports){
+		int distance = 0;
+		for(int i=0; i<ports.size()-1; i++){
+			int prePortId = ports.get(i).getPortId();
+			int postPortId = ports.get(i+1).getPortId();
+			DistanceElement dist = graph.getData().getDistanceElement(prePortId, postPortId, false, false);
+			distance += dist.getDistance();
+		}
+		distance += graph.getData().getDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), false, false).getDistance();
+		return distance;
 	}
 }
