@@ -18,10 +18,11 @@ public class Graph {
 	private ArrayList<Node> nodes;
 	private ArrayList<Edge> edges;
 	private Data data;
+	private Result result;
 
 	public Graph(String demandFileName, String fleetFileName) throws FileNotFoundException {
 		data = new Data(demandFileName, fleetFileName);
-		Result.initialize(this);
+		result = new Result(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		createCentroids();
@@ -30,8 +31,8 @@ public class Graph {
 
 	private void createCentroids(){
 		//Sets the number of centroids in the Node class once and for all, and is then garbage collected.
-		new Node(data.getPorts().size());
-		for(Port i : data.getPorts().values()){
+		new Node(data.getPortsMap().size());
+		for(Port i : data.getPortsMap().values()){
 			if(i.isActive()){
 				Node fromCentroid = new Node(i, true);
 				Node toCentroid = new Node(i, false);
@@ -56,6 +57,7 @@ public class Graph {
 		createLoadUnloadEdges(rotation);
 		createTransshipmentEdges(rotation);
 		rotation.calcOptimalSpeed();
+		result.addRotation(rotation);
 		return rotation;
 	}
 	
@@ -106,7 +108,7 @@ public class Graph {
 	}
 
 	private void createRotationEdges(ArrayList<DistanceElement> distances, Rotation rotation, VesselClass vesselClass){
-		checkDistances(distances);
+		checkDistances(distances, vesselClass);
 		//Rotation opened at port 0 outside of for loop.
 		DistanceElement currDist;
 		Port firstPort = distances.get(0).getOrigin();
@@ -145,7 +147,7 @@ public class Graph {
 		edges.add(newEdge);
 	}
 
-	private void checkDistances(ArrayList<DistanceElement> distances){
+	private void checkDistances(ArrayList<DistanceElement> distances, VesselClass vesselClass){
 		Port firstPort = distances.get(0).getOrigin();
 		for(int i = 1; i < distances.size(); i++){
 			Port portA = distances.get(i-1).getDestination();
@@ -153,10 +155,21 @@ public class Graph {
 			if(portA.getPortId() != portB.getPortId()){
 				throw new RuntimeException("The distances are not compatible.");
 			}
+			if(portA.getDraft() < vesselClass.getDraft()){
+				throw new RuntimeException("The draft at " + portA.getUNLocode() + " is exceeded.");
+			}
 		}
 		Port lastPort = distances.get(distances.size()-1).getDestination();
 		if(firstPort.getPortId() != lastPort.getPortId()){
 			throw new RuntimeException("The rotation is not closed.");
+		}
+		if(lastPort.getDraft() < vesselClass.getDraft()){
+			throw new RuntimeException("The draft at " + lastPort.getUNLocode() + " is exceeded.");
+		}
+		for(DistanceElement d : distances){
+			if(d.getDraft() < vesselClass.getDraft()){
+				throw new RuntimeException("The draft between " + d.getOrigin().getUNLocode() + " and " + d.getDestination().getUNLocode() + " is exceeded.");
+			}
 		}
 	}
 
@@ -273,6 +286,14 @@ public class Graph {
 
 	public Data getData() {
 		return data;
+	}
+	
+	public Port getPort(int portId){
+		return data.getPort(portId);
+	}
+	
+	public Result getResult(){
+		return result;
 	}
 
 }

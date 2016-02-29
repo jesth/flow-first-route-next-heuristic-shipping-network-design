@@ -36,22 +36,15 @@ public class RunModel {
 	}
 	
 	public static void testAux() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
-		initialize(testGraph);
+		Graph graph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
-		VesselClass feeder800 = testGraph.getData().getVesselClasses().get(1);
+		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
 		Rotation r = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		Rotation r2 = ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
 		MulticommodityFlow.run();
-		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
-		
-		for(VesselClass v : testGraph.getData().getVesselClasses()){
-			System.out.println(v);
-		}
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{
@@ -85,7 +78,6 @@ public class RunModel {
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
 		MulticommodityFlow.initialize(graph);
-		Result.initialize(graph);
 	}
 	
 	public static void testBalticManual() throws FileNotFoundException{
@@ -133,9 +125,6 @@ public class RunModel {
 //		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
 		
 		MulticommodityFlow.initialize(testGraph);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
 //		Result.addRotation(r3);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
@@ -143,8 +132,8 @@ public class RunModel {
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("test.csv", testGraph.getData().getDemands());
 		System.out.println();
-		System.out.println("Objective " + Result.getObjective());
-		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		System.out.println("Objective " + testGraph.getResult().getObjective());
+		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 	}
 	
 	public static void testBaltic() throws FileNotFoundException{
@@ -189,18 +178,14 @@ public class RunModel {
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
 		
 		MulticommodityFlow.initialize(testGraph);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
-		Result.addRotation(r3);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("test.csv", testGraph.getData().getDemands());
 		System.out.println();
-		System.out.println("Objective " + Result.getObjective());
-		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		System.out.println("Objective " + testGraph.getResult().getObjective());
+		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
 		testGraph.saveOPLData("OPLData.dat");
 	}
@@ -309,21 +294,15 @@ public class RunModel {
 
 		
 		MulticommodityFlow.initialize(testGraph);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
-		Result.addRotation(r3);
-		Result.addRotation(r4);
-		Result.addRotation(r5);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
 		System.out.println();
-		System.out.println("Objective " + Result.getObjective());
-		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		System.out.println("Objective " + testGraph.getResult().getObjective());
+		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
 		testGraph.saveOPLData("OPLData.dat");
 	}
@@ -460,23 +439,15 @@ public class RunModel {
 		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
 		
 		MulticommodityFlow.initialize(testGraph);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
-		Result.addRotation(r3);
-		Result.addRotation(r4);
-		Result.addRotation(r5);
-		Result.addRotation(r6);
-		Result.addRotation(r7);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
 		System.out.println();
-		System.out.println("Objective " + Result.getObjective());
-		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		System.out.println("Objective " + testGraph.getResult().getObjective());
+		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
 		testGraph.saveOPLData("OPLData.dat");
 	}
@@ -623,23 +594,15 @@ public class RunModel {
 		
 		
 		MulticommodityFlow.initialize(testGraph);
-		Result.initialize(testGraph);
-		Result.addRotation(r);
-		Result.addRotation(r2);
-		Result.addRotation(r3);
-		Result.addRotation(r4);
-		Result.addRotation(r5);
-		Result.addRotation(r6);
-		Result.addRotation(r7);
 		long time = System.currentTimeMillis();
 		MulticommodityFlow.run();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
 		MulticommodityFlow.saveODSol("ODSol.csv", testGraph.getData().getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", Result.getRotations());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
 		System.out.println();
-		System.out.println("Objective " + Result.getObjective());
-		System.out.println("Flow profit " + Result.getFlowProfit(false));
+		System.out.println("Objective " + testGraph.getResult().getObjective());
+		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
 		testGraph.saveOPLData("OPLData.dat");
 	}

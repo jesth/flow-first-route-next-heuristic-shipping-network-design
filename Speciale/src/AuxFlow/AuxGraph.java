@@ -26,7 +26,7 @@ public class AuxGraph implements Serializable{
 
 	public AuxGraph(Data data){
 		this.data = data;
-		nodes = new AuxNode[data.getPorts().size()];
+		nodes = new AuxNode[data.getPorts().length];
 		edges = new ArrayList<AuxEdge>();
 		ArrayList<VesselClass> vessels = data.getVesselClasses();
 		for(int i = 0; i < vessels.size(); i++){
@@ -41,7 +41,7 @@ public class AuxGraph implements Serializable{
 	}
 	
 	private void generateNodes(){
-		for(Port p : data.getPorts().values()){
+		for(Port p : data.getPorts()){
 			AuxNode newNode = new AuxNode(p);
 			nodes[p.getPortId()] = newNode;
 		}
@@ -49,8 +49,8 @@ public class AuxGraph implements Serializable{
 
 	private void generateEdges(){
 		Distance[][] distances = data.getDistances();
-		for(int i = 0; i < data.getPorts().size(); i++){
-			for(int j = 0; j < data.getPorts().size(); j++){
+		for(int i = 0; i < data.getPorts().length; i++){
+			for(int j = 0; j < data.getPorts().length; j++){
 				Distance distance = distances[i][j];
 				DistanceElement[] distanceElements = distance.getDistances();
 				for(int k = 0; k <= 3; k++){
