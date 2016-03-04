@@ -175,6 +175,7 @@ public class Graph {
 		createRotationEdge(r, newDepNode, toNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+1, newOutgoing);
 		createTransshipmentEdges(dwell);
 		createLoadUnloadEdges(dwell);
+		r.calcOptimalSpeed();
 	}
 	
 	public void deleteEdge(Edge e){

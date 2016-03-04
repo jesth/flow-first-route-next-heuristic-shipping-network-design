@@ -61,6 +61,9 @@ public class Data {
 	}
 	
 	public Distance getDistance(int portId1, int portId2){
+		if(portId1 == portId2){
+			throw new RuntimeException("Trying to get dwell distance.");
+		}
 		return distances[portId1][portId2];
 	}
 	

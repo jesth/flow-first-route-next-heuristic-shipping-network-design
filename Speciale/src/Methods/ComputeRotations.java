@@ -119,7 +119,7 @@ public class ComputeRotations {
 					if(e.isSail()){ //determine how many ships are needed
 						int detourCost = calcCostOfPortInsert(r, e.getDistance(), p);
 						int profit = profitPotential - detourCost;
-						if(profit > bestProfit){
+						if(profit > bestProfit && vesselsAvailable(r, e, p)){
 							bestProfit = profit;
 							bestRotation = r;
 							bestEdge = e;
@@ -131,6 +131,28 @@ public class ComputeRotations {
 				graph.insertPort(bestRotation, bestEdge, p);
 			}
 		}
+	}
+	
+	private static boolean vesselsAvailable(Rotation r, Edge e, Port p){
+		ArrayList<Port> ports = new ArrayList<Port>();
+		for(Edge edge : r.getRotationEdges()){
+			if(edge.isSail()){
+				Port port = edge.getFromNode().getPort();
+				ports.add(port);
+				System.out.println("Adding " + port.getUNLocode());
+				if(edge.equals(e)){
+					ports.add(p);
+					System.out.println("Adding new port " + p.getUNLocode());
+				}
+			}
+		}
+		int newNoOfVessels = calcNumberOfVessels(ports, r.getVesselClass());
+		int deltaVessels = newNoOfVessels - r.getNoOfVessels();
+		System.out.println("newNoOfVessels " + newNoOfVessels + " r.getNoOfVessels() " + r.getNoOfVessels());
+		if(deltaVessels <= r.getVesselClass().getNetNoAvailable()){
+			return true;
+		}
+		return false;
 	}
 	
 	private static ArrayList<Port> findUnservicedPorts(){
@@ -389,12 +411,14 @@ public class ComputeRotations {
 	}
 
 	public static int calcNumberOfVessels(ArrayList<Port> ports, VesselClass vesselClass){
-		int distance = getRotationLength(ports);
+		double distance = getRotationLength(ports);
 		
 		double minRotationTime = (24 * ports.size()+ (distance / vesselClass.getMaxSpeed())) / 168.0;
 		int lbNoVessels = (int) Math.ceil(minRotationTime);
 		double maxRotationTime = (24 * ports.size()+ (distance / vesselClass.getMinSpeed())) / 168.0;
-		int ubNoVessels = (int) Math.ceil(maxRotationTime);
+		int ubNoVessels = (int) Math.floor(maxRotationTime);
+		
+		System.out.println("lb " + lbNoVessels + " ub " + ubNoVessels);
 		
 		int lowestCost = Integer.MAX_VALUE;
 		int noVessels = Integer.MAX_VALUE;
@@ -422,11 +446,12 @@ public class ComputeRotations {
 	
 	public static int getRotationLength(ArrayList<Port> ports){
 		int distance = 0;
-		for(int i=0; i<ports.size()-1; i++){
+		for(int i = 0; i < ports.size()-1; i++){
 			int prePortId = ports.get(i).getPortId();
 			int postPortId = ports.get(i+1).getPortId();
 			DistanceElement dist = graph.getData().getDistanceElement(prePortId, postPortId, false, false);
 			distance += dist.getDistance();
+			System.out.println("Distance from " + ports.get(i).getUNLocode() + " to " + ports.get(i+1).getUNLocode() + " is " + dist.getDistance());
 		}
 		distance += graph.getData().getDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), false, false).getDistance();
 		return distance;
