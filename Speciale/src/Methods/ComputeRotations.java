@@ -76,7 +76,7 @@ public class ComputeRotations {
 		double extraDuration = 0;
 		for(AuxEdge e : firstNode.getIngoingEdges()){
 			AuxNode newNode = e.getFromNode();
-			if(!e.isUsedInRotation() && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
+			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -90,7 +90,7 @@ public class ComputeRotations {
 		}
 		for(AuxEdge e : lastNode.getOutgoingEdges()){
 			AuxNode newNode = e.getToNode();
-			if(!e.isUsedInRotation() && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
+			if(!e.isUsedInRotation() && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -139,16 +139,14 @@ public class ComputeRotations {
 			if(edge.isSail()){
 				Port port = edge.getFromNode().getPort();
 				ports.add(port);
-				System.out.println("Adding " + port.getUNLocode());
 				if(edge.equals(e)){
 					ports.add(p);
-					System.out.println("Adding new port " + p.getUNLocode());
 				}
 			}
 		}
 		int newNoOfVessels = calcNumberOfVessels(ports, r.getVesselClass());
 		int deltaVessels = newNoOfVessels - r.getNoOfVessels();
-		System.out.println("newNoOfVessels " + newNoOfVessels + " r.getNoOfVessels() " + r.getNoOfVessels());
+		System.out.println("Rotation " + r.getId() + " newNoOfVessels " + newNoOfVessels + " r.getNoOfVessels() " + r.getNoOfVessels());
 		if(deltaVessels <= r.getVesselClass().getNetNoAvailable()){
 			return true;
 		}
@@ -451,7 +449,7 @@ public class ComputeRotations {
 			int postPortId = ports.get(i+1).getPortId();
 			DistanceElement dist = graph.getData().getDistanceElement(prePortId, postPortId, false, false);
 			distance += dist.getDistance();
-			System.out.println("Distance from " + ports.get(i).getUNLocode() + " to " + ports.get(i+1).getUNLocode() + " is " + dist.getDistance());
+//			System.out.println("Distance from " + ports.get(i).getUNLocode() + " to " + ports.get(i+1).getUNLocode() + " is " + dist.getDistance());
 		}
 		distance += graph.getData().getDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), false, false).getDistance();
 		return distance;

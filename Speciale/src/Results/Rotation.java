@@ -43,7 +43,7 @@ public class Rotation {
 			setNoOfVessels(lbNoVessels);
 			setSailTimes();
 			setDwellTimes();
-			
+
 		} else {
 			for(int i = lbNoVessels; i <= ubNoVessels; i++){
 				double speed = calculateSpeed(i);
@@ -59,7 +59,7 @@ public class Rotation {
 			setSailTimes();
 		}
 	}
-	
+
 	private void setNoOfVessels(int newNoOfVessels){
 		vesselClass.removeNoUsed(noOfVessels);
 		noOfVessels = newNoOfVessels;
@@ -93,7 +93,6 @@ public class Rotation {
 				e.setTravelTime(e.getTravelTime()+extraDwellTime);
 			}
 		}
-		
 	}
 
 	public double calculateSpeed(int noOfVessels){
@@ -129,9 +128,12 @@ public class Rotation {
 	}
 
 	public void addRotationEdge(Edge edge){
-		rotationEdges.add(edge);
 		if(edge.isSail()){
+			int index = edge.getNoInRotation();
+			rotationEdges.add(index, edge);
 			distance += edge.getDistance().getDistance();
+		} else {
+			rotationEdges.add(edge);
 		}
 	}
 
@@ -310,6 +312,11 @@ public class Rotation {
 				e.incrementNoInRotation();
 			}
 		}
+	}
+
+	public void subtractDistance(int subtractDistance) {
+		distance -= subtractDistance;
+		
 	}
 
 

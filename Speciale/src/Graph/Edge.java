@@ -386,6 +386,7 @@ public class Edge {
 	
 	public void delete(){
 		rotation.getRotationEdges().remove(this);
+		rotation.subtractDistance(this.distance.getDistance());
 		fromNode.getIngoingEdges().remove(this);
 		toNode.getOutgoingEdges().remove(this);
 	}
