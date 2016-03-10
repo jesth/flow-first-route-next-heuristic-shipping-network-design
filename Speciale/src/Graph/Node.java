@@ -237,6 +237,14 @@ public class Node {
 		return id;
 	}
 	
+	public void removeIngoingEdge(Edge e){
+		ingoingEdges.remove(e);
+	}
+	
+	public void removeOutgoingEdge(Edge e){
+		outgoingEdges.remove(e);
+	}
+	
 	public static int getNoOfCentroids() {
 		return noOfCentroids;
 	}

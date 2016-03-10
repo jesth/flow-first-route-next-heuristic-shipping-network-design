@@ -385,10 +385,10 @@ public class Edge {
 	}
 	
 	public void delete(){
+		fromNode.removeOutgoingEdge(this);
+		toNode.removeIngoingEdge(this);
 		rotation.getRotationEdges().remove(this);
 		rotation.subtractDistance(this.distance.getDistance());
-		fromNode.getIngoingEdges().remove(this);
-		toNode.getOutgoingEdges().remove(this);
 	}
 	
 	/**

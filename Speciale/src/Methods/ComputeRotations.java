@@ -116,7 +116,7 @@ public class ComputeRotations {
 			int bestProfit = 0;
 			for(Rotation r : graph.getResult().getRotations()){
 				for(Edge e : r.getRotationEdges()){
-					if(e.isSail()){ //determine how many ships are needed
+					if(e.isSail()){
 						int detourCost = calcCostOfPortInsert(r, e.getDistance(), p);
 						int profit = profitPotential - detourCost;
 						if(profit > bestProfit && vesselsAvailable(r, e, p)){
@@ -146,7 +146,7 @@ public class ComputeRotations {
 		}
 		int newNoOfVessels = calcNumberOfVessels(ports, r.getVesselClass());
 		int deltaVessels = newNoOfVessels - r.getNoOfVessels();
-		System.out.println("Rotation " + r.getId() + " newNoOfVessels " + newNoOfVessels + " r.getNoOfVessels() " + r.getNoOfVessels());
+//		System.out.println("Rotation " + r.getId() + " newNoOfVessels " + newNoOfVessels + " r.getNoOfVessels() " + r.getNoOfVessels());
 		if(deltaVessels <= r.getVesselClass().getNetNoAvailable()){
 			return true;
 		}
@@ -415,8 +415,6 @@ public class ComputeRotations {
 		int lbNoVessels = (int) Math.ceil(minRotationTime);
 		double maxRotationTime = (24 * ports.size()+ (distance / vesselClass.getMinSpeed())) / 168.0;
 		int ubNoVessels = (int) Math.floor(maxRotationTime);
-		
-		System.out.println("lb " + lbNoVessels + " ub " + ubNoVessels);
 		
 		int lowestCost = Integer.MAX_VALUE;
 		int noVessels = Integer.MAX_VALUE;

@@ -70,7 +70,7 @@ public class MulticommodityFlow {
 				}
 				if(e.isSail()){
 //				if(e.getFromNode().getPort().getUNLocode().equals("DEBRV") && e.getToNode().getPort().getUNLocode().equals("RULED")){
-					System.out.println(e.simplePrint() + " lagrange = " + e.getLagrange());
+//					System.out.println(e.simplePrint() + " lagrange = " + e.getLagrange());
 				}
 			}
 			iteration++;
@@ -121,7 +121,7 @@ public class MulticommodityFlow {
 			for(Edge e : graph.getEdges()){
 				int overflow = e.getRepLoad() - e.getCapacity();
 				if(e.isSail() && overflow > 0){
-					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for " + e.simplePrint());
+//					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for " + e.simplePrint());
 					invalidFlow = true;
 					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;

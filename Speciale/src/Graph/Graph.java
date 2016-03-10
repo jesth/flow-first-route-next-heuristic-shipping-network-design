@@ -161,10 +161,11 @@ public class Graph {
 	
 
 	public void insertPort(Rotation r, Edge e, Port p) {
+		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
 		Node fromNode = e.getFromNode();
 		Node toNode = e.getToNode();
-		r.incrementNoInRotation(e.getNoInRotation());
 		deleteEdge(e);
+		r.incrementNoInRotation(e.getNoInRotation());
 		Node newArrNode = createRotationNode(p, r, false);
 		Node newDepNode = createRotationNode(p, r, true);
 		//TODO: Hardcoded - no canals.
@@ -176,6 +177,22 @@ public class Graph {
 		createTransshipmentEdges(dwell);
 		createLoadUnloadEdges(dwell);
 		r.calcOptimalSpeed();
+		System.out.println("For old outgoing node at port " + fromNode.getPort().getUNLocode() + ", the following edges are present:");
+		for(Edge edge : fromNode.getOutgoingEdges()){
+			if(edge.isLoadUnload()){
+				System.out.println("Load/Unload.");
+			}
+			if(edge.isTransshipment()){
+				System.out.println("Transshipment from rotation " + edge.getFromNode().getRotation().getId() + " to rotation " + edge.getToNode().getRotation().getId());
+			}
+			if(edge.isSail()){
+				System.out.println("Sail edge from " + edge.getFromPortUNLo() + " to " + edge.getToPortUNLo() + " on rotation " + edge.getRotation().getId());
+			}
+			if(edge.isDwell()){
+				System.out.println("Dwell");
+			}
+		}
+		System.out.println();
 	}
 	
 	public void deleteEdge(Edge e){
@@ -217,12 +234,14 @@ public class Graph {
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		nodes.add(edge.getFromNode());
 		nodes.add(edge.getToNode());
+		System.out.println("No of edges to create load/unload for: " + nodes.size());
 		createLoadUnloadEdges(nodes, edge.getRotation());
 	}
 	
 	private void createLoadUnloadEdges(ArrayList<Node> rotationNodes, Rotation rotation){
-		for(Node i : rotation.getRotationNodes()){
+		for(Node i : rotationNodes){
 			if(i.isArrival()){
+				System.out.println("Creating unload edge");
 				createLoadUnloadEdge(i, i.getPort().getToCentroidNode());
 			} else if(i.isDeparture()){
 				createLoadUnloadEdge(i.getPort().getFromCentroidNode(), i);
