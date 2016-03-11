@@ -19,8 +19,12 @@ public class Result {
 		rotations = new ArrayList<Rotation>();
 	}
 	
-	public void addRotation(Rotation rotation){
-		rotations.add(rotation);
+	public void addRotation(Rotation r){
+		rotations.add(r);
+	}
+	
+	public void removeRotation(Rotation r){
+		rotations.remove(r);
 	}
 	
 	/**

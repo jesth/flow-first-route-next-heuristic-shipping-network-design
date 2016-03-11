@@ -1,6 +1,7 @@
 package Data;
 import java.util.ArrayList;
 
+import Graph.Edge;
 import Graph.Node;
 import Results.Rotation;
 
@@ -21,9 +22,9 @@ public class Port {
 	private Node toCentroidNode;
 	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
 	private ArrayList<Node> departureNodes = new ArrayList<Node>();
+	private ArrayList<Edge> dwellEdges = new ArrayList<Edge>();
 	private int portId;
 	private boolean active;
-	private ArrayList<Rotation> rotations = new ArrayList<Rotation>();
 	private int totalDemand = 0;
 	private int totalProfitPotential = 0;
 	
@@ -170,12 +171,12 @@ public class Port {
 		return active;
 	}
 	
-	public void addRotation(Rotation rotation){
-		this.rotations.add(rotation);
+	public void addDwellEdge(Edge dwellEdge){
+		this.dwellEdges.add(dwellEdge);
 	}
 	
-	public ArrayList<Rotation> getRotations(){
-		return rotations;
+	public ArrayList<Edge> getDwellEdges(){
+		return dwellEdges;
 	}
 	
 	public int getTotalDemand(){

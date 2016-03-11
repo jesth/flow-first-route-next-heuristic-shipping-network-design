@@ -122,9 +122,6 @@ public class Rotation {
 
 	public void addRotationNode(Node node){
 		rotationNodes.add(node);
-		if(node.isDeparture()){
-			node.getPort().addRotation(this);
-		}
 	}
 
 	public void addRotationEdge(Edge edge){
@@ -132,8 +129,10 @@ public class Rotation {
 			int index = edge.getNoInRotation();
 			rotationEdges.add(index, edge);
 			distance += edge.getDistance().getDistance();
-		} else {
+		} else if(edge.isDwell()) {
 			rotationEdges.add(edge);
+			Port port = edge.getFromNode().getPort();
+			port.addDwellEdge(edge);
 		}
 	}
 
@@ -314,10 +313,24 @@ public class Rotation {
 		}
 	}
 
-	public void subtractDistance(int subtractDistance) {
-		distance -= subtractDistance;
-		
+	public void decrementNoInRotation(int fromNo) {
+		for(Edge e : rotationEdges){
+			if(e.getNoInRotation() > fromNo){
+				e.decrementNoInRotation();
+			}
+		}
 	}
 
+	public void subtractDistance(int subtractDistance) {
+		distance -= subtractDistance;
+	}
 
+	public void delete(){
+		if(!rotationNodes.isEmpty() || !rotationEdges.isEmpty()){
+			throw new RuntimeException("Nodes and edges must be deleted first via Graph class.");
+		}
+		setNoOfVessels(0);
+		distance = 0;
+		setInactive();
+	}
 }

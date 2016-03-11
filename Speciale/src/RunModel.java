@@ -7,6 +7,7 @@ import AuxFlow.AuxGraph;
 import AuxFlow.AuxRun;
 import Data.DistanceElement;
 import Data.VesselClass;
+import Graph.Edge;
 import Graph.Graph;
 import Methods.ComputeRotations;
 import Methods.MulticommodityFlow;
@@ -48,6 +49,9 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		ComputeRotations.addPorts();
+		Rotation optRotation = graph.getResult().getRotations().get(0);
+		Edge remove = optRotation.getRotationEdges().get(14);
+		graph.removePort(optRotation, remove);
 		MulticommodityFlow.run();
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());

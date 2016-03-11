@@ -244,7 +244,7 @@ public class Node {
 	public void removeOutgoingEdge(Edge e){
 		outgoingEdges.remove(e);
 	}
-	
+
 	public static int getNoOfCentroids() {
 		return noOfCentroids;
 	}
@@ -263,5 +263,6 @@ public class Node {
 		str += "at port " + port.getUNLocode();
 		return str;
 	}
+
 	
 }
