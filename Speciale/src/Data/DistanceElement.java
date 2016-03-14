@@ -59,4 +59,20 @@ public class DistanceElement {
 	public Port getDestination(){
 		return parent.getDestination();
 	}
+	
+	public int getDesignSpeedCost(VesselClass vesselClass){
+		double travelTimeDays = (distance / vesselClass.getDesignSpeed()) / 24.0;
+		double TCCost = travelTimeDays * vesselClass.getTCRate();
+		//TODO: Fuel cost hardcoded.
+		double fuelConsumptionCost = vesselClass.getFuelConsumptionDesign() * travelTimeDays * 600;
+		double canalCost = 0;
+		if(suez){
+			canalCost += vesselClass.getSuezFee();
+		}
+		if(panama){
+			canalCost += vesselClass.getPanamaFee();
+		}
+		int cost = (int) (TCCost + fuelConsumptionCost + canalCost);
+		return cost;
+	}
 }

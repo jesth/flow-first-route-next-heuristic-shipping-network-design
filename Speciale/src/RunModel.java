@@ -67,6 +67,7 @@ public class RunModel {
 		graph.saveOPLData("OPLData.dat");
 	}
 	
+	/*
 	public static void testAutomatic() throws FileNotFoundException{
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		initialize(testGraph);
@@ -94,6 +95,7 @@ public class RunModel {
 		System.out.println(r1);
 		System.out.println(r2);
 	}
+	*/
 	
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
@@ -104,11 +106,11 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
-		DistanceElement leg3 = testGraph.getData().getDistanceElement("DEBRV", "NOSVG", false, false);
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("NOSVG", "SEGOT", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("SEGOT", "DEBRV", false, false);
+		DistanceElement leg1 = testGraph.getData().getBestDistanceElement("DEBRV", "RULED", vesselClass);
+		DistanceElement leg2 = testGraph.getData().getBestDistanceElement("RULED", "DEBRV", vesselClass);
+		DistanceElement leg3 = testGraph.getData().getBestDistanceElement("DEBRV", "NOSVG", vesselClass);
+		DistanceElement leg4 = testGraph.getData().getBestDistanceElement("NOSVG", "SEGOT", vesselClass);
+		DistanceElement leg5 = testGraph.getData().getBestDistanceElement("SEGOT", "DEBRV", vesselClass);
 		distances.add(leg1);
 		distances.add(leg2);
 		distances.add(leg3);
@@ -118,14 +120,14 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg10 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", false, false);
-		DistanceElement leg11 = testGraph.getData().getDistanceElement("DKAAR", "DEBRV", false, false);
-		DistanceElement leg12 = testGraph.getData().getDistanceElement("DEBRV", "RUKGD", false, false);
-		DistanceElement leg13 = testGraph.getData().getDistanceElement("RUKGD", "FIKTK", false, false);
-		DistanceElement leg14 = testGraph.getData().getDistanceElement("FIKTK", "DEBRV", false, false);
-		DistanceElement leg15 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
-		DistanceElement leg16 = testGraph.getData().getDistanceElement("RULED", "PLGDY", false, false);
-		DistanceElement leg17 = testGraph.getData().getDistanceElement("PLGDY", "DEBRV", false, false);
+		DistanceElement leg10 = testGraph.getData().getBestDistanceElement("DEBRV", "DKAAR", vesselClass);
+		DistanceElement leg11 = testGraph.getData().getBestDistanceElement("DKAAR", "DEBRV", vesselClass);
+		DistanceElement leg12 = testGraph.getData().getBestDistanceElement("DEBRV", "RUKGD", vesselClass);
+		DistanceElement leg13 = testGraph.getData().getBestDistanceElement("RUKGD", "FIKTK", vesselClass);
+		DistanceElement leg14 = testGraph.getData().getBestDistanceElement("FIKTK", "DEBRV", vesselClass);
+		DistanceElement leg15 = testGraph.getData().getBestDistanceElement("DEBRV", "RULED", vesselClass);
+		DistanceElement leg16 = testGraph.getData().getBestDistanceElement("RULED", "PLGDY", vesselClass);
+		DistanceElement leg17 = testGraph.getData().getBestDistanceElement("PLGDY", "DEBRV", vesselClass);
 		distances2.add(leg10);
 		distances2.add(leg11);
 		distances2.add(leg12);
@@ -138,8 +140,8 @@ public class RunModel {
 		
 //		vesselClass = testGraph.getData().getVesselClasses().get(0);
 //		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-//		DistanceElement leg20 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", false, false);
-//		DistanceElement leg21 = testGraph.getData().getDistanceElement("DKAAR", "DEBRV", false, false);
+//		DistanceElement leg20 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", vesselClass);
+//		DistanceElement leg21 = testGraph.getData().getDistanceElement("DKAAR", "DEBRV", vesselClass);
 //		distances3.add(leg20);
 //		distances3.add(leg21);
 //		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
@@ -162,12 +164,12 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("RULED", "FIKTK", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("FIKTK", "DEBRV", false, false);
-		DistanceElement leg3 = testGraph.getData().getDistanceElement("DEBRV", "RUKGD", false, false);
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("RUKGD", "PLGDY", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("PLGDY", "DEBRV", false, false);
-		DistanceElement leg6 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
+		DistanceElement leg1 = testGraph.getData().getBestDistanceElement("RULED", "FIKTK", vesselClass);
+		DistanceElement leg2 = testGraph.getData().getBestDistanceElement("FIKTK", "DEBRV", vesselClass);
+		DistanceElement leg3 = testGraph.getData().getBestDistanceElement("DEBRV", "RUKGD", vesselClass);
+		DistanceElement leg4 = testGraph.getData().getBestDistanceElement("RUKGD", "PLGDY", vesselClass);
+		DistanceElement leg5 = testGraph.getData().getBestDistanceElement("PLGDY", "DEBRV", vesselClass);
+		DistanceElement leg6 = testGraph.getData().getBestDistanceElement("DEBRV", "RULED", vesselClass);
 		
 		distances.add(leg1);
 		distances.add(leg2);
@@ -179,11 +181,11 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg10 = testGraph.getData().getDistanceElement("RULED", "DEBRV", false, false);
-		DistanceElement leg11 = testGraph.getData().getDistanceElement("DEBRV", "NOSVG", false, false);
-		DistanceElement leg12 = testGraph.getData().getDistanceElement("NOSVG", "SEGOT", false, false);
-		DistanceElement leg13 = testGraph.getData().getDistanceElement("SEGOT", "DEBRV", false, false);
-		DistanceElement leg14 = testGraph.getData().getDistanceElement("DEBRV", "RULED", false, false);
+		DistanceElement leg10 = testGraph.getData().getBestDistanceElement("RULED", "DEBRV", vesselClass);
+		DistanceElement leg11 = testGraph.getData().getBestDistanceElement("DEBRV", "NOSVG", vesselClass);
+		DistanceElement leg12 = testGraph.getData().getBestDistanceElement("NOSVG", "SEGOT", vesselClass);
+		DistanceElement leg13 = testGraph.getData().getBestDistanceElement("SEGOT", "DEBRV", vesselClass);
+		DistanceElement leg14 = testGraph.getData().getBestDistanceElement("DEBRV", "RULED", vesselClass);
 		distances2.add(leg10);
 		distances2.add(leg11);
 		distances2.add(leg12);
@@ -193,8 +195,8 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-		DistanceElement leg20 = testGraph.getData().getDistanceElement("DEBRV", "DKAAR", false, false);
-		DistanceElement leg21 = testGraph.getData().getDistanceElement("DKAAR", "DEBRV", false, false);
+		DistanceElement leg20 = testGraph.getData().getBestDistanceElement("DEBRV", "DKAAR", vesselClass);
+		DistanceElement leg21 = testGraph.getData().getBestDistanceElement("DKAAR", "DEBRV", vesselClass);
 		distances3.add(leg20);
 		distances3.add(leg21);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
@@ -216,12 +218,12 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("TRAMB", "ESALG", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("ESALG", "MAPTM", false, false);
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("MAPTM", "EGPSD", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("EGPSD", "ITGIT", false, false);
-		DistanceElement leg6 = testGraph.getData().getDistanceElement("ITGIT", "EGALY", false, false);
-		DistanceElement leg7 = testGraph.getData().getDistanceElement("EGALY", "TRAMB", false, false);
+		DistanceElement leg1 = testGraph.getData().getBestDistanceElement("TRAMB", "ESALG", vesselClass);
+		DistanceElement leg2 = testGraph.getData().getBestDistanceElement("ESALG", "MAPTM", vesselClass);
+		DistanceElement leg4 = testGraph.getData().getBestDistanceElement("MAPTM", "EGPSD", vesselClass);
+		DistanceElement leg5 = testGraph.getData().getBestDistanceElement("EGPSD", "ITGIT", vesselClass);
+		DistanceElement leg6 = testGraph.getData().getBestDistanceElement("ITGIT", "EGALY", vesselClass);
+		DistanceElement leg7 = testGraph.getData().getBestDistanceElement("EGALY", "TRAMB", vesselClass);
 		distances.add(leg1);
 		distances.add(leg2);
 		distances.add(leg4);
@@ -232,20 +234,20 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg10 = testGraph.getData().getDistanceElement("EGPSD", "ILASH", false, false);
-		DistanceElement leg11 = testGraph.getData().getDistanceElement("ILASH", "LBBEY", false, false);
-		DistanceElement leg12 = testGraph.getData().getDistanceElement("LBBEY", "TRMER", false, false);
-		DistanceElement leg52 = testGraph.getData().getDistanceElement("TRMER", "ITGIT", false, false);
-		DistanceElement leg53 = testGraph.getData().getDistanceElement("ITGIT", "ITSAL", false, false);
-		DistanceElement leg54 = testGraph.getData().getDistanceElement("ITSAL", "ESBCN", false, false);
-		DistanceElement leg55 = testGraph.getData().getDistanceElement("ESBCN", "ESAGP", false, false);
-		DistanceElement leg56 = testGraph.getData().getDistanceElement("ESAGP", "ESALG", false, false);
-		DistanceElement leg57 = testGraph.getData().getDistanceElement("ESALG", "GRSKG", false, false);
-		DistanceElement leg58 = testGraph.getData().getDistanceElement("GRSKG", "TRAMB", false, false);
-		DistanceElement leg59 = testGraph.getData().getDistanceElement("TRAMB", "TRMER", false, false);
-		DistanceElement leg13 = testGraph.getData().getDistanceElement("TRMER", "ILHFA", false, false);
-//		DistanceElement leg14 = testGraph.getData().getDistanceElement("SYLTK", "ILHFA", false, false);
-		DistanceElement leg15 = testGraph.getData().getDistanceElement("ILHFA", "EGPSD", false, false);
+		DistanceElement leg10 = testGraph.getData().getBestDistanceElement("EGPSD", "ILASH", vesselClass);
+		DistanceElement leg11 = testGraph.getData().getBestDistanceElement("ILASH", "LBBEY", vesselClass);
+		DistanceElement leg12 = testGraph.getData().getBestDistanceElement("LBBEY", "TRMER", vesselClass);
+		DistanceElement leg52 = testGraph.getData().getBestDistanceElement("TRMER", "ITGIT", vesselClass);
+		DistanceElement leg53 = testGraph.getData().getBestDistanceElement("ITGIT", "ITSAL", vesselClass);
+		DistanceElement leg54 = testGraph.getData().getBestDistanceElement("ITSAL", "ESBCN", vesselClass);
+		DistanceElement leg55 = testGraph.getData().getBestDistanceElement("ESBCN", "ESAGP", vesselClass);
+		DistanceElement leg56 = testGraph.getData().getBestDistanceElement("ESAGP", "ESALG", vesselClass);
+		DistanceElement leg57 = testGraph.getData().getBestDistanceElement("ESALG", "GRSKG", vesselClass);
+		DistanceElement leg58 = testGraph.getData().getBestDistanceElement("GRSKG", "TRAMB", vesselClass);
+		DistanceElement leg59 = testGraph.getData().getBestDistanceElement("TRAMB", "TRMER", vesselClass);
+		DistanceElement leg13 = testGraph.getData().getBestDistanceElement("TRMER", "ILHFA", vesselClass);
+//		DistanceElement leg14 = testGraph.getData().getDistanceElement("SYLTK", "ILHFA", vesselClass);
+		DistanceElement leg15 = testGraph.getData().getBestDistanceElement("ILHFA", "EGPSD", vesselClass);
 		distances2.add(leg10);
 		distances2.add(leg11);
 		distances2.add(leg12);
@@ -264,12 +266,12 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-		DistanceElement leg20 = testGraph.getData().getDistanceElement("TRAMB", "GEPTI", false, false);
-		DistanceElement leg21 = testGraph.getData().getDistanceElement("GEPTI", "UAODS", false, false);
-		DistanceElement leg22 = testGraph.getData().getDistanceElement("UAODS", "BGVAR", false, false);
-		DistanceElement leg23 = testGraph.getData().getDistanceElement("BGVAR", "TRAMB", false, false);
-		DistanceElement leg24 = testGraph.getData().getDistanceElement("TRAMB", "TRIZM", false, false);
-		DistanceElement leg25 = testGraph.getData().getDistanceElement("TRIZM", "TRAMB", false, false);
+		DistanceElement leg20 = testGraph.getData().getBestDistanceElement("TRAMB", "GEPTI", vesselClass);
+		DistanceElement leg21 = testGraph.getData().getBestDistanceElement("GEPTI", "UAODS", vesselClass);
+		DistanceElement leg22 = testGraph.getData().getBestDistanceElement("UAODS", "BGVAR", vesselClass);
+		DistanceElement leg23 = testGraph.getData().getBestDistanceElement("BGVAR", "TRAMB", vesselClass);
+		DistanceElement leg24 = testGraph.getData().getBestDistanceElement("TRAMB", "TRIZM", vesselClass);
+		DistanceElement leg25 = testGraph.getData().getBestDistanceElement("TRIZM", "TRAMB", vesselClass);
 		distances3.add(leg20);
 		distances3.add(leg21);
 		distances3.add(leg22);
@@ -280,12 +282,12 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
-		DistanceElement leg30 = testGraph.getData().getDistanceElement("ESALG", "MACAS", false, false);
-		DistanceElement leg32 = testGraph.getData().getDistanceElement("MACAS", "MAPTM", false, false);
-		DistanceElement leg33 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
-		DistanceElement leg34 = testGraph.getData().getDistanceElement("ESALG", "ITGOA", false, false);
-		DistanceElement leg35 = testGraph.getData().getDistanceElement("ITGOA", "ITGIT", false, false);
-		DistanceElement leg36 = testGraph.getData().getDistanceElement("ITGIT", "ESALG", false, false);
+		DistanceElement leg30 = testGraph.getData().getBestDistanceElement("ESALG", "MACAS", vesselClass);
+		DistanceElement leg32 = testGraph.getData().getBestDistanceElement("MACAS", "MAPTM", vesselClass);
+		DistanceElement leg33 = testGraph.getData().getBestDistanceElement("MAPTM", "ESALG", vesselClass);
+		DistanceElement leg34 = testGraph.getData().getBestDistanceElement("ESALG", "ITGOA", vesselClass);
+		DistanceElement leg35 = testGraph.getData().getBestDistanceElement("ITGOA", "ITGIT", vesselClass);
+		DistanceElement leg36 = testGraph.getData().getBestDistanceElement("ITGIT", "ESALG", vesselClass);
 		distances4.add(leg30);
 		distances4.add(leg32);
 		distances4.add(leg33);
@@ -296,14 +298,14 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 				ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
-		DistanceElement leg40 = testGraph.getData().getDistanceElement("MAPTM", "MAAGA", false, false);
-		DistanceElement leg41 = testGraph.getData().getDistanceElement("MAAGA", "PTLEI", false, false);
-		DistanceElement leg42 = testGraph.getData().getDistanceElement("PTLEI", "ESALG", false, false);
-		DistanceElement leg43 = testGraph.getData().getDistanceElement("ESALG", "TNTUN", false, false);
-		DistanceElement leg44 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
-		DistanceElement leg45 = testGraph.getData().getDistanceElement("ITGIT", "EGPSD", false, false);
-		DistanceElement leg46 = testGraph.getData().getDistanceElement("EGPSD", "DZALG", false, false);
-		DistanceElement leg47 = testGraph.getData().getDistanceElement("DZALG", "MAPTM", false, false);
+		DistanceElement leg40 = testGraph.getData().getBestDistanceElement("MAPTM", "MAAGA", vesselClass);
+		DistanceElement leg41 = testGraph.getData().getBestDistanceElement("MAAGA", "PTLEI", vesselClass);
+		DistanceElement leg42 = testGraph.getData().getBestDistanceElement("PTLEI", "ESALG", vesselClass);
+		DistanceElement leg43 = testGraph.getData().getBestDistanceElement("ESALG", "TNTUN", vesselClass);
+		DistanceElement leg44 = testGraph.getData().getBestDistanceElement("TNTUN", "ITGIT", vesselClass);
+		DistanceElement leg45 = testGraph.getData().getBestDistanceElement("ITGIT", "EGPSD", vesselClass);
+		DistanceElement leg46 = testGraph.getData().getBestDistanceElement("EGPSD", "DZALG", vesselClass);
+		DistanceElement leg47 = testGraph.getData().getBestDistanceElement("DZALG", "MAPTM", vesselClass);
 		distances5.add(leg40);
 		distances5.add(leg41);
 		distances5.add(leg42);
@@ -333,14 +335,14 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("EGPSD", "ESALG", false, false);
-		DistanceElement leg8 = testGraph.getData().getDistanceElement("ESALG", "MACAS", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("MACAS", "MAAGA", false, false);
-		DistanceElement leg7 = testGraph.getData().getDistanceElement("MAAGA", "PTLEI", false, false);
-		DistanceElement leg3 = testGraph.getData().getDistanceElement("PTLEI", "MAPTM", false, false);
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("ESALG", "EGALY", false, false);
-		DistanceElement leg6 = testGraph.getData().getDistanceElement("EGALY", "EGPSD", false, false);
+		DistanceElement leg1 = testGraph.getData().getBestDistanceElement("EGPSD", "ESALG", vesselClass);
+		DistanceElement leg8 = testGraph.getData().getBestDistanceElement("ESALG", "MACAS", vesselClass);
+		DistanceElement leg2 = testGraph.getData().getBestDistanceElement("MACAS", "MAAGA", vesselClass);
+		DistanceElement leg7 = testGraph.getData().getBestDistanceElement("MAAGA", "PTLEI", vesselClass);
+		DistanceElement leg3 = testGraph.getData().getBestDistanceElement("PTLEI", "MAPTM", vesselClass);
+		DistanceElement leg4 = testGraph.getData().getBestDistanceElement("MAPTM", "ESALG", vesselClass);
+		DistanceElement leg5 = testGraph.getData().getBestDistanceElement("ESALG", "EGALY", vesselClass);
+		DistanceElement leg6 = testGraph.getData().getBestDistanceElement("EGALY", "EGPSD", vesselClass);
 		distances.add(leg1);
 		distances.add(leg8);
 		distances.add(leg2);
@@ -353,17 +355,17 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg10 = testGraph.getData().getDistanceElement("ESALG", "MAPTM", false, false);
-		DistanceElement leg19 = testGraph.getData().getDistanceElement("MAPTM", "DZALG", false, false);
-		DistanceElement leg11 = testGraph.getData().getDistanceElement("DZALG", "TNTUN", false, false);
-		DistanceElement leg12 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
-		DistanceElement leg13 = testGraph.getData().getDistanceElement("ITGIT", "EGPSD", false, false);
-		DistanceElement leg14 = testGraph.getData().getDistanceElement("EGPSD", "EGALY", false, false);
-		DistanceElement leg15 = testGraph.getData().getDistanceElement("EGALY", "GRPIR", false, false);
-		DistanceElement leg16 = testGraph.getData().getDistanceElement("GRPIR", "ITGIT", false, false);
-//		DistanceElement leg17 = testGraph.getData().getDistanceElement("ITGIT", "ITGOA", false, false);
-		DistanceElement leg18 = testGraph.getData().getDistanceElement("ITGIT", "ESBCN", false, false);
-		DistanceElement leg20 = testGraph.getData().getDistanceElement("ESBCN", "ESALG", false, false);
+		DistanceElement leg10 = testGraph.getData().getBestDistanceElement("ESALG", "MAPTM", vesselClass);
+		DistanceElement leg19 = testGraph.getData().getBestDistanceElement("MAPTM", "DZALG", vesselClass);
+		DistanceElement leg11 = testGraph.getData().getBestDistanceElement("DZALG", "TNTUN", vesselClass);
+		DistanceElement leg12 = testGraph.getData().getBestDistanceElement("TNTUN", "ITGIT", vesselClass);
+		DistanceElement leg13 = testGraph.getData().getBestDistanceElement("ITGIT", "EGPSD", vesselClass);
+		DistanceElement leg14 = testGraph.getData().getBestDistanceElement("EGPSD", "EGALY", vesselClass);
+		DistanceElement leg15 = testGraph.getData().getBestDistanceElement("EGALY", "GRPIR", vesselClass);
+		DistanceElement leg16 = testGraph.getData().getBestDistanceElement("GRPIR", "ITGIT", vesselClass);
+//		DistanceElement leg17 = testGraph.getData().getDistanceElement("ITGIT", "ITGOA", vesselClass);
+		DistanceElement leg18 = testGraph.getData().getBestDistanceElement("ITGIT", "ESBCN", vesselClass);
+		DistanceElement leg20 = testGraph.getData().getBestDistanceElement("ESBCN", "ESALG", vesselClass);
 		distances2.add(leg10);
 		distances2.add(leg19);
 		distances2.add(leg11);
@@ -380,11 +382,11 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-		DistanceElement leg30 = testGraph.getData().getDistanceElement("TRAMB", "EGPSD", false, false);
-		DistanceElement leg32 = testGraph.getData().getDistanceElement("EGPSD", "ILASH", false, false);
-		DistanceElement leg33 = testGraph.getData().getDistanceElement("ILASH", "ILHFA", false, false);
-		DistanceElement leg34 = testGraph.getData().getDistanceElement("ILHFA", "EGPSD", false, false);
-		DistanceElement leg35 = testGraph.getData().getDistanceElement("EGPSD", "TRAMB", false, false);
+		DistanceElement leg30 = testGraph.getData().getBestDistanceElement("TRAMB", "EGPSD", vesselClass);
+		DistanceElement leg32 = testGraph.getData().getBestDistanceElement("EGPSD", "ILASH", vesselClass);
+		DistanceElement leg33 = testGraph.getData().getBestDistanceElement("ILASH", "ILHFA", vesselClass);
+		DistanceElement leg34 = testGraph.getData().getBestDistanceElement("ILHFA", "EGPSD", vesselClass);
+		DistanceElement leg35 = testGraph.getData().getBestDistanceElement("EGPSD", "TRAMB", vesselClass);
 		distances3.add(leg30);
 		distances3.add(leg32);
 		distances3.add(leg33);
@@ -394,12 +396,12 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
-		DistanceElement leg40 = testGraph.getData().getDistanceElement("ESALG", "TNTUN", false, false);
-		DistanceElement leg41 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
-		DistanceElement leg42 = testGraph.getData().getDistanceElement("ITGIT", "ITSAL", false, false);
-		DistanceElement leg45 = testGraph.getData().getDistanceElement("ITSAL", "ESVLC", false, false);
-		DistanceElement leg43 = testGraph.getData().getDistanceElement("ESVLC", "ESAGP", false, false);
-		DistanceElement leg44 = testGraph.getData().getDistanceElement("ESAGP", "ESALG", false, false);
+		DistanceElement leg40 = testGraph.getData().getBestDistanceElement("ESALG", "TNTUN", vesselClass);
+		DistanceElement leg41 = testGraph.getData().getBestDistanceElement("TNTUN", "ITGIT", vesselClass);
+		DistanceElement leg42 = testGraph.getData().getBestDistanceElement("ITGIT", "ITSAL", vesselClass);
+		DistanceElement leg45 = testGraph.getData().getBestDistanceElement("ITSAL", "ESVLC", vesselClass);
+		DistanceElement leg43 = testGraph.getData().getBestDistanceElement("ESVLC", "ESAGP", vesselClass);
+		DistanceElement leg44 = testGraph.getData().getBestDistanceElement("ESAGP", "ESALG", vesselClass);
 		distances4.add(leg40);
 		distances4.add(leg41);
 		distances4.add(leg42);
@@ -410,14 +412,14 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 				ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
-		DistanceElement leg50 = testGraph.getData().getDistanceElement("ESALG", "ESAGP", false, false);
-		DistanceElement leg51 = testGraph.getData().getDistanceElement("ESAGP", "DZORN", false, false);
-		DistanceElement leg53 = testGraph.getData().getDistanceElement("DZORN", "ITGIT", false, false);
-		DistanceElement leg54 = testGraph.getData().getDistanceElement("ITGIT", "EGPSD", false, false);
-		DistanceElement leg55 = testGraph.getData().getDistanceElement("EGPSD", "LBBEY", false, false);
-		DistanceElement leg56 = testGraph.getData().getDistanceElement("LBBEY", "TRMER", false, false);
-		DistanceElement leg57 = testGraph.getData().getDistanceElement("TRMER", "EGPSD", false, false);
-		DistanceElement leg59 = testGraph.getData().getDistanceElement("EGPSD", "ESALG", false, false);
+		DistanceElement leg50 = testGraph.getData().getBestDistanceElement("ESALG", "ESAGP", vesselClass);
+		DistanceElement leg51 = testGraph.getData().getBestDistanceElement("ESAGP", "DZORN", vesselClass);
+		DistanceElement leg53 = testGraph.getData().getBestDistanceElement("DZORN", "ITGIT", vesselClass);
+		DistanceElement leg54 = testGraph.getData().getBestDistanceElement("ITGIT", "EGPSD", vesselClass);
+		DistanceElement leg55 = testGraph.getData().getBestDistanceElement("EGPSD", "LBBEY", vesselClass);
+		DistanceElement leg56 = testGraph.getData().getBestDistanceElement("LBBEY", "TRMER", vesselClass);
+		DistanceElement leg57 = testGraph.getData().getBestDistanceElement("TRMER", "EGPSD", vesselClass);
+		DistanceElement leg59 = testGraph.getData().getBestDistanceElement("EGPSD", "ESALG", vesselClass);
 		distances5.add(leg50);
 		distances5.add(leg51);
 		distances5.add(leg53);
@@ -431,12 +433,12 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances6 = new ArrayList<DistanceElement>();
-		DistanceElement leg60 = testGraph.getData().getDistanceElement("TRAMB", "GEPTI", false, false);
-		DistanceElement leg61 = testGraph.getData().getDistanceElement("GEPTI", "UAODS", false, false);
-		DistanceElement leg62 = testGraph.getData().getDistanceElement("UAODS", "BGVAR", false, false);
-		DistanceElement leg63 = testGraph.getData().getDistanceElement("BGVAR", "TRAMB", false, false);
-		DistanceElement leg64 = testGraph.getData().getDistanceElement("TRAMB", "TRIZM", false, false);
-		DistanceElement leg65 = testGraph.getData().getDistanceElement("TRIZM", "TRAMB", false, false);
+		DistanceElement leg60 = testGraph.getData().getBestDistanceElement("TRAMB", "GEPTI", vesselClass);
+		DistanceElement leg61 = testGraph.getData().getBestDistanceElement("GEPTI", "UAODS", vesselClass);
+		DistanceElement leg62 = testGraph.getData().getBestDistanceElement("UAODS", "BGVAR", vesselClass);
+		DistanceElement leg63 = testGraph.getData().getBestDistanceElement("BGVAR", "TRAMB", vesselClass);
+		DistanceElement leg64 = testGraph.getData().getBestDistanceElement("TRAMB", "TRIZM", vesselClass);
+		DistanceElement leg65 = testGraph.getData().getBestDistanceElement("TRIZM", "TRAMB", vesselClass);
 		distances6.add(leg60);
 		distances6.add(leg61);
 		distances6.add(leg62);
@@ -448,11 +450,11 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances7 = new ArrayList<DistanceElement>();
-		DistanceElement leg70 = testGraph.getData().getDistanceElement("ESALG", "ESTAR", false, false);
-		DistanceElement leg71 = testGraph.getData().getDistanceElement("ESTAR", "ITGOA", false, false);
-		DistanceElement leg72 = testGraph.getData().getDistanceElement("ITGOA", "ITGIT", false, false);
-		DistanceElement leg73 = testGraph.getData().getDistanceElement("ITGIT", "MAPTM", false, false);
-		DistanceElement leg74 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
+		DistanceElement leg70 = testGraph.getData().getBestDistanceElement("ESALG", "ESTAR", vesselClass);
+		DistanceElement leg71 = testGraph.getData().getBestDistanceElement("ESTAR", "ITGOA", vesselClass);
+		DistanceElement leg72 = testGraph.getData().getBestDistanceElement("ITGOA", "ITGIT", vesselClass);
+		DistanceElement leg73 = testGraph.getData().getBestDistanceElement("ITGIT", "MAPTM", vesselClass);
+		DistanceElement leg74 = testGraph.getData().getBestDistanceElement("MAPTM", "ESALG", vesselClass);
 		distances7.add(leg70);
 		distances7.add(leg71);
 		distances7.add(leg72);
@@ -479,18 +481,18 @@ public class RunModel {
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
 		VesselClass vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
-		DistanceElement leg1 = testGraph.getData().getDistanceElement("MACAS", "MAAGA", false, false);
-		DistanceElement leg2 = testGraph.getData().getDistanceElement("MAAGA", "ESVGO", false, false);
-		DistanceElement leg3 = testGraph.getData().getDistanceElement("ESVGO", "PTLEI", false, false);
-		DistanceElement leg4 = testGraph.getData().getDistanceElement("PTLEI", "MAPTM", false, false);
-		DistanceElement leg5 = testGraph.getData().getDistanceElement("MAPTM", "ESALG", false, false);
-		DistanceElement leg6 = testGraph.getData().getDistanceElement("ESALG", "ESAGP", false, false);
-		DistanceElement leg7 = testGraph.getData().getDistanceElement("ESAGP", "DZBJA", false, false);
-		DistanceElement leg8 = testGraph.getData().getDistanceElement("DZBJA", "TNTUN", false, false);
-		DistanceElement leg9 = testGraph.getData().getDistanceElement("TNTUN", "ITGOA", false, false);
-		DistanceElement leg10 = testGraph.getData().getDistanceElement("ITGOA", "ESTAR", false, false);
-		DistanceElement leg11 = testGraph.getData().getDistanceElement("ESTAR", "ESAGP", false, false);
-		DistanceElement leg12 = testGraph.getData().getDistanceElement("ESAGP", "MACAS", false, false);
+		DistanceElement leg1 = testGraph.getData().getBestDistanceElement("MACAS", "MAAGA", vesselClass);
+		DistanceElement leg2 = testGraph.getData().getBestDistanceElement("MAAGA", "ESVGO", vesselClass);
+		DistanceElement leg3 = testGraph.getData().getBestDistanceElement("ESVGO", "PTLEI", vesselClass);
+		DistanceElement leg4 = testGraph.getData().getBestDistanceElement("PTLEI", "MAPTM", vesselClass);
+		DistanceElement leg5 = testGraph.getData().getBestDistanceElement("MAPTM", "ESALG", vesselClass);
+		DistanceElement leg6 = testGraph.getData().getBestDistanceElement("ESALG", "ESAGP", vesselClass);
+		DistanceElement leg7 = testGraph.getData().getBestDistanceElement("ESAGP", "DZBJA", vesselClass);
+		DistanceElement leg8 = testGraph.getData().getBestDistanceElement("DZBJA", "TNTUN", vesselClass);
+		DistanceElement leg9 = testGraph.getData().getBestDistanceElement("TNTUN", "ITGOA", vesselClass);
+		DistanceElement leg10 = testGraph.getData().getBestDistanceElement("ITGOA", "ESTAR", vesselClass);
+		DistanceElement leg11 = testGraph.getData().getBestDistanceElement("ESTAR", "ESAGP", vesselClass);
+		DistanceElement leg12 = testGraph.getData().getBestDistanceElement("ESAGP", "MACAS", vesselClass);
 		distances.add(leg1);
 		distances.add(leg2);
 		distances.add(leg3);
@@ -507,14 +509,14 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
-		DistanceElement leg20 = testGraph.getData().getDistanceElement("SYLTK", "ILHFA", false, false);
-		DistanceElement leg21 = testGraph.getData().getDistanceElement("ILHFA", "EGDAM", false, false);
-		DistanceElement leg22 = testGraph.getData().getDistanceElement("EGDAM", "EGPSD", false, false);
-		DistanceElement leg23 = testGraph.getData().getDistanceElement("EGPSD", "EGALY", false, false);
-		DistanceElement leg24 = testGraph.getData().getDistanceElement("EGALY", "EGPSD", false, false);
-		DistanceElement leg25 = testGraph.getData().getDistanceElement("EGPSD", "ILASH", false, false);
-		DistanceElement leg26 = testGraph.getData().getDistanceElement("ILASH", "TRMER", false, false);
-		DistanceElement leg27 = testGraph.getData().getDistanceElement("TRMER", "SYLTK", false, false);
+		DistanceElement leg20 = testGraph.getData().getBestDistanceElement("SYLTK", "ILHFA", vesselClass);
+		DistanceElement leg21 = testGraph.getData().getBestDistanceElement("ILHFA", "EGDAM", vesselClass);
+		DistanceElement leg22 = testGraph.getData().getBestDistanceElement("EGDAM", "EGPSD", vesselClass);
+		DistanceElement leg23 = testGraph.getData().getBestDistanceElement("EGPSD", "EGALY", vesselClass);
+		DistanceElement leg24 = testGraph.getData().getBestDistanceElement("EGALY", "EGPSD", vesselClass);
+		DistanceElement leg25 = testGraph.getData().getBestDistanceElement("EGPSD", "ILASH", vesselClass);
+		DistanceElement leg26 = testGraph.getData().getBestDistanceElement("ILASH", "TRMER", vesselClass);
+		DistanceElement leg27 = testGraph.getData().getBestDistanceElement("TRMER", "SYLTK", vesselClass);
 		distances2.add(leg20);
 		distances2.add(leg21);
 		distances2.add(leg22);
@@ -528,13 +530,13 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-		DistanceElement leg30 = testGraph.getData().getDistanceElement("ESAGP", "DZALG", false, false);
-		DistanceElement leg31 = testGraph.getData().getDistanceElement("DZALG", "DZSKI", false, false);
-		DistanceElement leg32 = testGraph.getData().getDistanceElement("DZSKI", "TRIZM", false, false);
-		DistanceElement leg33 = testGraph.getData().getDistanceElement("TRIZM", "ITSAL", false, false);
-		DistanceElement leg34 = testGraph.getData().getDistanceElement("ITSAL", "ITGOA", false, false);
-		DistanceElement leg35 = testGraph.getData().getDistanceElement("ITGOA", "ESALG", false, false);
-		DistanceElement leg36 = testGraph.getData().getDistanceElement("ESALG", "ESAGP", false, false);
+		DistanceElement leg30 = testGraph.getData().getBestDistanceElement("ESAGP", "DZALG", vesselClass);
+		DistanceElement leg31 = testGraph.getData().getBestDistanceElement("DZALG", "DZSKI", vesselClass);
+		DistanceElement leg32 = testGraph.getData().getBestDistanceElement("DZSKI", "TRIZM", vesselClass);
+		DistanceElement leg33 = testGraph.getData().getBestDistanceElement("TRIZM", "ITSAL", vesselClass);
+		DistanceElement leg34 = testGraph.getData().getBestDistanceElement("ITSAL", "ITGOA", vesselClass);
+		DistanceElement leg35 = testGraph.getData().getBestDistanceElement("ITGOA", "ESALG", vesselClass);
+		DistanceElement leg36 = testGraph.getData().getBestDistanceElement("ESALG", "ESAGP", vesselClass);
 		distances3.add(leg30);
 		distances3.add(leg31);
 		distances3.add(leg32);
@@ -546,13 +548,13 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
-		DistanceElement leg40 = testGraph.getData().getDistanceElement("TNTUN", "ITGIT", false, false);
-		DistanceElement leg41 = testGraph.getData().getDistanceElement("ITGIT", "ITTRS", false, false);
-		DistanceElement leg42 = testGraph.getData().getDistanceElement("ITTRS", "GRPIR", false, false);
-		DistanceElement leg43 = testGraph.getData().getDistanceElement("GRPIR", "TRAMB", false, false);
-		DistanceElement leg44 = testGraph.getData().getDistanceElement("TRAMB", "CYLMS", false, false);
-		DistanceElement leg45 = testGraph.getData().getDistanceElement("CYLMS", "EGPSD", false, false);
-		DistanceElement leg46 = testGraph.getData().getDistanceElement("EGPSD", "TNTUN", false, false);
+		DistanceElement leg40 = testGraph.getData().getBestDistanceElement("TNTUN", "ITGIT", vesselClass);
+		DistanceElement leg41 = testGraph.getData().getBestDistanceElement("ITGIT", "ITTRS", vesselClass);
+		DistanceElement leg42 = testGraph.getData().getBestDistanceElement("ITTRS", "GRPIR", vesselClass);
+		DistanceElement leg43 = testGraph.getData().getBestDistanceElement("GRPIR", "TRAMB", vesselClass);
+		DistanceElement leg44 = testGraph.getData().getBestDistanceElement("TRAMB", "CYLMS", vesselClass);
+		DistanceElement leg45 = testGraph.getData().getBestDistanceElement("CYLMS", "EGPSD", vesselClass);
+		DistanceElement leg46 = testGraph.getData().getBestDistanceElement("EGPSD", "TNTUN", vesselClass);
 		distances4.add(leg40);
 		distances4.add(leg41);
 		distances4.add(leg42);
@@ -564,16 +566,16 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
-		DistanceElement leg50 = testGraph.getData().getDistanceElement("LBBEY", "EGPSD", false, false);
-		DistanceElement leg51 = testGraph.getData().getDistanceElement("EGPSD", "ITGIT", false, false);
-		DistanceElement leg52 = testGraph.getData().getDistanceElement("ITGIT", "ESVLC", false, false);
-		DistanceElement leg53 = testGraph.getData().getDistanceElement("ESVLC", "ESALG", false, false);
-		DistanceElement leg54 = testGraph.getData().getDistanceElement("ESALG", "ESAGP", false, false);
-		DistanceElement leg55 = testGraph.getData().getDistanceElement("ESAGP", "MAPTM", false, false);
-		DistanceElement leg56 = testGraph.getData().getDistanceElement("MAPTM", "ESLPA", false, false);
-		DistanceElement leg57 = testGraph.getData().getDistanceElement("ESLPA", "ESBCN", false, false);
-		DistanceElement leg58 = testGraph.getData().getDistanceElement("ESBCN", "ITGOA", false, false);
-		DistanceElement leg59 = testGraph.getData().getDistanceElement("ITGOA", "LBBEY", false, false);
+		DistanceElement leg50 = testGraph.getData().getBestDistanceElement("LBBEY", "EGPSD", vesselClass);
+		DistanceElement leg51 = testGraph.getData().getBestDistanceElement("EGPSD", "ITGIT", vesselClass);
+		DistanceElement leg52 = testGraph.getData().getBestDistanceElement("ITGIT", "ESVLC", vesselClass);
+		DistanceElement leg53 = testGraph.getData().getBestDistanceElement("ESVLC", "ESALG", vesselClass);
+		DistanceElement leg54 = testGraph.getData().getBestDistanceElement("ESALG", "ESAGP", vesselClass);
+		DistanceElement leg55 = testGraph.getData().getBestDistanceElement("ESAGP", "MAPTM", vesselClass);
+		DistanceElement leg56 = testGraph.getData().getBestDistanceElement("MAPTM", "ESLPA", vesselClass);
+		DistanceElement leg57 = testGraph.getData().getBestDistanceElement("ESLPA", "ESBCN", vesselClass);
+		DistanceElement leg58 = testGraph.getData().getBestDistanceElement("ESBCN", "ITGOA", vesselClass);
+		DistanceElement leg59 = testGraph.getData().getBestDistanceElement("ITGOA", "LBBEY", vesselClass);
 		distances5.add(leg50);
 		distances5.add(leg51);
 		distances5.add(leg52);
@@ -588,9 +590,9 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances6 = new ArrayList<DistanceElement>();
-		DistanceElement leg60 = testGraph.getData().getDistanceElement("MACAS", "ESALG", false, false);
-		DistanceElement leg61 = testGraph.getData().getDistanceElement("ESALG", "DZORN", false, false);
-		DistanceElement leg62 = testGraph.getData().getDistanceElement("DZORN", "MACAS", false, false);
+		DistanceElement leg60 = testGraph.getData().getBestDistanceElement("MACAS", "ESALG", vesselClass);
+		DistanceElement leg61 = testGraph.getData().getBestDistanceElement("ESALG", "DZORN", vesselClass);
+		DistanceElement leg62 = testGraph.getData().getBestDistanceElement("DZORN", "MACAS", vesselClass);
 		distances6.add(leg60);
 		distances6.add(leg61);
 		distances6.add(leg62);
@@ -598,13 +600,13 @@ public class RunModel {
 		
 		vesselClass = testGraph.getData().getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances7 = new ArrayList<DistanceElement>();
-		DistanceElement leg70 = testGraph.getData().getDistanceElement("EGPSD", "ILASH", false, false);
-		DistanceElement leg71 = testGraph.getData().getDistanceElement("ILASH", "ITGIT", false, false);
-		DistanceElement leg72 = testGraph.getData().getDistanceElement("ITGIT", "ITGOA", false, false);
-		DistanceElement leg73 = testGraph.getData().getDistanceElement("ITGOA", "GEPTI", false, false);
-		DistanceElement leg74 = testGraph.getData().getDistanceElement("GEPTI", "UAODS", false, false);
-		DistanceElement leg75 = testGraph.getData().getDistanceElement("UAODS", "BGVAR", false, false);
-		DistanceElement leg76 = testGraph.getData().getDistanceElement("BGVAR", "EGPSD", false, false);
+		DistanceElement leg70 = testGraph.getData().getBestDistanceElement("EGPSD", "ILASH", vesselClass);
+		DistanceElement leg71 = testGraph.getData().getBestDistanceElement("ILASH", "ITGIT", vesselClass);
+		DistanceElement leg72 = testGraph.getData().getBestDistanceElement("ITGIT", "ITGOA", vesselClass);
+		DistanceElement leg73 = testGraph.getData().getBestDistanceElement("ITGOA", "GEPTI", vesselClass);
+		DistanceElement leg74 = testGraph.getData().getBestDistanceElement("GEPTI", "UAODS", vesselClass);
+		DistanceElement leg75 = testGraph.getData().getBestDistanceElement("UAODS", "BGVAR", vesselClass);
+		DistanceElement leg76 = testGraph.getData().getBestDistanceElement("BGVAR", "EGPSD", vesselClass);
 		distances7.add(leg70);
 		distances7.add(leg71);
 		distances7.add(leg72);

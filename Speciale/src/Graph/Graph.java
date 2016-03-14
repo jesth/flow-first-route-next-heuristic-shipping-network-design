@@ -62,22 +62,21 @@ public class Graph {
 	}
 
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
-		ArrayList<DistanceElement> distances = findDistances(ports);
+		ArrayList<DistanceElement> distances = findDistances(ports, vesselClass);
 		Rotation rotation = createRotation(distances, vesselClass);
 		return rotation;
 	}
 
-	private ArrayList<DistanceElement> findDistances(ArrayList<Integer> ports){
+	private ArrayList<DistanceElement> findDistances(ArrayList<Integer> ports, VesselClass vesselClass){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		for(int i = 0; i < ports.size() - 1; i++){
 			int port1 = ports.get(i);
 			int port2 = ports.get(i+1);
-			//TODO: Hardcoded - no canals.
-			distances.add(data.getDistanceElement(port1, port2, false, false));
+			distances.add(data.getBestDistanceElement(port1, port2, vesselClass));
 		}
 		int lastPort = ports.get(ports.size()-1);
 		int firstPort = ports.get(0);
-		distances.add(data.getDistanceElement(lastPort, firstPort, false, false));
+		distances.add(data.getBestDistanceElement(lastPort, firstPort, vesselClass));
 		return distances;
 	}
 
@@ -168,9 +167,8 @@ public class Graph {
 		r.incrementNoInRotation(e.getNoInRotation());
 		Node newArrNode = createRotationNode(p, r, false);
 		Node newDepNode = createRotationNode(p, r, true);
-		//TODO: Hardcoded - no canals.
-		DistanceElement newIngoing = data.getDistanceElement(fromNode.getPort(), newArrNode.getPort(), false, false);
-		DistanceElement newOutgoing = data.getDistanceElement(newDepNode.getPort(), toNode.getPort(), false, false);
+		DistanceElement newIngoing = data.getBestDistanceElement(fromNode.getPort(), newArrNode.getPort(), r.getVesselClass());
+		DistanceElement newOutgoing = data.getBestDistanceElement(newDepNode.getPort(), toNode.getPort(), r.getVesselClass());
 		createRotationEdge(r, fromNode, newArrNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation(), newIngoing);
 		Edge dwell = createRotationEdge(r, newArrNode, newDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
 		createRotationEdge(r, newDepNode, toNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+1, newOutgoing);
@@ -219,8 +217,7 @@ public class Graph {
 			System.out.println("Rotation no. " + r.getId() + " deleted. Last remaining port: " + fromNode.getPort().getUNLocode());
 
 		} else {
-			//TODO: Hardcoded - no canals.
-			DistanceElement distance = data.getDistanceElement(fromNode.getPort(), toNode.getPort(), false, false);
+			DistanceElement distance = data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), r.getVesselClass());
 			createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
 			r.calcOptimalSpeed();
 		}

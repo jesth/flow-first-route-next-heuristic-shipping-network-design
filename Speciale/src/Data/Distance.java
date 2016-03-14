@@ -109,6 +109,54 @@ public class Distance {
 		}
 	}
 	
+	public DistanceElement getBestDistanceElement(VesselClass vesselClass){
+		int costNone = getDistanceElement(false, false).getDesignSpeedCost(vesselClass);
+		int costPanama = Integer.MAX_VALUE;
+		int costSuez = Integer.MAX_VALUE;
+		int costBoth = Integer.MAX_VALUE;
+		if(suez(vesselClass)){
+			costSuez = getDistanceElement(true, false).getDesignSpeedCost(vesselClass);
+		}
+		if(panama(vesselClass)){
+			costPanama = getDistanceElement(false, true).getDesignSpeedCost(vesselClass);
+		}
+		if(suez(vesselClass) && panama(vesselClass)){
+			costBoth = getDistanceElement(true, true).getDesignSpeedCost(vesselClass);
+		}
+		int costOpt = costNone;
+		int canalOpt = 0;
+		if(costSuez < costOpt){
+			costOpt = costSuez;
+			canalOpt = 1;
+		}
+		if(costPanama < costOpt){
+			costOpt = costPanama;
+			canalOpt = 2;
+		}
+		if(costBoth < costOpt){
+			return getDistanceElement(true, true);
+		} else if(canalOpt == 2){
+			return getDistanceElement(false, true);
+		} else if(canalOpt == 1){
+			return getDistanceElement(true, false);
+		}
+		return getDistanceElement(false, false);
+	}
+	
+	public boolean suez(VesselClass vesselClass){
+		if(vesselClass.getDraft() < getDistanceElement(true, false).getDraft()){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean panama(VesselClass vesselClass){
+		if(vesselClass.getDraft() < getDistanceElement(false, true).getDraft()){
+			return true;
+		}
+		return false;
+	}
+	
 	public DistanceElement[] getDistances(){
 		return distances;
 	}
