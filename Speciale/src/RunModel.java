@@ -49,9 +49,13 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		ComputeRotations.addPorts();
+		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
+		*/
+		MulticommodityFlow.run();
+		ComputeRotations.removePorts();
 		MulticommodityFlow.run();
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());

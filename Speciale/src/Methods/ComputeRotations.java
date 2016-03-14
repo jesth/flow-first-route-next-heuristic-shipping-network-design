@@ -117,7 +117,7 @@ public class ComputeRotations {
 			for(Rotation r : graph.getResult().getRotations()){
 				for(Edge e : r.getRotationEdges()){
 					if(e.isSail()){
-						int detourCost = calcCostOfPortInsert(r, e.getDistance(), p);
+						int detourCost = calcCostOfPortInsert(r.getVesselClass(), e.getDistance(), p);
 						int profit = profitPotential - detourCost;
 						if(profit > bestProfit && vesselsAvailable(r, e, p)){
 							bestProfit = profit;
@@ -131,6 +131,35 @@ public class ComputeRotations {
 				graph.insertPort(bestRotation, bestEdge, p);
 			}
 		}
+	}
+	
+	public static void removePorts(){
+		ArrayList<Port> servicedPorts = findServicedPorts();
+		for(Port p : servicedPorts){
+			int bestProfit = 0;
+			Edge bestEdge = null;
+			int spareCapacityIn = p.findSpareCapacity(false);
+			int spareCapacityOut = p.findSpareCapacity(true);
+			for(Edge e : p.getDwellEdges()){
+				Rotation r = e.getRotation();
+				int saving = calcSavingOfPortRemoval(r, e);
+				Node fromNode = e.getFromNode();
+				Node toNode = e.getToNode();
+				int lostFFEIn = fromNode.getUnloadedFFE() + fromNode.getTransshippedFromFFE() - spareCapacityIn;
+				int lostFFEOut = toNode.getLoadedFFE() + toNode.getTransshippedToFFE() - spareCapacityOut;
+				int lostFFE = Math.max(lostFFEIn, 0) + Math.max(lostFFEOut, 0);
+				int cost = lostFFE * p.getTotalProfitPotential() / p.getTotalDemand();
+				int profit = saving - cost;
+				if(profit > bestProfit){
+					bestProfit = profit;
+					bestEdge = e;
+				}
+			}
+			if(bestProfit > 0){
+				graph.removePort(bestEdge);
+			}
+		}
+		
 	}
 
 	private static boolean vesselsAvailable(Rotation r, Edge e, Port p){
@@ -187,6 +216,16 @@ public class ComputeRotations {
 			}
 		}
 		return unservicedPorts;
+	}
+	
+	private static ArrayList<Port> findServicedPorts(){
+		ArrayList<Port> servicedPorts = new ArrayList<Port>();
+		for(Port p : graph.getData().getPorts()){
+			if(p.isActive() && !p.getDwellEdges().isEmpty() && p.getTotalDemand() > 0){
+				servicedPorts.add(p);
+			}
+		}
+		return servicedPorts;
 	}
 
 	private static ArrayList<Integer> convertAuxNodes(ArrayList<AuxNode> nodes){
@@ -360,13 +399,12 @@ public class ComputeRotations {
 				bestProfit = profit;
 			}
 		}
-		int cost = calcCostOfPortInsert(rotation, edge.getDistance(), insertPort);
+		int cost = calcCostOfPortInsert(rotation.getVesselClass(), edge.getDistance(), insertPort);
 
 		return bestProfit - cost;
 	}
 
-	public static int calcCostOfPortInsert(Rotation rotation, DistanceElement leg, Port insertPort){
-		VesselClass v = rotation.getVesselClass();
+	public static int calcCostOfPortInsert(VesselClass v, DistanceElement leg, Port insertPort){
 		int detourDays = (int) ((getDetour(leg, insertPort.getPortId()) / v.getDesignSpeed())/ 24.0);
 		int fuelSail = detourDays * (int) v.getFuelConsumptionDesign();
 		int fuelDwell = (int) v.getFuelConsumptionIdle();
@@ -376,6 +414,32 @@ public class ComputeRotations {
 
 		int cost = fuelSail + fuelDwell + TCCost + fixedCall + varCall;
 
+		return cost;
+	}
+	
+	public static int calcSavingOfPortRemoval(Rotation r, Edge dwell){
+		Port removePort = dwell.getFromNode().getPort();
+		Port prevPort = dwell.getPrevEdge().getFromNode().getPort();
+		Port nextPort = dwell.getNextEdge().getToNode().getPort();
+		if(!prevPort.equals(nextPort)){
+			DistanceElement newDist = graph.getData().getDistanceElement(prevPort, nextPort, false, false);
+			return calcCostOfPortInsert(r.getVesselClass(), newDist, removePort);
+		}
+		Edge newDwell = null;
+		for(Edge e : dwell.getNextEdge().getToNode().getOutgoingEdges()){
+			if(e.isDwell()){
+				newDwell = e;
+				break;
+			}
+		}
+		nextPort = newDwell.getFromNode().getPort();
+		if(prevPort.equals(nextPort)){
+			return r.calcCost();
+		}
+		DistanceElement newDist = graph.getData().getDistanceElement(prevPort, nextPort, false, false);
+		int cost = calcCostOfPortInsert(r.getVesselClass(), newDist, removePort);
+		newDist = graph.getData().getDistanceElement(removePort, nextPort, false, false);
+		cost += calcCostOfPortInsert(r.getVesselClass(), newDist, prevPort);
 		return cost;
 	}
 
@@ -429,7 +493,7 @@ public class ComputeRotations {
 		int postPortId = postEdge.getFromNode().getPortId();
 		DistanceElement leg = graph.getData().getDistanceElement(prePortId, postPortId, false, false);
 		Port port = graph.getData().getPort(portId);
-		cost = calcCostOfPortInsert(rotation, leg, port);
+		cost = calcCostOfPortInsert(rotation.getVesselClass(), leg, port);
 
 		return cost;
 	}

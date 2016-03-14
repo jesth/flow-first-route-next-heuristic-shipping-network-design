@@ -179,13 +179,14 @@ public class Graph {
 		r.calcOptimalSpeed();
 	}
 
-	public void removePort(Rotation r, Edge dwell){
+	public void removePort(Edge dwell){
+		Rotation r = dwell.getRotation();
 		if(!dwell.isDwell()){
 			throw new RuntimeException("Passed edge is not dwell.");
 		}
-		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId());
-		Edge ingoingEdge = dwell.getFromNode().getIngoingEdges().get(0);
-		Edge outgoingEdge = dwell.getToNode().getOutgoingEdges().get(0);
+		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
+		Edge ingoingEdge = dwell.getPrevEdge();
+		Edge outgoingEdge = dwell.getNextEdge();
 		r.decrementNoInRotation(outgoingEdge.getNoInRotation());
 		Node fromNode = dwell.getFromNode();
 		Node toNode = dwell.getToNode();
@@ -202,7 +203,7 @@ public class Graph {
 				}
 			}
 			System.out.println("Removing port " + newDwell.getFromPortUNLo() + " from rotation " + r.getId());
-			outgoingEdge = newDwell.getToNode().getOutgoingEdges().get(0);
+			outgoingEdge = newDwell.getNextEdge();
 			r.decrementNoInRotation(outgoingEdge.getNoInRotation());
 			deleteNode(newDwell.getFromNode());
 			deleteNode(newDwell.getToNode());

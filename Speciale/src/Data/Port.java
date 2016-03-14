@@ -199,4 +199,18 @@ public class Port {
 		addTotalDemand(demand);
 		addTotalProfitPotential(demand*rate);
 	}
+
+	public int findSpareCapacity(boolean outgoing) {
+		int spareCapacity = 0;
+		for(Edge e : dwellEdges){
+			if(outgoing){
+				spareCapacity += e.getNextEdge().getSpareCapacity();
+			} else {
+				System.out.println("Spare capacity for rotation " + e.getRotation().getId());
+				spareCapacity += e.getPrevEdge().getSpareCapacity();
+			}
+		}
+		System.out.println();
+		return spareCapacity;
+	}
 }

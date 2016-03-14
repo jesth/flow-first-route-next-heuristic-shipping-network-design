@@ -383,6 +383,18 @@ public class Edge {
 		}
 		return load;
 	}
+	
+	public Edge getPrevEdge(){
+		return fromNode.getPrevEdge();
+	}
+	
+	public Edge getNextEdge(){
+		return toNode.getNextEdge();
+	}
+	
+	public int getSpareCapacity(){
+		return capacity - getLoad();
+	}
 
 	public void delete(){
 		fromNode.removeOutgoingEdge(this);
