@@ -6,6 +6,7 @@ import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
 import AuxFlow.AuxRun;
 import Data.DistanceElement;
+import Data.Port;
 import Data.VesselClass;
 import Graph.Edge;
 import Graph.Graph;
