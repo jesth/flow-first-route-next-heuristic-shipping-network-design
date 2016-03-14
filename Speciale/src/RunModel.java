@@ -62,6 +62,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+		graph.saveOPLData("OPLData.dat");
 	}
 	
 	public static void testAutomatic() throws FileNotFoundException{
@@ -151,6 +153,8 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
+		
+		testGraph.saveOPLData("OPLData.dat");
 	}
 	
 	public static void testBaltic() throws FileNotFoundException{
