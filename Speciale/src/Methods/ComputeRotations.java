@@ -49,11 +49,18 @@ public class ComputeRotations {
 		DistanceElement leg2 = graph.getData().getDistanceElement(node2.getPortId(), node1.getPortId(), false, false);
 		//TODO: Port stay hardcoded at 24 hrs.
 		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed() + 2 * 24;
-		while(currentDuration < durationHours){
-			currentDuration += addBestLeg(rotationNodes, sortedEdges, vesselClass);
+		ArrayList<Port> ports = new ArrayList<Port>();
+		ports.add(graph.getPort(node1.getPortId()));
+		ports.add(graph.getPort(node2.getPortId()));
+		while(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
+			ports.add(addBestLeg(rotationNodes, sortedEdges, vesselClass));
 		}
-		ArrayList<Integer> ports = convertAuxNodes(rotationNodes);
-		return graph.createRotationFromPorts(ports, vesselClass);
+		if(calcNumberOfVessels(ports, vesselClass) > durationWeeks){
+			ports.remove(ports.size()-1);
+			rotationNodes.remove(rotationNodes.size()-1);
+		}
+		ArrayList<Integer> portsId = convertAuxNodes(rotationNodes);
+		return graph.createRotationFromPorts(portsId, vesselClass);
 	}
 	
 	private static AuxEdge getFirstUnusedEdge(ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
@@ -67,7 +74,7 @@ public class ComputeRotations {
 		return null;
 	}
 
-	private static double addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+	private static Port addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
 		AuxNode firstNode = rotationNodes.get(0);
 		AuxNode lastNode = rotationNodes.get(rotationNodes.size()-1);
 		double bestRatio = 0;
@@ -104,7 +111,8 @@ public class ComputeRotations {
 		}
 		rotationNodes.add(bestNode);
 		bestEdge.setUsedInRotation();
-		return extraDuration;
+		Port realNode = graph.getPort(bestNode.getPortId());
+		return realNode;
 	}
 	
 	public static void addPorts(){
