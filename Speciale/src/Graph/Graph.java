@@ -60,13 +60,13 @@ public class Graph {
 		result.addRotation(rotation);
 		return rotation;
 	}
-	
+
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
 		ArrayList<DistanceElement> distances = findDistances(ports);
 		Rotation rotation = createRotation(distances, vesselClass);
 		return rotation;
 	}
-	
+
 	private ArrayList<DistanceElement> findDistances(ArrayList<Integer> ports){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		for(int i = 0; i < ports.size() - 1; i++){
@@ -85,14 +85,14 @@ public class Graph {
 		ArrayList<Node> rotationNodes = rotation.getRotationNodes();
 		createTransshipmentEdges(rotationNodes, rotation);
 	}
-	
+
 	private void createTransshipmentEdges(Edge e){
 		ArrayList<Node> rotationNodes = new ArrayList<Node>();
 		rotationNodes.add(e.getFromNode());
 		rotationNodes.add(e.getToNode());
 		createTransshipmentEdges(rotationNodes, e.getRotation());
 	}
-	
+
 	private void createTransshipmentEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotationNodes){
 			Port p = i.getPort();
@@ -158,7 +158,7 @@ public class Graph {
 		edges.add(newEdge);
 		return newEdge;
 	}
-	
+
 
 	public void insertPort(Rotation r, Edge e, Port p) {
 		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
@@ -177,27 +177,73 @@ public class Graph {
 		createTransshipmentEdges(dwell);
 		createLoadUnloadEdges(dwell);
 		r.calcOptimalSpeed();
-		System.out.println("For old outgoing node at port " + fromNode.getPort().getUNLocode() + ", the following edges are present:");
-		for(Edge edge : fromNode.getOutgoingEdges()){
-			if(edge.isLoadUnload()){
-				System.out.println("Load/Unload.");
-			}
-			if(edge.isTransshipment()){
-				System.out.println("Transshipment from rotation " + edge.getFromNode().getRotation().getId() + " to rotation " + edge.getToNode().getRotation().getId());
-			}
-			if(edge.isSail()){
-				System.out.println("Sail edge from " + edge.getFromPortUNLo() + " to " + edge.getToPortUNLo() + " on rotation " + edge.getRotation().getId());
-			}
-			if(edge.isDwell()){
-				System.out.println("Dwell");
-			}
-		}
-		System.out.println();
 	}
-	
+
+	public void removePort(Edge dwell){
+		Rotation r = dwell.getRotation();
+		if(!dwell.isDwell()){
+			throw new RuntimeException("Passed edge is not dwell.");
+		}
+		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
+		Edge ingoingEdge = dwell.getPrevEdge();
+		Edge outgoingEdge = dwell.getNextEdge();
+		r.decrementNoInRotation(outgoingEdge.getNoInRotation());
+		Node fromNode = dwell.getFromNode();
+		Node toNode = dwell.getToNode();
+		deleteNode(fromNode);
+		deleteNode(toNode);
+		Port prevPort = ingoingEdge.getFromNode().getPort();
+		Port nextPort = outgoingEdge.getToNode().getPort();
+		if(prevPort.equals(nextPort)){
+			Edge newDwell = null;
+			for(Edge e : outgoingEdge.getToNode().getOutgoingEdges()){
+				if(e.isDwell()){
+					newDwell = e;
+					break;
+				}
+			}
+			System.out.println("Removing port " + newDwell.getFromPortUNLo() + " from rotation " + r.getId());
+			outgoingEdge = newDwell.getNextEdge();
+			r.decrementNoInRotation(outgoingEdge.getNoInRotation());
+			deleteNode(newDwell.getFromNode());
+			deleteNode(newDwell.getToNode());
+			nextPort = outgoingEdge.getToNode().getPort();
+		}
+		fromNode = ingoingEdge.getFromNode();
+		toNode = outgoingEdge.getToNode();
+		if(fromNode.getPort().equals(toNode.getPort())){
+			deleteNode(fromNode);
+			deleteNode(toNode);
+			r.delete();
+			result.removeRotation(r);
+			System.out.println("Rotation no. " + r.getId() + " deleted. Last remaining port: " + fromNode.getPort().getUNLocode());
+
+		} else {
+			//TODO: Hardcoded - no canals.
+			DistanceElement distance = data.getDistanceElement(fromNode.getPort(), toNode.getPort(), false, false);
+			createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
+			r.calcOptimalSpeed();
+		}
+	}
+
 	public void deleteEdge(Edge e){
 		e.delete();
 		edges.remove(e);
+	}
+
+	public void deleteNode(Node i){
+		ArrayList<Edge> ingoingEdges = i.getIngoingEdges();
+		for(int j = ingoingEdges.size()-1; j >= 0; j--){
+			Edge e = ingoingEdges.remove(j);
+			deleteEdge(e);
+		}
+		ArrayList<Edge> outgoingEdges = i.getOutgoingEdges();
+		for(int j = outgoingEdges.size()-1; j >= 0; j--){
+			Edge e = outgoingEdges.remove(j);
+			deleteEdge(e);
+		}
+		i.getRotation().getRotationNodes().remove(i);
+		nodes.remove(i);
 	}
 
 	private void checkDistances(ArrayList<DistanceElement> distances, VesselClass vesselClass){
@@ -229,7 +275,7 @@ public class Graph {
 	private void createLoadUnloadEdges(Rotation rotation){
 		createLoadUnloadEdges(rotation.getRotationNodes(), rotation);
 	}
-	
+
 	private void createLoadUnloadEdges(Edge edge){
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		nodes.add(edge.getFromNode());
@@ -237,11 +283,10 @@ public class Graph {
 		System.out.println("No of edges to create load/unload for: " + nodes.size());
 		createLoadUnloadEdges(nodes, edge.getRotation());
 	}
-	
+
 	private void createLoadUnloadEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotationNodes){
 			if(i.isArrival()){
-				System.out.println("Creating unload edge");
 				createLoadUnloadEdge(i, i.getPort().getToCentroidNode());
 			} else if(i.isDeparture()){
 				createLoadUnloadEdge(i.getPort().getFromCentroidNode(), i);
@@ -353,11 +398,11 @@ public class Graph {
 	public Data getData() {
 		return data;
 	}
-	
+
 	public Port getPort(int portId){
 		return data.getPort(portId);
 	}
-	
+
 	public Result getResult(){
 		return result;
 	}

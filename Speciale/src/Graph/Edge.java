@@ -27,7 +27,7 @@ public class Edge {
 	private ArrayList<Route> routes;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
-	
+
 	public Edge(){
 	}
 
@@ -114,7 +114,7 @@ public class Edge {
 		routes = new ArrayList<Route>();
 		this.distance = null;
 	}
-	
+
 	/**
 	 * @return The id.
 	 */
@@ -148,7 +148,7 @@ public class Edge {
 			this.lagrangeStart = lagrangeInput;
 		}
 	}
-	
+
 	public void resetLagrange(){
 		int lowestProfit = Integer.MAX_VALUE;
 		for(Route r : getRoutes()){
@@ -160,10 +160,10 @@ public class Edge {
 			lowestProfit = -1001;
 			throw new RuntimeException("lowestProfit == Integer.MAX_VALUE");
 		}
-			
+
 		addLagrange(lowestProfit + 1000);
 	}
-	
+
 	public void lagrangeAdjustment(int iteration){
 		if(capacity < getLoad()){
 			// if we initially didn't use the edge we set the lagrangeStart to -1,
@@ -177,7 +177,7 @@ public class Edge {
 			//					System.out.println();
 		} else if(capacity > getLoad()){
 			adjustLagrange(iteration, false);
-//			System.out.println(this.simplePrint());
+			//			System.out.println(this.simplePrint());
 			BellmanFord.relaxEdge(this);
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
@@ -185,10 +185,10 @@ public class Edge {
 			System.out.println("Nothing to adjust");
 		}
 	}
-	
+
 	public void adjustLagrange(int iteration, boolean overflow){
-//		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
-//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
+		//		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
+		//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(this.sail){
 			if(overflow){
 				this.lagrange = Math.max(this.lagrange + 50, 1);
@@ -205,7 +205,7 @@ public class Edge {
 	public int getLagrange(){
 		return lagrange;
 	}
-	
+
 	/** Sets the Lagrange cost to the specified input without conversion.
 	 * @param lagrange - the Lagrange cost to be used.
 	 */
@@ -332,7 +332,7 @@ public class Edge {
 	public void clearRoutes(){
 		routes.clear();
 	}
-	
+
 	/**
 	 * @param removeRoute - the route to be removed from the routes array.
 	 */
@@ -353,11 +353,11 @@ public class Edge {
 	public ArrayList<Route> getRoutes(){
 		return routes;
 	}
-	
+
 	public void incrementNoInRotation(){
 		noInRotation++;
 	}
-	
+
 	public void decrementNoInRotation(){
 		noInRotation--;
 	}
@@ -384,13 +384,29 @@ public class Edge {
 		return load;
 	}
 	
+	public Edge getPrevEdge(){
+		return fromNode.getPrevEdge();
+	}
+	
+	public Edge getNextEdge(){
+		return toNode.getNextEdge();
+	}
+	
+	public int getSpareCapacity(){
+		return capacity - getLoad();
+	}
+
 	public void delete(){
 		fromNode.removeOutgoingEdge(this);
 		toNode.removeIngoingEdge(this);
-		rotation.getRotationEdges().remove(this);
-		rotation.subtractDistance(this.distance.getDistance());
+		if(this.isDwell() || this.isSail()){
+			rotation.getRotationEdges().remove(this);
+			if(this.isSail()){
+				rotation.subtractDistance(this.distance.getDistance());
+			}
+		}
 	}
-	
+
 	/**
 	 * @return A simple print of the edge.
 	 */
@@ -408,7 +424,7 @@ public class Edge {
 		} else {
 			str+="??????";
 		}
-//		str +=  " with load: " + load + " and capacity: " + capacity;
+		//		str +=  " with load: " + load + " and capacity: " + capacity;
 		return str;
 	}
 

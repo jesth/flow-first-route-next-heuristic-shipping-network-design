@@ -219,11 +219,34 @@ public class Node {
 		return ingoingEdges;
 	}
 	
+	public Edge getPrevEdge(){
+		if(ingoingEdges.size() != 1){
+			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+			throw new RuntimeException("More than one or no ingoing edge.");
+		}
+		return ingoingEdges.get(0);
+	}
+	
+	public Node getPrevNode(){
+		return getPrevEdge().getFromNode();
+	}
+	
 	/**
 	 * @return A list of all outgoing edges.
 	 */
 	public ArrayList<Edge> getOutgoingEdges() {
 		return outgoingEdges;
+	}
+	
+	public Edge getNextEdge(){
+		if(outgoingEdges.size() != 1){
+			throw new RuntimeException("More than one outgoing edge.");
+		}
+		return outgoingEdges.get(0);
+	}
+	
+	public Node getNextNode(){
+		return getNextEdge().getToNode();
 	}
 	
 	/**
@@ -245,6 +268,46 @@ public class Node {
 		outgoingEdges.remove(e);
 	}
 	
+	public int getLoadedFFE(){
+		int load = 0;
+		for(Edge e : ingoingEdges){
+			if(e.isLoadUnload()){
+				load += e.getLoad();
+			}
+		}
+		return load;
+	}
+	
+	public int getTransshippedToFFE(){
+		int transshippedTo = 0;
+		for(Edge e : ingoingEdges){
+			if(e.isTransshipment()){
+				transshippedTo += e.getLoad();
+			}
+		}
+		return transshippedTo;
+	}
+	
+	public int getUnloadedFFE(){
+		int unload = 0;
+		for(Edge e : outgoingEdges){
+			if(e.isLoadUnload()){
+				unload += e.getLoad();
+			}
+		}
+		return unload;
+	}
+	
+	public int getTransshippedFromFFE(){
+		int transshippedFrom = 0;
+		for(Edge e : outgoingEdges){
+			if(e.isTransshipment()){
+				transshippedFrom += e.getLoad();
+			}
+		}
+		return transshippedFrom;
+	}
+
 	public static int getNoOfCentroids() {
 		return noOfCentroids;
 	}
@@ -263,5 +326,6 @@ public class Node {
 		str += "at port " + port.getUNLocode();
 		return str;
 	}
+
 	
 }

@@ -8,6 +8,7 @@ import AuxFlow.AuxRun;
 import Data.DistanceElement;
 import Data.Port;
 import Data.VesselClass;
+import Graph.Edge;
 import Graph.Graph;
 import Methods.ComputeRotations;
 import Methods.MulticommodityFlow;
@@ -43,18 +44,19 @@ public class RunModel {
 		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
 		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
 		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
-		Rotation r1 = ComputeRotations.createAuxFlowRotation(4, sortedEdges, panamax1200);
-		ArrayList<String> portString = new ArrayList<String>(r1.getPorts().size());
-		for(Port p : r1.getPorts()){
-			portString.add(p.getName());
-		}
-		RuneVisualization.makeVisualization(portString);
-		
-//		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
-//		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
-//		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
-//		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
-//		ComputeRotations.addPorts();
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
+		ComputeRotations.addPorts();
+		/*
+		Rotation optRotation = graph.getResult().getRotations().get(0);
+		Edge remove = optRotation.getRotationEdges().get(14);
+		graph.removePort(optRotation, remove);
+		*/
+		MulticommodityFlow.run();
+		ComputeRotations.removePorts();
 		MulticommodityFlow.run();
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
