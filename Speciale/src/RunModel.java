@@ -16,7 +16,6 @@ import Results.Result;
 import Results.Rotation;
 
 public class RunModel {
-
 	public static void main(String[] args) throws FileNotFoundException {
 		
 //		testBaltic();
@@ -49,7 +48,9 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
+		
 		ComputeRotations.addPorts();
+<<<<<<< HEAD
 		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
 		for(Port p : r.getPorts()){
 			rotationPorts.add(p.getUNLocode());
@@ -60,9 +61,12 @@ public class RunModel {
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
 		*/
+=======
+>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 		MulticommodityFlow.run();
 //		ComputeRotations.removePorts();
 		MulticommodityFlow.run();
+<<<<<<< HEAD
 //		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 //		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 //		System.out.println();
@@ -70,6 +74,20 @@ public class RunModel {
 //		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 //		
 //		graph.saveOPLData("OPLData.dat");
+=======
+		ComputeRotations.removePorts();
+		MulticommodityFlow.run();	
+		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+		
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+		graph.saveOPLData("OPLData.dat");
+>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 	}
 	
 	/*

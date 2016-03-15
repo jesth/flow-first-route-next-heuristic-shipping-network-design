@@ -181,9 +181,7 @@ public class Edge {
 			BellmanFord.relaxEdge(this);
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
-		} else {
-			System.out.println("Nothing to adjust");
-		}
+		} 
 	}
 
 	public void adjustLagrange(int iteration, boolean overflow){
@@ -403,6 +401,9 @@ public class Edge {
 			rotation.getRotationEdges().remove(this);
 			if(this.isSail()){
 				rotation.subtractDistance(this.distance.getDistance());
+			}
+			if(this.isDwell()){
+				fromNode.getPort().removeDwellEdge(this);
 			}
 		}
 	}

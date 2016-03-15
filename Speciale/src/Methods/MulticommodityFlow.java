@@ -46,9 +46,6 @@ public class MulticommodityFlow {
 			//			System.out.println();
 			BellmanFord.run();
 			boolean validFlow = findRepairFlow();
-			if(validFlow){
-				System.out.println("Flow is valid");
-			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
 //			int lowerBoundFlow = Result.getFlowProfit(true);
 			if(validFlow && flowProfit > bestFlowProfit){

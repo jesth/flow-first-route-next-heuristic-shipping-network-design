@@ -145,9 +145,11 @@ public class ComputeRotations {
 		for(Port p : servicedPorts){
 			int bestProfit = 0;
 			Edge bestEdge = null;
-			int spareCapacityIn = p.findSpareCapacity(false);
-			int spareCapacityOut = p.findSpareCapacity(true);
+			int totalSpareCapacityIn = p.findSpareCapacity(false);
+			int totalSpareCapacityOut = p.findSpareCapacity(true);
 			for(Edge e : p.getDwellEdges()){
+				int spareCapacityIn = totalSpareCapacityIn - e.getPrevEdge().getSpareCapacity();
+				int spareCapacityOut = totalSpareCapacityOut - e.getNextEdge().getSpareCapacity();
 				Rotation r = e.getRotation();
 				int saving = calcSavingOfPortRemoval(r, e);
 				Node fromNode = e.getFromNode();
@@ -157,6 +159,7 @@ public class ComputeRotations {
 				int lostFFE = Math.max(lostFFEIn, 0) + Math.max(lostFFEOut, 0);
 				int cost = lostFFE * p.getTotalProfitPotential() / p.getTotalDemand();
 				int profit = saving - cost;
+				System.out.println("Lost turnover of removing " + p.getUNLocode() + " from rotation " + e.getRotation().getId() + " is " + cost + " and operational saving " + saving);
 				if(profit > bestProfit){
 					bestProfit = profit;
 					bestEdge = e;

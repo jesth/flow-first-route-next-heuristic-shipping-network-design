@@ -15,6 +15,8 @@ import Results.Result;
 import Results.Rotation;
 
 public class Graph {
+	public static final double DOUBLE_TOLERANCE = 0.0000000001;
+	
 	private ArrayList<Node> nodes;
 	private ArrayList<Edge> edges;
 	private Data data;
@@ -192,7 +194,7 @@ public class Graph {
 		deleteNode(toNode);
 		Port prevPort = ingoingEdge.getFromNode().getPort();
 		Port nextPort = outgoingEdge.getToNode().getPort();
-		if(prevPort.equals(nextPort)){
+		if(prevPort.equals(nextPort) && r.getNoOfPortStays() > 1){
 			Edge newDwell = null;
 			for(Edge e : outgoingEdge.getToNode().getOutgoingEdges()){
 				if(e.isDwell()){
@@ -200,7 +202,6 @@ public class Graph {
 					break;
 				}
 			}
-			System.out.println("Removing port " + newDwell.getFromPortUNLo() + " from rotation " + r.getId());
 			outgoingEdge = newDwell.getNextEdge();
 			r.decrementNoInRotation(outgoingEdge.getNoInRotation());
 			deleteNode(newDwell.getFromNode());
@@ -210,11 +211,11 @@ public class Graph {
 		fromNode = ingoingEdge.getFromNode();
 		toNode = outgoingEdge.getToNode();
 		if(fromNode.getPort().equals(toNode.getPort())){
+			System.err.println("Rotation dying");
 			deleteNode(fromNode);
 			deleteNode(toNode);
 			r.delete();
 			result.removeRotation(r);
-			System.out.println("Rotation no. " + r.getId() + " deleted. Last remaining port: " + fromNode.getPort().getUNLocode());
 
 		} else {
 			DistanceElement distance = data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), r.getVesselClass());
@@ -240,7 +241,17 @@ public class Graph {
 			deleteEdge(e);
 		}
 		i.getRotation().getRotationNodes().remove(i);
+		decrementNodeIds(i.getId());
 		nodes.remove(i);
+	}
+	
+	private void decrementNodeIds(int id){
+		for(Node i : nodes){
+			if(i.getId() > id){
+				i.decrementId();
+			}
+		}
+		Node.decrementIdCounter();
 	}
 
 	private void checkDistances(ArrayList<DistanceElement> distances, VesselClass vesselClass){
@@ -277,7 +288,6 @@ public class Graph {
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		nodes.add(edge.getFromNode());
 		nodes.add(edge.getToNode());
-		System.out.println("No of edges to create load/unload for: " + nodes.size());
 		createLoadUnloadEdges(nodes, edge.getRotation());
 	}
 
