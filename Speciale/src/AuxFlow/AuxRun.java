@@ -27,6 +27,7 @@ public class AuxRun {
 //			System.out.println("Running iteration " + i);
 			AuxDijkstra.run();
 			AuxDijkstra.convert(iterations);
+			System.out.println("AuxDijkstra iteration " + i + " done");
 		}
 //		for(AuxEdge e : graph.getEdges()){
 //			if(e.getSumLoad() > 1 || e.isRotation()){

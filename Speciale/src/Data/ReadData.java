@@ -62,7 +62,8 @@ public class ReadData {
 			String destinationUNLo = scanner.next();
 			Port destination = ports.get(destinationUNLo);
 			String textIn = scanner.next();
-			textIn = textIn.replaceAll("\\s+","");	
+			textIn = textIn.replaceAll("\\s+","");
+			textIn = textIn.replace(".", "");
 			int demand = Integer.parseInt(textIn);	
 			textIn = scanner.next();
 			int rate = Integer.parseInt(textIn);	

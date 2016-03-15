@@ -27,7 +27,7 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 		testAux();
-		
+//		testWorldSmallAuto();
 //		testMedManual2();
 		
 	}
@@ -44,27 +44,32 @@ public class RunModel {
 		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
 		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
 		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
-		ComputeRotations.createAuxFlowRotation(4, sortedEdges, panamax1200);
+		Rotation r = ComputeRotations.createAuxFlowRotation(4, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		ComputeRotations.addPorts();
+		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
+		for(Port p : r.getPorts()){
+			rotationPorts.add(p.getUNLocode());
+		}
+		RuneVisualization.makeVisualization(rotationPorts);
 		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
 		*/
 		MulticommodityFlow.run();
-		ComputeRotations.removePorts();
+//		ComputeRotations.removePorts();
 		MulticommodityFlow.run();
-		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
-		System.out.println();
-		System.out.println("Objective " + graph.getResult().getObjective());
-		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
-		graph.saveOPLData("OPLData.dat");
+//		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+//		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+//		System.out.println();
+//		System.out.println("Objective " + graph.getResult().getObjective());
+//		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+//		
+//		graph.saveOPLData("OPLData.dat");
 	}
 	
 	/*
@@ -629,6 +634,74 @@ public class RunModel {
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
 		testGraph.saveOPLData("OPLData.dat");
+	}
+	
+	public static void testWorldSmallAuto()throws FileNotFoundException{
+		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
+		initialize(graph);
+		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
+		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
+		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
+		VesselClass panamax2400 = graph.getData().getVesselClasses().get(3);
+		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
+		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, postPanamax);
+//		ComputeRotations.createAuxFlowRotation(6, sortedEdges, postPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
+		
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
+		
+		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+		ComputeRotations.addPorts();
+//		ComputeRotations.removePorts();
+		MulticommodityFlow.run();
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+		graph.saveOPLData("OPLData.dat");
+		
 	}
 
 }
