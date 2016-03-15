@@ -222,6 +222,7 @@ public class Node {
 	public Edge getPrevEdge(){
 		if(ingoingEdges.size() != 1){
 			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+			System.out.println("Rotation id " + rotation.getId());
 			throw new RuntimeException("More than one or no ingoing edge.");
 		}
 		return ingoingEdges.get(0);
@@ -240,7 +241,9 @@ public class Node {
 	
 	public Edge getNextEdge(){
 		if(outgoingEdges.size() != 1){
-			throw new RuntimeException("More than one outgoing edge.");
+			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+			System.out.println("Rotation id " + rotation.getId());
+			throw new RuntimeException("More than one or no outgoing edge.");
 		}
 		return outgoingEdges.get(0);
 	}
@@ -310,6 +313,14 @@ public class Node {
 
 	public static int getNoOfCentroids() {
 		return noOfCentroids;
+	}
+	
+	public void decrementId(){
+		id--;
+	}
+	
+	public static void decrementIdCounter(){
+		idCounter.getAndDecrement();
 	}
 	
 	public String simplePrint(){

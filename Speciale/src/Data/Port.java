@@ -175,6 +175,10 @@ public class Port {
 		this.dwellEdges.add(dwellEdge);
 	}
 	
+	public void removeDwellEdge(Edge dwellEdge){
+		this.dwellEdges.remove(dwellEdge);
+	}
+	
 	public ArrayList<Edge> getDwellEdges(){
 		return dwellEdges;
 	}
@@ -206,11 +210,9 @@ public class Port {
 			if(outgoing){
 				spareCapacity += e.getNextEdge().getSpareCapacity();
 			} else {
-				System.out.println("Spare capacity for rotation " + e.getRotation().getId());
 				spareCapacity += e.getPrevEdge().getSpareCapacity();
 			}
 		}
-		System.out.println();
 		return spareCapacity;
 	}
 }

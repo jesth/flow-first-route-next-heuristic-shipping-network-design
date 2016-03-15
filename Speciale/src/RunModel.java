@@ -16,7 +16,6 @@ import Results.Result;
 import Results.Rotation;
 
 public class RunModel {
-
 	public static void main(String[] args) throws FileNotFoundException {
 		
 //		testBaltic();
@@ -49,15 +48,16 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
+		
 		ComputeRotations.addPorts();
-		/*
-		Rotation optRotation = graph.getResult().getRotations().get(0);
-		Edge remove = optRotation.getRotationEdges().get(14);
-		graph.removePort(optRotation, remove);
-		*/
 		MulticommodityFlow.run();
 		ComputeRotations.removePorts();
 		MulticommodityFlow.run();
+		ComputeRotations.removePorts();
+		MulticommodityFlow.run();	
+		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+		
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();

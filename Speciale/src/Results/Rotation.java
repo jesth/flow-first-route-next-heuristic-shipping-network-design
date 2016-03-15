@@ -4,8 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import Data.Port;
 import Data.VesselClass;
-import Graph.Edge;
-import Graph.Node;
+import Graph.*;
 
 public class Rotation {
 	private int id;
@@ -57,6 +56,7 @@ public class Rotation {
 				}
 			}
 			setSailTimes();
+			setDwellTimes();
 		}
 	}
 
@@ -78,13 +78,14 @@ public class Rotation {
 		double travelTime = 0;
 		int numDwells = 0;
 		for(Edge e : rotationEdges){
-			travelTime += e.getTravelTime();
 			if(e.isDwell()){
+				e.setTravelTime(24.0);
 				numDwells++;
 			}
+			travelTime += e.getTravelTime();
 		}
-		double diffFromWeek = 168.0*noOfVessels - travelTime;
-		if(diffFromWeek < 0){
+		double diffFromWeek = 168.0 * noOfVessels - travelTime;
+		if(diffFromWeek < 0 - Graph.DOUBLE_TOLERANCE){
 			throw new RuntimeException("invalid dwell times");
 		}
 		double extraDwellTime = diffFromWeek / numDwells;
@@ -254,7 +255,7 @@ public class Rotation {
 	public int getNoOfPortStays(){
 		int counter = 0;
 		for(Edge e : rotationEdges){
-			if(e.getToNode().isArrival()){
+			if(e.isDwell()){
 				counter++;
 			}
 		}
