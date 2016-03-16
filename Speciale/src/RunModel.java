@@ -50,31 +50,19 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		
 		ComputeRotations.addPorts();
-<<<<<<< HEAD
 		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
 		for(Port p : r.getPorts()){
 			rotationPorts.add(p.getUNLocode());
 		}
-		RuneVisualization.makeVisualization(rotationPorts);
+//		RuneVisualization.makeVisualization(rotationPorts);
 		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
 		*/
-=======
->>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 		MulticommodityFlow.run();
 //		ComputeRotations.removePorts();
-		MulticommodityFlow.run();
-<<<<<<< HEAD
-//		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
-//		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
-//		System.out.println();
-//		System.out.println("Objective " + graph.getResult().getObjective());
-//		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-//		
-//		graph.saveOPLData("OPLData.dat");
-=======
+//		MulticommodityFlow.run();
 		ComputeRotations.removePorts();
 		MulticommodityFlow.run();	
 		ComputeRotations.addPorts();
@@ -87,7 +75,6 @@ public class RunModel {
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
 		graph.saveOPLData("OPLData.dat");
->>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 	}
 	
 	/*
