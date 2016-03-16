@@ -65,7 +65,7 @@ public class ComputeRotations {
 		for(AuxEdge e : sortedEdges){
 			Port fromPort = graph.getPort(e.getFromNode().getPortId());
 			Port toPort = graph.getPort(e.getToNode().getPortId());
-			if(!e.isUsedInRotation() && fromPort.getDraft() >= vesselClass.getDraft() && toPort.getDraft() >= vesselClass.getDraft()){
+			if(!e.isUsedInRotation() && fromPort.getDraft() >= vesselClass.getDraft() && toPort.getDraft() >= vesselClass.getDraft() && fromPort.isActive() && toPort.isActive()){
 				ports.add(fromPort);
 				ports.add(toPort);
 				if(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
@@ -86,7 +86,7 @@ public class ComputeRotations {
 		//		double extraDuration = 0;
 		for(AuxEdge e : firstNode.getIngoingEdges()){
 			AuxNode newNode = e.getFromNode();
-			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
+			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -100,7 +100,7 @@ public class ComputeRotations {
 		}
 		for(AuxEdge e : lastNode.getOutgoingEdges()){
 			AuxNode newNode = e.getToNode();
-			if(!e.isUsedInRotation() && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
+			if(!e.isUsedInRotation() && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;

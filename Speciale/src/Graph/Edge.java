@@ -27,6 +27,7 @@ public class Edge {
 	private ArrayList<Route> routes;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
+	private int[] lagrangeValues = new int[100];
 
 	public Edge(){
 	}
@@ -195,6 +196,7 @@ public class Edge {
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
+		lagrangeValues[iteration] = this.lagrange;
 	}
 
 	/**
@@ -308,6 +310,10 @@ public class Edge {
 	 */
 	public Rotation getRotation(){
 		return this.rotation;
+	}
+	
+	public int[] getLagrangeValues(){
+		return lagrangeValues;
 	}
 
 	/**
