@@ -36,18 +36,16 @@ public class ComputeRotations {
 	}
 
 	public static Rotation createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
-		int durationHours = (durationWeeks-1) * 7 * 24;
 		ArrayList<AuxNode> rotationNodes = new ArrayList<AuxNode>();
-		AuxEdge firstEdge = getFirstUnusedEdge(sortedEdges, vesselClass);
+		AuxEdge firstEdge = getFirstUnusedEdge(durationWeeks, sortedEdges, vesselClass);
 		firstEdge.setUsedInRotation();
 		AuxNode node1 = firstEdge.getFromNode();
 		AuxNode node2 = firstEdge.getToNode();
 		rotationNodes.add(node1);
 		rotationNodes.add(node2);
-		DistanceElement leg1 = graph.getData().getBestDistanceElement(node1.getPortId(), node2.getPortId(), vesselClass);
-		DistanceElement leg2 = graph.getData().getBestDistanceElement(node2.getPortId(), node1.getPortId(), vesselClass);
+//		DistanceElement leg1 = graph.getData().getBestDistanceElement(node1.getPortId(), node2.getPortId(), vesselClass);
+//		DistanceElement leg2 = graph.getData().getBestDistanceElement(node2.getPortId(), node1.getPortId(), vesselClass);
 		//TODO: Port stay hardcoded at 24 hrs.
-		double currentDuration = (leg1.getDistance() + leg2.getDistance()) / vesselClass.getDesignSpeed() + 2 * 24;
 		ArrayList<Port> ports = new ArrayList<Port>();
 		ports.add(graph.getPort(node1.getPortId()));
 		ports.add(graph.getPort(node2.getPortId()));
@@ -62,15 +60,21 @@ public class ComputeRotations {
 		return graph.createRotationFromPorts(portsId, vesselClass);
 	}
 
-	private static AuxEdge getFirstUnusedEdge(ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+	private static AuxEdge getFirstUnusedEdge(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+		ArrayList<Port> ports = new ArrayList<Port>();
 		for(AuxEdge e : sortedEdges){
 			Port fromPort = graph.getPort(e.getFromNode().getPortId());
 			Port toPort = graph.getPort(e.getToNode().getPortId());
 			if(!e.isUsedInRotation() && fromPort.getDraft() >= vesselClass.getDraft() && toPort.getDraft() >= vesselClass.getDraft()){
-				return e;
+				ports.add(fromPort);
+				ports.add(toPort);
+				if(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
+					return e;
+				}
+				ports.clear();
 			}
 		}
-		return null;
+		throw new RuntimeException("No ports could be added to the rotation without exceeding the time limit.");
 	}
 
 	private static Port addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
@@ -79,7 +83,7 @@ public class ComputeRotations {
 		double bestRatio = 0;
 		AuxNode bestNode = null;
 		AuxEdge bestEdge = null;
-		double extraDuration = 0;
+		//		double extraDuration = 0;
 		for(AuxEdge e : firstNode.getIngoingEdges()){
 			AuxNode newNode = e.getFromNode();
 			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft()){
@@ -90,7 +94,7 @@ public class ComputeRotations {
 					bestRatio = ratio;
 					bestNode = newNode;
 					bestEdge = e;
-					extraDuration = detourTime;
+					//					extraDuration = detourTime;
 				}
 			}
 		}
@@ -104,7 +108,7 @@ public class ComputeRotations {
 					bestRatio = ratio;
 					bestNode = newNode;
 					bestEdge = e;
-					extraDuration = detourTime;
+					//					extraDuration = detourTime;
 				}
 			}
 		}
@@ -308,7 +312,7 @@ public class ComputeRotations {
 		rotation.calcOptimalSpeed();
 
 	}
-	*/
+	 */
 
 	public static ArrayList<Edge> findPotentialEdges(Rotation rotation, double maxLoadFactor){
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -417,11 +421,11 @@ public class ComputeRotations {
 
 		return bestProfit - cost;
 	}
-	*/
+	 */
 
 	public static int calcCostOfPortInsert(VesselClass v, DistanceElement leg, Port insertPort){
 		int prevCost = leg.getDesignSpeedCost(v);
-		
+
 		DistanceElement newLeg1 = graph.getData().getBestDistanceElement(leg.getOrigin(), insertPort, v);
 		DistanceElement newLeg2 = graph.getData().getBestDistanceElement(insertPort, leg.getDestination(), v);
 		int newLegCost = newLeg1.getDesignSpeedCost(v) + newLeg2.getDesignSpeedCost(v);
@@ -466,7 +470,7 @@ public class ComputeRotations {
 		return (detour / currLength);
 	}
 	 */
-	
+
 	public static int getDetour(DistanceElement currentLeg, int addPortId, VesselClass vesselClass){
 		int port1 = currentLeg.getOrigin().getPortId();
 		int port2 = addPortId;
@@ -477,14 +481,14 @@ public class ComputeRotations {
 		int extraDist = leg1.getDistance() + leg2.getDistance() - prevLeg.getDistance();
 		return extraDist;
 	}
-	
+
 	public static double getDetourTime(int fromPortId, int toPortId, int addPortId, VesselClass vesselClass){
 		DistanceElement prevLeg = graph.getData().getBestDistanceElement(fromPortId, toPortId, vesselClass);
 		double extraDist = getDetour(prevLeg, addPortId, vesselClass);
 		double extraTime = extraDist / vesselClass.getDesignSpeed() + 24;
 		return extraTime;
 	}
-	
+
 
 	public static double costOfCallingPort(Rotation rotation, int portId){
 		double cost = 0;

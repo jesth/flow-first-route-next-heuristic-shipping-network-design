@@ -25,14 +25,14 @@ public class RunModel {
 //		testMedManual();
 //		testMed();
 //		saveAux();
-		testAux();
-//		testWorldSmallAuto();
+//		testAux();
+		testWorldSmallAuto();
 //		testMedManual2();
 		
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+		Graph testGraph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
 		AuxRun.initialize(testGraph.getData(), 10);
 	}
 	
@@ -654,13 +654,13 @@ public class RunModel {
 		
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
 		
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, postPanamax);
-//		ComputeRotations.createAuxFlowRotation(6, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, postPanamax);
 		
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
