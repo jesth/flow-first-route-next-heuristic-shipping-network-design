@@ -51,11 +51,11 @@ public class Edge {
 		this.id = idCounter.getAndIncrement();
 		this.fromNode = fromNode;
 		this.toNode = toNode;
-		this.cost = cost;
 		this.realCost = cost;
+		this.cost = cost;
 		this.lagrange = 0;
 		//TODO: Hardcoded lagrangeStep.
-		this.lagrangeStep = 64;
+		this.lagrangeStep = 100;
 		this.capacity = capacity;
 		this.omission = false;
 		this.sail = false;	
@@ -199,7 +199,7 @@ public class Edge {
 		//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(this.sail){
 			if(overflow){
-				this.lagrange = Math.max(this.lagrange + 2, 1);
+				this.lagrange = Math.max(this.lagrange + lagrangeStep, 1);
 				/*
 				if(getLagrangeUp() > 0){
 					doubleLagrangeStep();
@@ -211,7 +211,7 @@ public class Edge {
 				resetLagrangeDown();
 				*/
 			} else {
-								this.lagrange = Math.max(this.lagrange - 1, 1);
+				this.lagrange = Math.max(this.lagrange - lagrangeStep / 5, 1);
 				/*
 				if(getLagrangeDown() >= 3 && this.lagrange > 1){
 					doubleLagrangeStep();
@@ -465,7 +465,9 @@ public class Edge {
 	}
 
 	public void halveLagrangeStep(){
-		lagrangeStep = Math.max(lagrangeStep / 2, 1);
+		int decrement = lagrangeStep / 4;
+		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
+//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
 
 	public void delete(){

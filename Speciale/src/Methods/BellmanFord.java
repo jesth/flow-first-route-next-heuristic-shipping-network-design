@@ -42,12 +42,10 @@ public class BellmanFord {
 		for(Edge e : graph.getEdges()){
 			e.clearRoutes();
 		}
-//		System.out.println("Routes cleared.");
 		while(!unprocessedNodes.isEmpty()){
 			Node u = unprocessedNodes.remove(0);
 			relaxAll(u);
 		}
-//		System.out.println("Whiling completed.");
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
 //			System.out.println("Running demand from " + d.getOrigin().getUNLocode() + " to " + d.getDestination().getUNLocode());

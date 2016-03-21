@@ -45,10 +45,10 @@ public class MulticommodityFlow {
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 0;
-		//		startLagrange();
+		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
-		while (iteration < 1200){
+		while (iteration < 100){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
@@ -60,6 +60,7 @@ public class MulticommodityFlow {
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
+
 			}
 
 			//			for (Edge e : graph.getEdges()){
@@ -90,6 +91,15 @@ public class MulticommodityFlow {
 		overFlow = overFlow/(double) sailEdges;
 
 		return (overFlow < overflowPercent);
+	}
+
+	private static void startLagrange(){
+		for (Edge e : graph.getEdges()){
+			if(e.isSail()){
+				e.setLagrange(1000);
+
+			}
+		}
 	}
 
 	/*
@@ -129,15 +139,24 @@ public class MulticommodityFlow {
 	 * @return The profit of the repaired flow.
 	 */
 	private static boolean findRepairFlow(){
+		System.out.println("Finding repair flow.");
 		boolean firstValid = true;
 		boolean invalidFlow = true;
 		int counter = 0;
+		ArrayList<Edge> overflowEdges = new ArrayList<Edge>();
+		for(Edge e : graph.getEdges()){
+			int overflow = e.getRepLoad() - e.getCapacity();
+			if(e.isSail() && overflow > 0){
+				overflowEdges.add(e);
+			}
+		}
 		while(invalidFlow){
 			//			System.out.println("Iteration: " + counter);
 			invalidFlow = false;
-			for(Edge e : graph.getEdges()){
+			for(int i = overflowEdges.size()-1; i >= 0; i--){
+				Edge e = overflowEdges.get(i);
 				int overflow = e.getRepLoad() - e.getCapacity();
-				if(e.isSail() && overflow > 0){
+				if(overflow > 0){
 					invalidFlow = true;
 					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;
@@ -152,6 +171,8 @@ public class MulticommodityFlow {
 					int FFErep = Math.min(lowestProfitRoute.getFFErep(), overflow);
 					lowestProfitRoute.adjustFFErep(-FFErep);
 					repDemand.createRepRoute(lowestProfitRoute, e, FFErep);
+				} else {
+					overflowEdges.remove(i);
 				}
 			}
 			counter++;
@@ -160,6 +181,11 @@ public class MulticommodityFlow {
 		if(flowProfit > bestFlowProfit){
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					e.halveLagrangeStep();
+				}
+			}
 		}
 		return firstValid;
 	}
