@@ -35,33 +35,38 @@ public class MulticommodityFlow {
 	 * <br>3) If the flow is legal, the best found flow is implemented.
 	 */
 	public static void run(){
+		ArrayList<Edge> sailEdges = new ArrayList<Edge>();
+		for(Edge e : graph.getEdges()){
+			if(e.isSail()){
+				sailEdges.add(e);
+			}
+		}
 		BellmanFord.reset();
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 0;
-//		startLagrange();
+		//		startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
-		while (iteration < 100){
+		while (iteration < 1200){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
-			System.out.println("BellmanFord.run() executed.");
 			boolean validFlow = false;
 			if(checkOverflow(0.1)){
 				validFlow = findRepairFlow();
 			}
-			System.out.println("Repairflow found.");
 			int flowProfit = graph.getResult().getFlowProfit(false);
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
 
-			for (Edge e : graph.getEdges()){
-				if(e.isSail()){
-					e.lagrangeAdjustment(iteration);
-				}
+			//			for (Edge e : graph.getEdges()){
+			//				if(e.isSail()){
+			for(Edge e : sailEdges){
+				e.lagrangeAdjustment(iteration);
+				//				}
 			}
 			iteration++;
 		}
@@ -110,7 +115,7 @@ public class MulticommodityFlow {
 			e.addLagrange(lowestProfit+1000);
 		}
 	}
-	*/
+	 */
 
 	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
 	 * <br>1) Running through all edges in unprioritized order.
@@ -128,7 +133,6 @@ public class MulticommodityFlow {
 		boolean invalidFlow = true;
 		int counter = 0;
 		while(invalidFlow){
-			System.out.println("Whiling");
 			//			System.out.println("Iteration: " + counter);
 			invalidFlow = false;
 			for(Edge e : graph.getEdges()){
@@ -293,7 +297,7 @@ public class MulticommodityFlow {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void saveLoads(String fileName, int iterations){
 		try {
 			File fileOut = new File(fileName);
