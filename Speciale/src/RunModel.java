@@ -49,23 +49,30 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
 		
-		ComputeRotations.addPorts();
-		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
-		for(Port p : r.getPorts()){
-			rotationPorts.add(p.getUNLocode());
-		}
-//		RuneVisualization.makeVisualization(rotationPorts);
+//		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
+//		for(Port p : r.getPorts()){
+//			rotationPorts.add(p.getName());
+//		}
+//		RuneVisualization.makeVisualization(rotationPorts, "beforeOptimization");
 		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
 		*/
+		ComputeRotations.addPorts();
 		MulticommodityFlow.run();
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		ComputeRotations.removePorts();
 		MulticommodityFlow.run();	
 		ComputeRotations.addPorts();
+		
+//		rotationPorts = new ArrayList<String>(r.getPorts().size());
+//		for(Port p : r.getPorts()){
+//			rotationPorts.add(p.getName());
+//		}
+//		RuneVisualization.makeVisualization(rotationPorts, "afterOptimization");
+		
 		MulticommodityFlow.run();
 		
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
