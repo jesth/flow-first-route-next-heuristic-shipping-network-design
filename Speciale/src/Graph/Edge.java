@@ -14,7 +14,9 @@ public class Edge {
 	private int cost; 
 	private int realCost;
 	private int lagrange;
-	private int lagrangeStart;
+	private int lagrangeStep;
+	private int lagrangeUp;
+	private int lagrangeDown;
 	private int capacity;
 	private double travelTime;
 	private boolean omission;
@@ -27,8 +29,8 @@ public class Edge {
 	private ArrayList<Route> routes;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
-	private int[] lagrangeValues = new int[100];
-	private int[] loadValues = new int[100];
+	private int[] lagrangeValues = new int[1200];
+	private int[] loadValues = new int[1200];
 
 	public Edge(){
 	}
@@ -52,7 +54,8 @@ public class Edge {
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
-		this.lagrangeStart = 0;
+		//TODO: Hardcoded lagrangeStep.
+		this.lagrangeStep = 64;
 		this.capacity = capacity;
 		this.omission = false;
 		this.sail = false;	
@@ -101,7 +104,7 @@ public class Edge {
 		this.cost = 1000 + rate;
 		this.realCost = 1000 + rate;
 		this.lagrange = 0;
-		this.lagrangeStart = 0;
+		this.lagrangeStep = 0;
 		this.capacity = Integer.MAX_VALUE;
 		this.travelTime = 0;
 		this.omission = true;
@@ -145,12 +148,15 @@ public class Edge {
 		return cost;
 	}
 
+	/*
 	public void addLagrange(int lagrangeInput){
 		if(!this.dwell){ //Dwell edges can never be restricting.
 			this.lagrangeStart = lagrangeInput;
 		}
 	}
+	 */
 
+	/*
 	public void resetLagrange(){
 		int lowestProfit = Integer.MAX_VALUE;
 		for(Route r : getRoutes()){
@@ -165,14 +171,16 @@ public class Edge {
 
 		addLagrange(lowestProfit + 1000);
 	}
+	 */
 
 	public void lagrangeAdjustment(int iteration){
 		if(capacity < getLoad()){
 			// if we initially didn't use the edge we set the lagrangeStart to -1,
 			// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
-			if(lagrangeStart < 0 && !routes.isEmpty()){
+			/*if(lagrangeStart < 0 && !routes.isEmpty()){
 				resetLagrange();
 			} 
+			 */
 			adjustLagrange(iteration, true);
 			BellmanFord.relaxEdge(this);
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
@@ -191,9 +199,31 @@ public class Edge {
 		//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(this.sail){
 			if(overflow){
-				this.lagrange = Math.max(this.lagrange + 50, 1);
+				this.lagrange = Math.max(this.lagrange + 2, 1);
+				/*
+				if(getLagrangeUp() > 0){
+					doubleLagrangeStep();
+				} else {
+					halveLagrangeStep();
+				}
+				this.lagrange = Math.max(Math.min(this.lagrange + this.lagrangeStep, 1000000),1);
+				incrementLagrangeUp();
+				resetLagrangeDown();
+				*/
 			} else {
-				this.lagrange = Math.max(this.lagrange - 10, 1);
+								this.lagrange = Math.max(this.lagrange - 1, 1);
+				/*
+				if(getLagrangeDown() >= 3 && this.lagrange > 1){
+					doubleLagrangeStep();
+				} else if(getLagrangeDown() == 0){
+					halveLagrangeStep();
+				}
+				if(getLagrangeDown() >= 3){
+					this.lagrange = Math.max(this.lagrange - this.lagrangeStep, 1);
+				}
+				incrementLagrangeDown();
+				resetLagrangeUp();
+				*/
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -313,11 +343,11 @@ public class Edge {
 	public Rotation getRotation(){
 		return this.rotation;
 	}
-	
+
 	public int[] getLagrangeValues(){
 		return lagrangeValues;
 	}
-	
+
 	public int[] getLoadValues(){
 		return loadValues;
 	}
@@ -393,17 +423,49 @@ public class Edge {
 		}
 		return load;
 	}
-	
+
 	public Edge getPrevEdge(){
 		return fromNode.getPrevEdge();
 	}
-	
+
 	public Edge getNextEdge(){
 		return toNode.getNextEdge();
 	}
-	
+
 	public int getSpareCapacity(){
 		return capacity - getLoad();
+	}
+
+	public int getLagrangeDown(){
+		return lagrangeDown;
+	}
+
+	public int getLagrangeUp(){
+		return lagrangeUp;
+	}
+
+	public void resetLagrangeDown(){
+		lagrangeDown = 0;
+	}
+
+	public void resetLagrangeUp(){
+		lagrangeUp = 0;
+	}
+
+	public void incrementLagrangeUp(){
+		lagrangeUp++;
+	}
+
+	public void incrementLagrangeDown(){
+		lagrangeDown++;
+	}
+
+	public void doubleLagrangeStep(){
+		lagrangeStep = lagrangeStep * 2;
+	}
+
+	public void halveLagrangeStep(){
+		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
 
 	public void delete(){
