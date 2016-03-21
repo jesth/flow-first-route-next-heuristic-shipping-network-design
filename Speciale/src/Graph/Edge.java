@@ -29,6 +29,7 @@ public class Edge {
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
 	private int[] lagrangeValues = new int[100];
+	private int[] loadValues = new int[100];
 
 	public Edge(){
 	}
@@ -220,6 +221,7 @@ public class Edge {
 			this.cost = this.realCost+this.lagrange;
 		}
 		lagrangeValues[iteration] = this.lagrange;
+		loadValues[iteration] = this.getLoad();
 	}
 
 	/**
@@ -337,6 +339,10 @@ public class Edge {
 	
 	public int[] getLagrangeValues(){
 		return lagrangeValues;
+	}
+	
+	public int[] getLoadValues(){
+		return loadValues;
 	}
 
 	/**

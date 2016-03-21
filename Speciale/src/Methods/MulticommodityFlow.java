@@ -68,7 +68,7 @@ public class MulticommodityFlow {
 		implementBestFlow();
 		long endTime = System.currentTimeMillis();
 		saveLagranges("lagranges.csv", iteration);
-
+		saveLoads("loads.csv", iteration);
 		System.out.println("RunningTime " + (endTime-startTime));
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
@@ -283,6 +283,31 @@ public class MulticommodityFlow {
 				if(e.isSail()){
 					out.write(e.getId() + ";" + e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";" + e.getCapacity());
 					for(int i : e.getLagrangeValues()){
+						out.write(";" + i);
+					}
+					out.newLine();
+				}
+			}
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void saveLoads(String fileName, int iterations){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			String str = "EdgeId;From;To;Capacity";
+			for(int i=0; i<iterations; i++){
+				str += ";" + i;
+			}
+			out.write(str); 
+			out.newLine();
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					out.write(e.getId() + ";" + e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";" + e.getCapacity());
+					for(int i : e.getLoadValues()){
 						out.write(";" + i);
 					}
 					out.newLine();
