@@ -38,42 +38,53 @@ public class MulticommodityFlow {
 		BellmanFord.reset();
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
-		int iteration = 1;
+		int iteration = 0;
 		startLagrange();
 		//TODO hardcoded 100 iterations...
+		long startTime = System.currentTimeMillis();
 		while (iteration < 100){
-			//			System.out.println("Now running BellmanFord in iteration " + iteration);
+						System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
-			boolean validFlow = findRepairFlow();
+			System.out.println("BellmanFord.run() executed.");
+			boolean validFlow = false;
+			if(checkOverflow(0.01)){
+			validFlow = findRepairFlow();
+			}
+			System.out.println("Repairflow found.");
 			int flowProfit = graph.getResult().getFlowProfit(false);
-//			int lowerBoundFlow = Result.getFlowProfit(true);
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 			}
 			
-			//TODO maybe stupid??
-//			int sumYSquared = 0;
-//			for(Edge e : graph.getEdges()){
-//				if(e.isSail()){
-//					sumYSquared += Math.pow(e.getCapacity()-e.getLoad(), 2);
-//				}
-//			}
-//			int stepSize = 0;
 			for (Edge e : graph.getEdges()){
 				if(e.isSail()){
 					e.lagrangeAdjustment(iteration);
-				}
-				if(e.isSail()){
-//				if(e.getFromNode().getPort().getUNLocode().equals("DEBRV") && e.getToNode().getPort().getUNLocode().equals("RULED")){
-//					System.out.println(e.simplePrint() + " lagrange = " + e.getLagrange());
 				}
 			}
 			iteration++;
 		}
 		implementBestFlow();
+		long endTime = System.currentTimeMillis();
+		saveLagranges("lagranges.csv", iteration);
+		
+		System.out.println("RunningTime " + (endTime-startTime));
 		System.out.println("Exiting while loop after iteration " + iteration);
+	}
+	
+	private static boolean checkOverflow(double overflowPercent) {
+		double overFlow = 0;
+		int sailEdges = 0;
+		for(Edge e : graph.getEdges()){
+			if(e.isSail()){
+				sailEdges++;
+				overFlow += Math.max(((double) e.getLoad()/ (double) e.getCapacity())-1,0);
+			}
+		}
+		overFlow = overFlow/(double) sailEdges;
+		
+		return (overFlow < overflowPercent);
 	}
 
 	//TODO: Update description.
@@ -113,12 +124,13 @@ public class MulticommodityFlow {
 	private static boolean findRepairFlow(){
 		boolean firstValid = true;
 		boolean invalidFlow = true;
+		int counter = 0;
 		while(invalidFlow){
+//			System.out.println("Iteration: " + counter);
 			invalidFlow = false;
 			for(Edge e : graph.getEdges()){
 				int overflow = e.getRepLoad() - e.getCapacity();
 				if(e.isSail() && overflow > 0){
-//					System.out.println("Overflow = " + e.getRepLoad() + " - " + e.getCapacity() + " for " + e.simplePrint());
 					invalidFlow = true;
 					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;
@@ -135,6 +147,7 @@ public class MulticommodityFlow {
 					repDemand.createRepRoute(lowestProfitRoute, e, FFErep);
 				}
 			}
+			counter++;
 		}
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
@@ -249,6 +262,31 @@ public class MulticommodityFlow {
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void saveLagranges(String fileName, int iterations){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			String str = "EdgeId;From;To;Capacity";
+			for(int i=0; i<iterations; i++){
+				str += ";" + i;
+			}
+			out.write(str); 
+			out.newLine();
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					out.write(e.getId() + ";" + e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";" + e.getCapacity());
+					for(int i : e.getLagrangeValues()){
+						out.write(";" + i);
+					}
+					out.newLine();
+				}
+			}
+			out.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
