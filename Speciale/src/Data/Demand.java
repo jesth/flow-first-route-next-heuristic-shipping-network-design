@@ -12,8 +12,8 @@ public class Demand {
 	private Port destination;
 	private int demand;
 	private int rate;
-//	private int lagrangeProfit;
-//	private int realProfit;
+	//	private int lagrangeProfit;
+	//	private int realProfit;
 	//	private int repOmissionFFE;
 	private ArrayList<Route> routes;
 	private int maxTransitTime;
@@ -82,14 +82,14 @@ public class Demand {
 		return maxTransitTime;
 	}
 
-	
+
 	/**
 	 * @return The Id.
 	 */
 	public int getId(){
 		return this.id;
 	}
-	
+
 	/**
 	 * @return The "profit" of using a omission edge for a container.
 	 */
@@ -107,7 +107,7 @@ public class Demand {
 		return newRoute;
 	}
 
-	public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
+		public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
 		if(FFErep == 0){
 			throw new RuntimeException("Creating route without any demand for OD-pair " + origin.getUNLocode() + "-" + destination.getUNLocode());
 		}
@@ -129,15 +129,15 @@ public class Demand {
 	public void clearRoutes(){
 		routes.clear();
 	}
-	
+
 	public ArrayList<Route> getRoutes(){
 		return routes;
 	}
-	
+
 	public void addRoute(Route addRoute){
 		routes.add(addRoute);
 	}
-	
+
 	public void removeRoute(Route removeRoute){
 		routes.remove(removeRoute);
 	}

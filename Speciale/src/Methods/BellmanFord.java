@@ -42,12 +42,15 @@ public class BellmanFord {
 		for(Edge e : graph.getEdges()){
 			e.clearRoutes();
 		}
+//		System.out.println("Routes cleared.");
 		while(!unprocessedNodes.isEmpty()){
 			Node u = unprocessedNodes.remove(0);
 			relaxAll(u);
 		}
+//		System.out.println("Whiling completed.");
 		ArrayList<Demand> demands = graph.getData().getDemands();
 		for(Demand d : demands){
+//			System.out.println("Running demand from " + d.getOrigin().getUNLocode() + " to " + d.getDestination().getUNLocode());
 			d.clearRoutes();
 			d.createMainRoute();
 		}
@@ -154,10 +157,8 @@ public class BellmanFord {
 		Edge predecessor = toNode.getPredecessor(arrayPos);
 		usedEdges.add(predecessor);
 		//		System.out.println("Getting route from " + demand.getOrigin().getUNLocode() + " to " + demand.getDestination().getUNLocode());
-		if(repRoute){
-//			System.out.println("REP ROUTE");
-		}
 		while(!predecessor.getFromNode().equals(fromNode)){
+//			System.out.println("Predecessor from " + predecessor.getFromPortUNLo() + " to " + predecessor.getToPortUNLo() + " with Lagrange " + predecessor.getLagrange());
 			predecessor = predecessor.getFromNode().getPredecessor(arrayPos);
 			usedEdges.add(0, predecessor);
 		}
@@ -242,14 +243,16 @@ public class BellmanFord {
 		int arrayPos = Node.getNoOfCentroids()-1;
 		if(u.isUnprocessed(arrayPos)){
 			for(Edge e : u.getOutgoingEdges()){
-				if(!prohibitedEdges.contains(e)){
-					relax(arrayPos, e);
+				if(e.getCapacity() > e.getRepLoad()){
+					if(!prohibitedEdges.contains(e)){
+						relax(arrayPos, e);
+					}
 				}
 			}
 			u.setProcessed(arrayPos);
 		}
 	}
-	
+
 	/** Bookkeeping for the separate array unprocessedRepNodes - updates this array with the relevant changes to the "official" array unprocessedNodes.
 	 * @param unprocessedRepNodes - the array to be updated.
 	 */

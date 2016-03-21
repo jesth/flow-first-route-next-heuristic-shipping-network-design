@@ -14,7 +14,8 @@ public class Edge {
 	private int cost; 
 	private int realCost;
 	private int lagrange;
-	private int lagrangeStart;
+	private int lagrangeStep;
+	private boolean lagrangeDown;
 	private int capacity;
 	private double travelTime;
 	private boolean omission;
@@ -51,7 +52,8 @@ public class Edge {
 		this.cost = cost;
 		this.realCost = cost;
 		this.lagrange = 0;
-		this.lagrangeStart = 0;
+		//TODO: Hardcoded lagrangeStep.
+		this.lagrangeStep = 64;
 		this.capacity = capacity;
 		this.omission = false;
 		this.sail = false;	
@@ -100,7 +102,7 @@ public class Edge {
 		this.cost = 1000 + rate;
 		this.realCost = 1000 + rate;
 		this.lagrange = 0;
-		this.lagrangeStart = 0;
+		this.lagrangeStep = 64;
 		this.capacity = Integer.MAX_VALUE;
 		this.travelTime = 0;
 		this.omission = true;
@@ -144,12 +146,15 @@ public class Edge {
 		return cost;
 	}
 
+	/*
 	public void addLagrange(int lagrangeInput){
 		if(!this.dwell){ //Dwell edges can never be restricting.
 			this.lagrangeStart = lagrangeInput;
 		}
 	}
+	*/
 
+	/*
 	public void resetLagrange(){
 		int lowestProfit = Integer.MAX_VALUE;
 		for(Route r : getRoutes()){
@@ -164,14 +169,16 @@ public class Edge {
 
 		addLagrange(lowestProfit + 1000);
 	}
+	*/
 
 	public void lagrangeAdjustment(int iteration){
 		if(capacity < getLoad()){
 			// if we initially didn't use the edge we set the lagrangeStart to -1,
 			// but since edge is now used in a shortest route for a OD-pair we have to update the lagrange.
-			if(lagrangeStart < 0 && !routes.isEmpty()){
+			/*if(lagrangeStart < 0 && !routes.isEmpty()){
 				resetLagrange();
 			} 
+			*/
 			adjustLagrange(iteration, true);
 			BellmanFord.relaxEdge(this);
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
@@ -190,9 +197,25 @@ public class Edge {
 		//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(this.sail){
 			if(overflow){
-				this.lagrange = Math.max(this.lagrange + 50, 1);
+//				this.lagrange = Math.max(this.lagrange + 50, 1);
+				if(isLagrangeUp()){
+					doubleLagrangeStep();
+				} else {
+					halveLagrangeStep();
+				}
+				this.lagrange = Math.max(Math.min(this.lagrange + this.lagrangeStep, 1000000),1);
+				setLagrangeUp();
+				
 			} else {
-				this.lagrange = Math.max(this.lagrange - 10, 1);
+//				this.lagrange = Math.max(this.lagrange - 10, 1);
+				if(isLagrangeDown() && this.lagrange > 1){
+					doubleLagrangeStep();
+				} else {
+					halveLagrangeStep();
+				}
+				this.lagrange = Math.max(this.lagrange - this.lagrangeStep, 1);
+				setLagrangeDown();
+				
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -398,6 +421,30 @@ public class Edge {
 	
 	public int getSpareCapacity(){
 		return capacity - getLoad();
+	}
+	
+	public boolean isLagrangeDown(){
+		return lagrangeDown;
+	}
+	
+	public boolean isLagrangeUp(){
+		return !lagrangeDown;
+	}
+	
+	public void setLagrangeDown(){
+		lagrangeDown = true;
+	}
+	
+	public void setLagrangeUp(){
+		lagrangeDown = false;
+	}
+	
+	public void doubleLagrangeStep(){
+		lagrangeStep = lagrangeStep * 2;
+	}
+	
+	public void halveLagrangeStep(){
+		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
 
 	public void delete(){
