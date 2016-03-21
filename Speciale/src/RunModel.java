@@ -34,6 +34,7 @@ public class RunModel {
 	public static void saveAux() throws FileNotFoundException{
 		Graph testGraph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
 		AuxRun.initialize(testGraph.getData(), 10);
+		System.out.println("SaveAux is done");
 	}
 	
 	public static void testAux() throws FileNotFoundException{
