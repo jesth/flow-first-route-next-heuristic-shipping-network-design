@@ -7,7 +7,6 @@ import Methods.BellmanFord;
 
 public class Route {
 	private ArrayList<Edge> route;
-	private ArrayList<Edge> prohibitedEdges;
 	private Demand demand;
 	private int FFE;
 	private int FFErep;
@@ -19,7 +18,6 @@ public class Route {
 		this.route = new ArrayList<Edge>();
 		this.demand = demand;
 		this.repair = repair;
-		this.prohibitedEdges = new ArrayList<Edge>();
 		this.lagrangeProfit = 0;
 		this.realProfit = 0;
 		this.FFE = 0;
@@ -51,20 +49,6 @@ public class Route {
 		this.lagrangeProfit = lagrangeProfit;
 		this.realProfit = realProfit;
 		this.route = route;
-	}
-
-	/**
-	 * @return The edges that cannot be used in the shortest path for this route element.
-	 */
-	public ArrayList<Edge> getProhibitedEdges() {
-		return prohibitedEdges;
-	}
-
-	/** Adds a prohibited edge.
-	 * @param prohibitedEdge - an edge, which cannot be used in the shortest path for this route element.
-	 */
-	public void addProhibitedEdge(Edge prohibitedEdge) {
-		this.prohibitedEdges.add(prohibitedEdge);
 	}
 
 	/**
@@ -171,6 +155,17 @@ public class Route {
 	public void setRealProfit(int realProfit) {
 		this.realProfit = realProfit;
 	}
+	
+	public int findMaxUnderflow() {
+		int maxUnderflow = Integer.MAX_VALUE;
+		for(Edge e : route){
+			int underflow = e.getCapacity() - e.getRepLoad();
+			if(underflow < maxUnderflow){
+				maxUnderflow = underflow;
+			}
+		}
+		return maxUnderflow;
+	}
 
 	public String simplePrint(){
 		String str = "Demand of " + FFErep + " from " + demand.getOrigin().getUNLocode() + " to " + 
@@ -198,4 +193,5 @@ public class Route {
 		str += "\n";
 		return str;
 	}
+
 }

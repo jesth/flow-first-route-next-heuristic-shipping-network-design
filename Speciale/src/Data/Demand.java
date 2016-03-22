@@ -107,23 +107,19 @@ public class Demand {
 		return newRoute;
 	}
 
-		public Route createRepRoute(Route prevRoute, Edge prohibitedEdge, int FFErep){
+	public int createRepRoute(Route prevRoute, int FFErep){
 		if(FFErep == 0){
 			throw new RuntimeException("Creating route without any demand for OD-pair " + origin.getUNLocode() + "-" + destination.getUNLocode());
 		}
 		Route repRoute = new Route(this, true);
 		routes.add(repRoute);
-		repRoute.addProhibitedEdge(prohibitedEdge);
-		if(prevRoute.isRepair()){
-			for(Edge e : prevRoute.getProhibitedEdges()){
-				repRoute.addProhibitedEdge(e);
-			}
-		}
-		repRoute.setFFErep(FFErep);
 		repRoute.findRoute();
 		ArrayList<Edge> route = BellmanFord.getRoute(this, true);
 		repRoute.update(route);
-		return repRoute;
+		int maxUnderflow = repRoute.findMaxUnderflow();
+		int correctedFFErep = Math.min(FFErep,maxUnderflow);
+		repRoute.setFFErep(correctedFFErep);
+		return correctedFFErep;
 	}
 
 	public void clearRoutes(){
@@ -140,6 +136,16 @@ public class Demand {
 
 	public void removeRoute(Route removeRoute){
 		routes.remove(removeRoute);
+	}
+	
+	public void checkDemand(){
+		int servicedDemand = 0;
+		for(Route r : routes){
+			servicedDemand += r.getFFE();
+		}
+		if(servicedDemand != demand){
+			throw new RuntimeException("The correct number of containers is not transported from " + origin.getUNLocode() + " to " + destination.getUNLocode());
+		}
 	}
 
 	/* (non-Javadoc)

@@ -661,6 +661,7 @@ public class RunModel {
 		
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
 		
+		/*//WorldSmall1.
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
@@ -668,7 +669,16 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(6, sortedEdges, postPanamax);
+		*/
+		//WorldSmall2 & 3.
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
 		
+		//WorldSmall1 & 3.
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
@@ -679,6 +689,17 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
 		
+		/*//WorldSmall2.
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
+		*/
+		/*//WorldSmall1.
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
@@ -687,6 +708,17 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		*/
+		//WorldSmall2 & 3.
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200);
 		
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);

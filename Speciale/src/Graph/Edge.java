@@ -55,7 +55,7 @@ public class Edge {
 		this.cost = cost;
 		this.lagrange = 0;
 		//TODO: Hardcoded lagrangeStep.
-		this.lagrangeStep = 100;
+		this.lagrangeStep = 50;
 		this.capacity = capacity;
 		this.omission = false;
 		this.sail = false;	
@@ -183,12 +183,14 @@ public class Edge {
 			 */
 			adjustLagrange(iteration, true);
 			BellmanFord.relaxEdge(this);
+
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
 		} else if(capacity > getLoad()){
 			adjustLagrange(iteration, false);
-			//			System.out.println(this.simplePrint());
 			BellmanFord.relaxEdge(this);
+			//			System.out.println(this.simplePrint());
+
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
 		} 
@@ -209,9 +211,10 @@ public class Edge {
 				this.lagrange = Math.max(Math.min(this.lagrange + this.lagrangeStep, 1000000),1);
 				incrementLagrangeUp();
 				resetLagrangeDown();
-				*/
+				 */
 			} else {
 				this.lagrange = Math.max(this.lagrange - lagrangeStep / 5, 1);
+
 				/*
 				if(getLagrangeDown() >= 3 && this.lagrange > 1){
 					doubleLagrangeStep();
@@ -223,7 +226,7 @@ public class Edge {
 				}
 				incrementLagrangeDown();
 				resetLagrangeUp();
-				*/
+				 */
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -464,10 +467,11 @@ public class Edge {
 		lagrangeStep = lagrangeStep * 2;
 	}
 
-	public void halveLagrangeStep(){
-		int decrement = lagrangeStep / 4;
+	public void decreaseLagrangeStep(){
+		//		int decrement = lagrangeStep / 4;
+		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
-//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
+		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
 
 	public void delete(){

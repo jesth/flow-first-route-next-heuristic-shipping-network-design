@@ -144,7 +144,9 @@ public class MulticommodityFlow {
 		boolean invalidFlow = true;
 		int counter = 0;
 		ArrayList<Edge> overflowEdges = new ArrayList<Edge>();
-		for(Edge e : graph.getEdges()){
+//		for(Edge e : graph.getEdges()){
+		for(int i = graph.getEdges().size()-1; i>= 0; i--){
+			Edge e = graph.getEdges().get(i);
 			int overflow = e.getRepLoad() - e.getCapacity();
 			if(e.isSail() && overflow > 0){
 				overflowEdges.add(e);
@@ -169,8 +171,8 @@ public class MulticommodityFlow {
 					}
 					Demand repDemand = lowestProfitRoute.getDemand();
 					int FFErep = Math.min(lowestProfitRoute.getFFErep(), overflow);
+					FFErep = repDemand.createRepRoute(lowestProfitRoute, FFErep);
 					lowestProfitRoute.adjustFFErep(-FFErep);
-					repDemand.createRepRoute(lowestProfitRoute, e, FFErep);
 				} else {
 					overflowEdges.remove(i);
 				}
@@ -183,7 +185,7 @@ public class MulticommodityFlow {
 			updateBestFlow(flowProfit);
 			for(Edge e : graph.getEdges()){
 				if(e.isSail()){
-					e.halveLagrangeStep();
+					e.decreaseLagrangeStep();
 				}
 			}
 		}
@@ -220,6 +222,14 @@ public class MulticommodityFlow {
 			for(Edge e : r.getRoute()){
 				e.addRoute(r);
 			}
+		}
+		for(Edge e : graph.getEdges()){
+			if(e.getCapacity() < e.getLoad()){
+				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo());
+			}
+		}
+		for(Demand d : graph.getData().getDemands()){
+			d.checkDemand();
 		}
 	}
 
