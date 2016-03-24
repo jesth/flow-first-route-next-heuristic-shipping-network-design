@@ -17,6 +17,9 @@ public class Node {
 	private int[] distances;
 	private Edge[] predecessors;
 	private boolean[] unprocessed;
+	private int[] distancesRep;
+	private Edge[] predecessorsRep;
+	private boolean[] unprocessedRep;
 	private static int noOfCentroids;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private ArrayList<Edge> ingoingEdges;
@@ -51,6 +54,9 @@ public class Node {
 		this.distances = new int[noOfCentroids+1];
 		this.predecessors = new Edge[noOfCentroids+1];
 		this.unprocessed = new boolean[noOfCentroids+1];
+		this.distancesRep = new int[noOfCentroids];
+		this.predecessorsRep = new Edge[noOfCentroids];
+		this.unprocessedRep = new boolean[noOfCentroids];
 		this.ingoingEdges = new ArrayList<Edge>();
 		this.outgoingEdges = new ArrayList<Edge>();
 	}
@@ -76,6 +82,9 @@ public class Node {
 		this.distances = new int[noOfCentroids];
 		this.predecessors = new Edge[noOfCentroids];
 		this.unprocessed = new boolean[noOfCentroids];
+		this.distancesRep = new int[noOfCentroids];
+		this.predecessorsRep = new Edge[noOfCentroids];
+		this.unprocessedRep = new boolean[noOfCentroids];
 		this.ingoingEdges = new ArrayList<Edge>();
 		this.outgoingEdges = new ArrayList<Edge>();
 	}
@@ -132,12 +141,23 @@ public class Node {
 		predecessors[centroidId] = predecessor;
 	}
 	
+	public void setLabelsRep(int centroidId, int distance, Edge predecessor){
+//		System.out.println("Setting labels for centroidId " + centroidId + ", distance " + distance + " and predecessor " + predecessor);
+		distancesRep[centroidId] = distance;
+		predecessorsRep[centroidId] = predecessor;
+	}
+	
 	/** Sets this node unprocessed for the Bellman Ford algorithm.
 	 * @param centroidId - the centroid <i>from</i> which the shortest path must be processed again.
 	 */
 	public void setUnprocessed(int centroidId){
 		BellmanFord.addUnprocessedNode(this);
 		unprocessed[centroidId] = true;
+	}
+	
+	public void setUnprocessedRep(int centroidId){
+		BellmanFord.addUnprocessedNodeRep(this);
+		unprocessedRep[centroidId] = true;
 	}
 	
 	/** Sets this node processed through the Bellman Ford algorithm.
@@ -147,12 +167,20 @@ public class Node {
 		unprocessed[centroidId] = false;
 	}
 	
+	public void setProcessedRep(int centroidId){
+		unprocessedRep[centroidId] = false;
+	}
+	
 	/**
 	 * @param centroidId - the centroid <i>from</i> where the shortest path originates.
 	 * @return Whether this node is unprocessed from the input centroid.
 	 */
 	public boolean isUnprocessed(int centroidId){
 		return unprocessed[centroidId];
+	}
+	
+	public boolean isUnprocessedRep(int centroidId){
+		return unprocessedRep[centroidId];
 	}
 	
 
@@ -176,12 +204,20 @@ public class Node {
 		return distances[centroidId];
 	}
 	
+	public int getDistanceRep(int centroidId){
+		return distancesRep[centroidId];
+	}
+	
 	/**
 	 * @param centroidId - the centroid <i>from</i> where the shortest path originates.
 	 * @return The predecessor in the shortest path from the input centroid.
 	 */
 	public Edge getPredecessor(int centroidId){
 		return predecessors[centroidId];
+	}
+	
+	public Edge getPredecessorRep(int centroidId){
+		return predecessorsRep[centroidId];
 	}
 	
 	/**

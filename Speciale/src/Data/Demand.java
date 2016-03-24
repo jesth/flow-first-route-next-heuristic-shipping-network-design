@@ -107,6 +107,7 @@ public class Demand {
 		return newRoute;
 	}
 
+	/*
 	public int createRepRoute(Route prevRoute, int FFErep){
 		if(FFErep == 0){
 			throw new RuntimeException("Creating route without any demand for OD-pair " + origin.getUNLocode() + "-" + destination.getUNLocode());
@@ -121,6 +122,20 @@ public class Demand {
 		repRoute.setFFErep(correctedFFErep);
 		return correctedFFErep;
 	}
+	*/
+	
+	public void createRepRoute(Route prevRoute, int FFEforRemoval){
+		if(FFEforRemoval == 0){
+			return;
+		}
+		prevRoute.implementFFEforRemoval();
+		Route repRoute = new Route(this, true);
+		routes.add(repRoute);
+		ArrayList<Edge> route = BellmanFord.getRouteRep(this);
+		repRoute.update(route);
+		repRoute.setFFErep(FFEforRemoval);
+	}
+	
 
 	public void clearRoutes(){
 		routes.clear();
@@ -144,7 +159,7 @@ public class Demand {
 			servicedDemand += r.getFFE();
 		}
 		if(servicedDemand != demand){
-			throw new RuntimeException("The correct number of containers is not transported from " + origin.getUNLocode() + " to " + destination.getUNLocode());
+			throw new RuntimeException("The correct number of containers is not transported from " + origin.getUNLocode() + " to " + destination.getUNLocode() + ". Transported/Demand: " + servicedDemand + "/" + demand);
 		}
 	}
 

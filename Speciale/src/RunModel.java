@@ -16,8 +16,8 @@ import Results.Result;
 import Results.Rotation;
 
 public class RunModel {
-	public static void main(String[] args) throws FileNotFoundException {
-		
+	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+//		Thread.sleep(10000);
 //		testBaltic();
 //		testBaltic();
 //		testAutomatic();

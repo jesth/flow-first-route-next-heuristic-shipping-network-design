@@ -10,6 +10,7 @@ public class Route {
 	private Demand demand;
 	private int FFE;
 	private int FFErep;
+	private int FFEforRemoval;
 	private boolean repair;
 	private int lagrangeProfit;
 	private int realProfit;
@@ -22,6 +23,7 @@ public class Route {
 		this.realProfit = 0;
 		this.FFE = 0;
 		this.FFErep = 0;
+		this.FFEforRemoval = 0;
 	}
 
 	/** Determines the shortest route using Bellman-Ford and respecting the prohibited edges defined.
@@ -84,9 +86,22 @@ public class Route {
 	 */
 	public void adjustFFErep(int adjustFFErep){
 		this.FFErep += adjustFFErep;
-		if(FFErep == 0){
+		if(FFErep == 0 && repair){
 			deleteRoute();
 		}
+	}
+	
+	public int getFFEforRemoval(){
+		return FFEforRemoval;
+	}
+	
+	public void addFFEforRemoval(int FFEforRemoval){
+		this.FFEforRemoval += FFEforRemoval;
+	}
+	
+	public void implementFFEforRemoval(){
+		adjustFFErep(-FFEforRemoval);
+		this.FFEforRemoval = 0;
 	}
 
 	/** Removes all references to this route element from the associated edges and demand. Route element will then be garbage collected.

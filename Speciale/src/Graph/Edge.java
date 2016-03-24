@@ -416,6 +416,15 @@ public class Edge {
 		return repLoad;
 	}
 
+	public int getRepAndRemoveLoad(){
+		int repLoad = 0;
+		for(Route r : routes){
+			repLoad += r.getFFErep();
+			repLoad -= r.getFFEforRemoval();
+		}
+		return repLoad;
+	}
+
 	/**
 	 * @return The load, i.e. the sum of all FFE for the routes of this edge.
 	 */
@@ -468,10 +477,31 @@ public class Edge {
 	}
 
 	public void decreaseLagrangeStep(){
-		//		int decrement = lagrangeStep / 4;
+//				int decrement = lagrangeStep / 3;
 		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
+	}
+
+	public Route findLeastProfitableRoute(){
+		int lowestProfit = Integer.MAX_VALUE;
+		Route lowestProfitRoute = null;
+		for(Route r : routes){
+			if(r.getFFEforRemoval() != r.getFFErep()){
+				if(r.getLagrangeProfit() < lowestProfit){
+					lowestProfit = r.getLagrangeProfit();
+					lowestProfitRoute = r;
+				}
+			}
+		}
+		//		if(lowestProfitRoute == null){
+		//			System.err.println("No routes meet requirements on edge from " + getFromPortUNLo() + " to " + getToPortUNLo());
+		//			for(Route r : routes){
+		//				System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFErep " + r.getFFErep() + " and FFEforRemoval " + r.getFFEforRemoval());
+		//			}
+		//			
+		//		}
+		return lowestProfitRoute;
 	}
 
 	public void delete(){
