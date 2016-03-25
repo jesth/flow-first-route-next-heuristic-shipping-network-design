@@ -245,6 +245,13 @@ public class Graph {
 		nodes.remove(i);
 	}
 	
+	public void deleteRotation(Rotation rotation){
+		for(int i = rotation.getRotationEdges().size()-1; i >= 0; i--){
+			deleteNode(rotation.getRotationNodes().get(i));
+		}
+		rotation.delete();
+	}
+	
 	private void decrementNodeIds(int id){
 		for(Node i : nodes){
 			if(i.getId() > id){
@@ -413,5 +420,4 @@ public class Graph {
 	public Result getResult(){
 		return result;
 	}
-
 }

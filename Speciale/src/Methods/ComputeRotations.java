@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 import javax.tools.ToolProvider;
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
@@ -20,6 +22,8 @@ import Graph.Node;
 import Results.Result;
 import Results.Rotation;
 import Results.Route;
+import Sortables.SortableAuxEdge;
+import Sortables.SortableEdge;
 
 public class ComputeRotations {
 	private static Graph graph;
@@ -175,7 +179,105 @@ public class ComputeRotations {
 		}
 
 	}
+	
+	public static Rotation splitRotation(Rotation originalRotation){
+		
+		ArrayList<Port> originalRotationPorts = originalRotation.getPorts();
+		
+		//Sort edges after load, ascending.
+		ArrayList<SortableEdge> sortableEdges = new ArrayList<SortableEdge>();
+		for(Edge e : originalRotation.getRotationEdges()){
+			if(e.isSail()){
+				SortableEdge sortableAuxEdge = new SortableEdge(e.getLoad(), e);
+				sortableEdges.add(sortableAuxEdge);
+			}
+		}
+		Collections.sort(sortableEdges, Collections.reverseOrder());
+		
+		//Finds two least loaded edges, not consecutive.
+		Edge leastEdge = sortableEdges.get(0).getEdge();
+		int leastNoInRotation = leastEdge.getNoInRotation();
+		Edge secondLeastEdge = sortableEdges.get(1).getEdge();
+		int secondLeastNoInRotation = secondLeastEdge.getNoInRotation();
+		if(consecutiveEdges(leastNoInRotation, secondLeastNoInRotation, sortableEdges.size())){
+			secondLeastEdge = sortableEdges.get(2).getEdge();
+			secondLeastNoInRotation = secondLeastEdge.getNoInRotation();
+			if(consecutiveEdges(leastNoInRotation, secondLeastNoInRotation, sortableEdges.size())){
+				leastEdge = sortableEdges.get(1).getEdge();
+				leastNoInRotation = leastEdge.getNoInRotation();
+			}
+		}
+		
+		//Finds ports for new rotation and dwell edges to remove from old rotation.
+		ArrayList<Edge> dwellEdgesToRemove = new ArrayList<Edge>();
+		ArrayList<Port> portsForNewRotation = new ArrayList<Port>();
+		Edge currentEdge = leastEdge;
+		while(currentEdge != secondLeastEdge){
+			currentEdge = currentEdge.getPrevEdge();
+			if(currentEdge.isDwell()){
+				dwellEdgesToRemove.add(currentEdge);
+				portsForNewRotation.add(currentEdge.getFromNode().getPort());
+			}
+		}
+		//Finds remaining ports in old rotation.
+		ArrayList<Port> portsForOldRotation = new ArrayList<Port>();
+		currentEdge = secondLeastEdge;
+		while(currentEdge != leastEdge){
+			currentEdge = currentEdge.getPrevEdge();
+			if(currentEdge.isDwell()){
+				portsForOldRotation.add(currentEdge.getFromNode().getPort());
+			}
+		}
+		
+		removeConsecutivePorts(portsForNewRotation);
+		removeConsecutivePorts(portsForOldRotation);
+		
+		ArrayList<Integer> newRotationIds = new ArrayList<Integer>(portsForNewRotation.size());
+		for(Port p : portsForNewRotation){
+			newRotationIds.add(p.getPortId());
+		}
+		
+		VesselClass vessel = originalRotation.getVesselClass();
+		int originalNoVessels = originalRotation.getNoOfVessels();
+		int newRotationNoVessels = calcNumberOfVessels(portsForNewRotation, vessel);
+		int oldRotationNoVessels = calcNumberOfVessels(portsForOldRotation, vessel);
+		
+		Rotation newRotation = null;
+		if(newRotationNoVessels + oldRotationNoVessels <= originalNoVessels){
+			for(int i = dwellEdgesToRemove.size()-1; i >= 0; i--){
+				graph.removePort(dwellEdgesToRemove.get(i));
+			}
+			newRotation = graph.createRotationFromPorts(newRotationIds, vessel);
+			System.out.println("Split rotation succesfully with same or less vessels");
+		}
+		
+		return newRotation;
+	}
+	
+	public static boolean consecutiveEdges(int firstNo, int secondNo, int listSize){
+		if(secondNo == firstNo+1 ||
+			secondNo == firstNo-1 ||
+			firstNo == 0 && secondNo == listSize-1 ||
+			firstNo == listSize-1 && secondNo == 0){
+			return true;
+		}
+		return false;
+	}
 
+	public static void removeConsecutivePorts(ArrayList<Port> ports){
+		if(ports.get(0).getPortId() == ports.get(1).getPortId()){
+			ports.remove(0);
+		}
+		if(ports.get(ports.size()-2).getPortId() == ports.get(ports.size()-1).getPortId()){
+			ports.remove(ports.size()-1);
+		}
+		if(ports.get(0).getPortId() == ports.get(ports.size()-1).getPortId()){
+			ports.remove(0);
+		}
+	}
+	
+	
+	
 	private static boolean vesselsAvailable(Rotation r, Edge e, Port p){
 		ArrayList<Port> ports = new ArrayList<Port>();
 		for(Edge edge : r.getRotationEdges()){
