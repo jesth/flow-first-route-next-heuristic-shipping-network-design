@@ -12,6 +12,7 @@ public class Route {
 	private int FFErep;
 	private int FFEforRemoval;
 	private boolean repair;
+	private boolean omission;
 	private int lagrangeProfit;
 	private int realProfit;
 
@@ -40,6 +41,9 @@ public class Route {
 	 * @param route - the edges used in this Route element.
 	 */
 	public void update(ArrayList<Edge> route){
+		if(route.size() == 1 && route.get(0).isOmission()){
+			this.omission = true;
+		}
 		//TODO: Add 1000 to lagrangeProfit???
 		int lagrangeProfit = demand.getRate();
 		int realProfit = demand.getRate();
@@ -51,6 +55,7 @@ public class Route {
 		this.lagrangeProfit = lagrangeProfit;
 		this.realProfit = realProfit;
 		this.route = route;
+
 	}
 
 	/**
@@ -140,6 +145,10 @@ public class Route {
 	 */
 	public boolean isRepair() {
 		return repair;
+	}
+	
+	public boolean isOmission(){
+		return omission;
 	}
 
 

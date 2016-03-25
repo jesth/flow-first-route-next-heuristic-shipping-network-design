@@ -122,8 +122,8 @@ public class Demand {
 		repRoute.setFFErep(correctedFFErep);
 		return correctedFFErep;
 	}
-	*/
-	
+	 */
+
 	public void createRepRoute(Route prevRoute, int FFEforRemoval){
 		if(FFEforRemoval == 0){
 			return;
@@ -135,7 +135,44 @@ public class Demand {
 		repRoute.update(route);
 		repRoute.setFFErep(FFEforRemoval);
 	}
-	
+
+	public void rerouteOmissionFFEs() {
+		ArrayList<Route> omissionRoutes = new ArrayList<Route>();
+		int omissionDemand = 0;
+		for(Route r : routes){
+			if(r.isOmission()){
+				omissionRoutes.add(r);
+				omissionDemand += r.getFFErep();
+			}
+		}
+		if(omissionDemand > 0){
+			ArrayList<Edge> altRoute = BellmanFord.getRouteRep(this);
+			boolean omission = altRoute.get(0).isOmission();
+			if(!omission){
+				int altCap = Integer.MAX_VALUE;
+				for(Edge e : altRoute){
+					int underflow = e.getCapacity() - e.getRepLoad();
+					if(underflow < altCap){
+						altCap = underflow;
+					}
+				}
+				if(altCap > 0){
+					int rerouted = 0;
+					for(Route r : omissionRoutes){
+						int reroute = Math.min(altCap, r.getFFErep());
+						altCap -= reroute;
+						rerouted += reroute;
+						r.adjustFFErep(-reroute);
+					}
+					Route repRoute = new Route(this, true);
+					routes.add(repRoute);
+					repRoute.update(altRoute);
+					repRoute.setFFErep(rerouted);
+				}
+			}
+		}
+	}
+
 
 	public void clearRoutes(){
 		routes.clear();
@@ -152,7 +189,7 @@ public class Demand {
 	public void removeRoute(Route removeRoute){
 		routes.remove(removeRoute);
 	}
-	
+
 	public void checkDemand(){
 		int servicedDemand = 0;
 		for(Route r : routes){
@@ -171,6 +208,7 @@ public class Demand {
 		return "Demand [origin=" + origin.getName() + ", destination=" + destination.getName() + ", demand=" + demand + ", rate=" + rate
 				+ ", maxTransitTime=" + maxTransitTime + "]";
 	}
+
 
 
 }

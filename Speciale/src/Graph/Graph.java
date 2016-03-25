@@ -333,9 +333,24 @@ public class Graph {
 
 			}
 			File fileOut = new File(fileName);
+			File fileOutLegend = new File("legendOPLdata.csv");
 			BufferedWriter out;
+			BufferedWriter outLegend;
 
 			out = new BufferedWriter(new FileWriter(fileOut));
+			outLegend = new BufferedWriter(new FileWriter(fileOutLegend));
+			
+			outLegend.write("NodeId;Port;RotationId;Centroid");
+			for(Node i : nodes){
+				outLegend.newLine();
+				outLegend.write(i.getId()+";"+i.getPort().getUNLocode()+";");
+				if(i.isFromCentroid() || i.isToCentroid()){
+					outLegend.write("-1;1");
+				} else {
+					outLegend.write(i.getRotation().getId()+";0");
+				}
+			}
+			outLegend.close();
 
 			out.write("n = " + noOfNodes + ";");
 			out.newLine();
@@ -370,9 +385,8 @@ public class Graph {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 	}
-
+	
 	private void writeSingle(BufferedWriter out, int[] array, int number) throws IOException{
 		for(int i = 0; i < number; i++){
 			out.write(array[i] + " ");				

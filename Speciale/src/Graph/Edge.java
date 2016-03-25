@@ -183,7 +183,7 @@ public class Edge {
 			 */
 			adjustLagrange(iteration, true);
 			BellmanFord.relaxEdge(this);
-
+//
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
 		} else if(capacity > getLoad()){

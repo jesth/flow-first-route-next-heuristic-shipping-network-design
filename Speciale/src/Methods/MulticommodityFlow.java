@@ -56,10 +56,10 @@ public class MulticommodityFlow {
 			BellmanFord.run();
 			boolean validFlow = false;
 			double overflow = getOverflow();
-			if(overflow < 0.1){
+			if(overflow < 0.3){
 				System.out.println("Finding repair flow.");
 				validFlow = findRepairFlow();
-//				repairCounter++;
+				repairCounter++;
 				improvementCounter++;
 			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
@@ -81,7 +81,7 @@ public class MulticommodityFlow {
 				//				}
 			}
 			if(repairCounter >= 5){
-				System.out.println("Two/thirding Lagranges.");
+				System.out.println("Thirding Lagranges.");
 				repairCounter = 0;
 			}
 			iteration++;
@@ -227,6 +227,9 @@ public class MulticommodityFlow {
 			//			System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
 			Demand d = r.getDemand();
 			d.createRepRoute(r, r.getFFEforRemoval());
+		}
+		for(Demand d : graph.getData().getDemands()){
+			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
 			findRepairFlow();
