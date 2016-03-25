@@ -199,6 +199,22 @@ public class Demand {
 			throw new RuntimeException("The correct number of containers is not transported from " + origin.getUNLocode() + " to " + destination.getUNLocode() + ". Transported/Demand: " + servicedDemand + "/" + demand);
 		}
 	}
+	
+	public int calcLagrangeProfit(ArrayList<Edge> route){
+		int profit = rate;
+		for(Edge e : route){
+			profit -= e.getCost();
+		}
+		return profit;
+	}
+	
+	public int calcProfit(ArrayList<Edge> route){
+		int profit = rate;
+		for(Edge e : route){
+			profit -= e.getRealCost();
+		}
+		return profit;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

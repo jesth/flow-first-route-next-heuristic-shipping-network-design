@@ -208,10 +208,12 @@ public class MulticommodityFlow {
 	}
 	 */
 
+	
 	private static boolean findRepairFlow(){
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
-//		for(Edge e : graph.getEdges()){
+		//		for(Edge e : graph.getEdges()){
+		BellmanFord.runRep();
 		for(int i = graph.getEdges().size()-1; i>= 0; i--){
 			Edge e = graph.getEdges().get(i);
 			if(e.isSail()){
@@ -222,7 +224,7 @@ public class MulticommodityFlow {
 				}
 			}
 		}
-		BellmanFord.runRep();
+		
 		for(Route r : overflowRoutes){
 			//			System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
 			Demand d = r.getDemand();
@@ -285,10 +287,12 @@ public class MulticommodityFlow {
 			e.clearRoutes();
 		}
 		for(Route r : bestRoutes){
-			r.setFFE(r.getFFErep());
-			r.getDemand().addRoute(r);
-			for(Edge e : r.getRoute()){
-				e.addRoute(r);
+			if(r.getFFErep()!=0){
+				r.setFFE(r.getFFErep());
+				r.getDemand().addRoute(r);
+				for(Edge e : r.getRoute()){
+					e.addRoute(r);
+				}
 			}
 		}
 		for(Edge e : graph.getEdges()){

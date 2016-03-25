@@ -183,7 +183,7 @@ public class Edge {
 			 */
 			adjustLagrange(iteration, true);
 			BellmanFord.relaxEdge(this);
-//
+			//
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
 		} else if(capacity > getLoad()){
@@ -477,12 +477,13 @@ public class Edge {
 	}
 
 	public void decreaseLagrangeStep(){
-//				int decrement = lagrangeStep / 3;
+		//				int decrement = lagrangeStep / 3;
 		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
 
+	
 	public Route findLeastProfitableRoute(){
 		int lowestProfit = Integer.MAX_VALUE;
 		Route lowestProfitRoute = null;
@@ -503,7 +504,34 @@ public class Edge {
 		//		}
 		return lowestProfitRoute;
 	}
-
+	
+	//Defunct method.
+	public Route findLeastProfitableRoute2(){
+		int lowestProfitDiff = Integer.MAX_VALUE;
+		Route lowestProfitRoute = null;
+		for(Route r : routes){
+			if(r.getFFEforRemoval() != r.getFFErep()){
+				int currProfit = r.getDemand().calcLagrangeProfit(r.getRoute());
+				ArrayList<Edge> altRoute = BellmanFord.getRouteRep(r.getDemand());
+				int altProfit = r.getDemand().calcLagrangeProfit(altRoute);
+				int profitDiff = currProfit - altProfit;
+				if(profitDiff < lowestProfitDiff){
+					lowestProfitDiff = profitDiff;
+					lowestProfitRoute = r;
+				}
+			}
+		}
+		//		if(lowestProfitRoute == null){
+		//			System.err.println("No routes meet requirements on edge from " + getFromPortUNLo() + " to " + getToPortUNLo());
+		//			for(Route r : routes){
+		//				System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFErep " + r.getFFErep() + " and FFEforRemoval " + r.getFFEforRemoval());
+		//			}
+		//			
+		//		}
+		return lowestProfitRoute;
+	}
+	
+	
 	public void delete(){
 		fromNode.removeOutgoingEdge(this);
 		toNode.removeIngoingEdge(this);
