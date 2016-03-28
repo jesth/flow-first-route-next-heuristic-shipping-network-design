@@ -7,11 +7,12 @@ import Methods.BellmanFord;
 
 public class Route {
 	private ArrayList<Edge> route;
-	private ArrayList<Edge> prohibitedEdges;
 	private Demand demand;
 	private int FFE;
 	private int FFErep;
+	private int FFEforRemoval;
 	private boolean repair;
+	private boolean omission;
 	private int lagrangeProfit;
 	private int realProfit;
 
@@ -19,11 +20,11 @@ public class Route {
 		this.route = new ArrayList<Edge>();
 		this.demand = demand;
 		this.repair = repair;
-		this.prohibitedEdges = new ArrayList<Edge>();
 		this.lagrangeProfit = 0;
 		this.realProfit = 0;
 		this.FFE = 0;
 		this.FFErep = 0;
+		this.FFEforRemoval = 0;
 	}
 
 	/** Determines the shortest route using Bellman-Ford and respecting the prohibited edges defined.
@@ -40,6 +41,9 @@ public class Route {
 	 * @param route - the edges used in this Route element.
 	 */
 	public void update(ArrayList<Edge> route){
+		if(route.size() == 1 && route.get(0).isOmission()){
+			this.omission = true;
+		}
 		//TODO: Add 1000 to lagrangeProfit???
 		int lagrangeProfit = demand.getRate();
 		int realProfit = demand.getRate();
@@ -51,20 +55,7 @@ public class Route {
 		this.lagrangeProfit = lagrangeProfit;
 		this.realProfit = realProfit;
 		this.route = route;
-	}
 
-	/**
-	 * @return The edges that cannot be used in the shortest path for this route element.
-	 */
-	public ArrayList<Edge> getProhibitedEdges() {
-		return prohibitedEdges;
-	}
-
-	/** Adds a prohibited edge.
-	 * @param prohibitedEdge - an edge, which cannot be used in the shortest path for this route element.
-	 */
-	public void addProhibitedEdge(Edge prohibitedEdge) {
-		this.prohibitedEdges.add(prohibitedEdge);
 	}
 
 	/**
@@ -100,9 +91,22 @@ public class Route {
 	 */
 	public void adjustFFErep(int adjustFFErep){
 		this.FFErep += adjustFFErep;
-		if(FFErep == 0){
+		if(FFErep == 0 && repair){
 			deleteRoute();
 		}
+	}
+	
+	public int getFFEforRemoval(){
+		return FFEforRemoval;
+	}
+	
+	public void addFFEforRemoval(int FFEforRemoval){
+		this.FFEforRemoval += FFEforRemoval;
+	}
+	
+	public void implementFFEforRemoval(){
+		adjustFFErep(-FFEforRemoval);
+		this.FFEforRemoval = 0;
 	}
 
 	/** Removes all references to this route element from the associated edges and demand. Route element will then be garbage collected.
@@ -142,6 +146,10 @@ public class Route {
 	public boolean isRepair() {
 		return repair;
 	}
+	
+	public boolean isOmission(){
+		return omission;
+	}
 
 
 	/**
@@ -170,6 +178,17 @@ public class Route {
 	 */
 	public void setRealProfit(int realProfit) {
 		this.realProfit = realProfit;
+	}
+	
+	public int findMaxUnderflow() {
+		int maxUnderflow = Integer.MAX_VALUE;
+		for(Edge e : route){
+			int underflow = e.getCapacity() - e.getRepLoad();
+			if(underflow < maxUnderflow){
+				maxUnderflow = underflow;
+			}
+		}
+		return maxUnderflow;
 	}
 
 	public String simplePrint(){

@@ -16,8 +16,8 @@ import Results.Result;
 import Results.Rotation;
 
 public class RunModel {
-	public static void main(String[] args) throws FileNotFoundException {
-		
+	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+//		Thread.sleep(10000);
 //		testBaltic();
 //		testBaltic();
 //		testAutomatic();
@@ -26,7 +26,7 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testWorldSmallAuto();
+		testWorldSmall3Auto();
 //		testMedManual2();
 		
 	}
@@ -649,7 +649,7 @@ public class RunModel {
 		testGraph.saveOPLData("OPLData.dat");
 	}
 	
-	public static void testWorldSmallAuto()throws FileNotFoundException{
+	public static void testWorldSmall1Auto()throws FileNotFoundException{
 		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -679,7 +679,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
-		
+
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
@@ -720,4 +720,145 @@ public class RunModel {
 		
 	}
 
+	
+	public static void testWorldSmall2Auto()throws FileNotFoundException{
+		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
+		initialize(graph);
+		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
+		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
+		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
+		VesselClass panamax2400 = graph.getData().getVesselClasses().get(3);
+		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
+		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
+		
+		System.out.println("Rotations generated.");
+		
+//		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+//		ComputeRotations.addPorts();
+//		ComputeRotations.removePorts();
+//		MulticommodityFlow.run();
+		System.out.println("Multicommodity run.");
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+		graph.saveOPLData("OPLData.dat");
+		
+	}
+	
+	
+	public static void testWorldSmall3Auto()throws FileNotFoundException{
+		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
+		initialize(graph);
+		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
+		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
+		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
+		VesselClass panamax2400 = graph.getData().getVesselClasses().get(3);
+		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
+		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
+		
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
+		
+		System.out.println("Rotations generated.");
+		
+//		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+//		ComputeRotations.addPorts();
+//		ComputeRotations.removePorts();
+//		MulticommodityFlow.run();
+		System.out.println("Multicommodity run.");
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+		graph.saveOPLData("OPLData.dat");
+		
+	}
 }

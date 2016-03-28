@@ -45,28 +45,44 @@ public class MulticommodityFlow {
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 0;
-		//		startLagrange();
+		int repairCounter = 0;
+		int improvementCounter = 0;
+		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
-		while (iteration < 1200){
+		while (iteration < 100){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
 			boolean validFlow = false;
-			if(checkOverflow(0.1)){
+			double overflow = getOverflow();
+			if(overflow < 0.3){
+				System.out.println("Finding repair flow.");
 				validFlow = findRepairFlow();
+				repairCounter++;
+				improvementCounter++;
 			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
 			if(validFlow && flowProfit > bestFlowProfit){
 				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
+				repairCounter = 0;
+				improvementCounter = 0;
 			}
 
 			//			for (Edge e : graph.getEdges()){
 			//				if(e.isSail()){
 			for(Edge e : sailEdges){
-				e.lagrangeAdjustment(iteration);
+				if(repairCounter >= 5){
+					e.setLagrange(Math.max(e.getLagrange() / 3,1));
+				} else {
+					e.lagrangeAdjustment(iteration);
+				}
 				//				}
+			}
+			if(repairCounter >= 5){
+				System.out.println("Thirding Lagranges.");
+				repairCounter = 0;
 			}
 			iteration++;
 		}
@@ -78,18 +94,27 @@ public class MulticommodityFlow {
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 
-	private static boolean checkOverflow(double overflowPercent) {
-		double overFlow = 0;
+	private static double getOverflow() {
+		double overflow = 0;
 		int sailEdges = 0;
 		for(Edge e : graph.getEdges()){
 			if(e.isSail()){
 				sailEdges++;
-				overFlow += Math.max(((double) e.getLoad()/ (double) e.getCapacity())-1,0);
+				overflow += Math.max(((double) e.getLoad()/ (double) e.getCapacity())-1,0);
 			}
 		}
-		overFlow = overFlow/(double) sailEdges;
+		overflow = overflow/(double) sailEdges;
 
-		return (overFlow < overflowPercent);
+		return overflow;
+	}
+
+	private static void startLagrange(){
+		for (Edge e : graph.getEdges()){
+			if(e.isSail()){
+				e.setLagrange(1000);
+
+			}
+		}
 	}
 
 	/*
@@ -128,16 +153,28 @@ public class MulticommodityFlow {
 	 * <br>7) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
 	 * @return The profit of the repaired flow.
 	 */
+
+	/*
 	private static boolean findRepairFlow(){
+		System.out.println("Finding repair flow.");
 		boolean firstValid = true;
 		boolean invalidFlow = true;
-		int counter = 0;
+		ArrayList<Edge> overflowEdges = new ArrayList<Edge>();
+//		for(Edge e : graph.getEdges()){
+		for(int i = graph.getEdges().size()-1; i>= 0; i--){
+			Edge e = graph.getEdges().get(i);
+			int overflow = e.getRepLoad() - e.getCapacity();
+			if(e.isSail() && overflow > 0){
+				overflowEdges.add(e);
+			}
+		}
 		while(invalidFlow){
 			//			System.out.println("Iteration: " + counter);
 			invalidFlow = false;
-			for(Edge e : graph.getEdges()){
+			for(int i = overflowEdges.size()-1; i >= 0; i--){
+				Edge e = overflowEdges.get(i);
 				int overflow = e.getRepLoad() - e.getCapacity();
-				if(e.isSail() && overflow > 0){
+				if(overflow > 0){
 					invalidFlow = true;
 					firstValid = false;
 					int lowestProfit = Integer.MAX_VALUE;
@@ -150,18 +187,79 @@ public class MulticommodityFlow {
 					}
 					Demand repDemand = lowestProfitRoute.getDemand();
 					int FFErep = Math.min(lowestProfitRoute.getFFErep(), overflow);
+					FFErep = repDemand.createRepRoute(lowestProfitRoute, FFErep);
 					lowestProfitRoute.adjustFFErep(-FFErep);
-					repDemand.createRepRoute(lowestProfitRoute, e, FFErep);
+				} else {
+					overflowEdges.remove(i);
 				}
 			}
-			counter++;
 		}
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					e.decreaseLagrangeStep();
+				}
+			}
 		}
 		return firstValid;
+	}
+	 */
+
+	
+	private static boolean findRepairFlow(){
+		boolean validFlow = true;
+		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
+		//		for(Edge e : graph.getEdges()){
+		BellmanFord.runRep();
+		for(int i = graph.getEdges().size()-1; i>= 0; i--){
+			Edge e = graph.getEdges().get(i);
+			if(e.isSail()){
+				int overflow = e.getRepAndRemoveLoad() - e.getCapacity();
+				if(overflow > 0){
+					validFlow = false;
+					findOverflowRoutes(e, overflow, overflowRoutes);
+				}
+			}
+		}
+		
+		for(Route r : overflowRoutes){
+			//			System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
+			Demand d = r.getDemand();
+			d.createRepRoute(r, r.getFFEforRemoval());
+		}
+		for(Demand d : graph.getData().getDemands()){
+			d.rerouteOmissionFFEs();
+		}
+		if(!validFlow){
+			findRepairFlow();
+		}
+		int flowProfit = graph.getResult().getFlowProfit(true);
+		if(flowProfit > bestFlowProfit){
+			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
+			updateBestFlow(flowProfit);
+			for(Edge e : graph.getEdges()){
+				if(e.isSail()){
+					e.decreaseLagrangeStep();
+				}
+			}
+		}
+		return validFlow;
+	}
+
+
+	private static void findOverflowRoutes(Edge e, int overflow, ArrayList<Route> overflowRoutes){
+		Route r = e.findLeastProfitableRoute();
+		int FFEforRemoval = Math.min(overflow, (r.getFFErep()-r.getFFEforRemoval()));
+		r.addFFEforRemoval(FFEforRemoval);
+		//		System.err.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
+		overflowRoutes.add(r);
+		overflow -= FFEforRemoval;
+		if(overflow > 0){
+			findOverflowRoutes(e, overflow, overflowRoutes);
+		}
 	}
 
 	/** Updates the best flow to the current flow. Saves the best routes and objective value of the current flow. 
@@ -189,11 +287,21 @@ public class MulticommodityFlow {
 			e.clearRoutes();
 		}
 		for(Route r : bestRoutes){
-			r.setFFE(r.getFFErep());
-			r.getDemand().addRoute(r);
-			for(Edge e : r.getRoute()){
-				e.addRoute(r);
+			if(r.getFFErep()!=0){
+				r.setFFE(r.getFFErep());
+				r.getDemand().addRoute(r);
+				for(Edge e : r.getRoute()){
+					e.addRoute(r);
+				}
 			}
+		}
+		for(Edge e : graph.getEdges()){
+			if(e.getCapacity() < e.getLoad()){
+				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo());
+			}
+		}
+		for(Demand d : graph.getData().getDemands()){
+			d.checkDemand();
 		}
 	}
 
