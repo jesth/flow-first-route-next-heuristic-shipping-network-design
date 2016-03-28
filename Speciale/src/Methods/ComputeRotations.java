@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
 import javax.tools.ToolProvider;
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
@@ -182,17 +183,8 @@ public class ComputeRotations {
 	
 	public static Rotation splitRotation(Rotation originalRotation){
 		
-		ArrayList<Port> originalRotationPorts = originalRotation.getPorts();
-		
 		//Sort edges after load, ascending.
-		ArrayList<SortableEdge> sortableEdges = new ArrayList<SortableEdge>();
-		for(Edge e : originalRotation.getRotationEdges()){
-			if(e.isSail()){
-				SortableEdge sortableAuxEdge = new SortableEdge(e.getLoad(), e);
-				sortableEdges.add(sortableAuxEdge);
-			}
-		}
-		Collections.sort(sortableEdges, Collections.reverseOrder());
+		ArrayList<SortableEdge> sortableEdges = getSortedSailEdges(originalRotation);
 		
 		//Finds two least loaded edges, not consecutive.
 		Edge leastEdge = sortableEdges.get(0).getEdge();
@@ -249,9 +241,103 @@ public class ComputeRotations {
 			}
 			newRotation = graph.createRotationFromPorts(newRotationIds, vessel);
 			System.out.println("Split rotation succesfully with same or less vessels");
+		} else {
+			System.out.println("Split rotation unsuccesful, because number of ships needed were more than before");
 		}
 		
 		return newRotation;
+	}
+	
+	public static Rotation mergeRotations(Rotation r1, Rotation r2){
+		VesselClass r1Vessel = r1.getVesselClass();
+		VesselClass r2Vessel = r2.getVesselClass();
+		if(r1Vessel != r2Vessel){
+			throw new RuntimeException("Tried to merge two rotaitons with different vessel classes");
+		}
+		VesselClass vessel = r1Vessel;
+		
+		Rotation mergeRotation = null;
+		
+		ArrayList<SortableEdge> sortedR1 = getSortedSailEdges(r1);
+		Edge leastR1Edge = sortedR1.get(0).getEdge();
+		ArrayList<SortableEdge> sortedR2 = getSortedSailEdges(r2);
+		Edge leastR2Edge = sortedR2.get(0).getEdge();
+//		Port fromPortR1 = sortedR1.get(0).getEdge().getFromNode().getPort();
+//		Port toPortR1 = sortedR1.get(0).getEdge().getToNode().getPort();
+//		Port fromPortR2 = sortedR2.get(0).getEdge().getFromNode().getPort();
+//		Port toPortR2 = sortedR2.get(0).getEdge().getToNode().getPort();
+//		
+//		int fromFrom = 0;
+//		fromFrom += graph.getData().getBestDistanceElement(fromPortR1, fromPortR2, vessel).getDistance();
+//		fromFrom += graph.getData().getBestDistanceElement(toPortR2, toPortR1, vessel).getDistance();
+//		
+//		int fromTo = 0;
+//		fromTo += graph.getData().getBestDistanceElement(fromPortR1, toPortR2, vessel).getDistance();
+//		fromTo += graph.getData().getBestDistanceElement(fromPortR2, toPortR1, vessel).getDistance();
+		
+		ArrayList<Port> mergeRotationPorts = new ArrayList<Port>();
+		
+		Edge currentEdge = sortedR1.get(0).getEdge().getNextEdge();
+		while(currentEdge != leastR1Edge){
+			if(currentEdge.isDwell()){
+				mergeRotationPorts.add(currentEdge.getFromNode().getPort());
+			}
+			currentEdge = currentEdge.getNextEdge();
+		}
+		currentEdge = sortedR2.get(0).getEdge().getNextEdge();
+		while(currentEdge != leastR2Edge){
+			if(currentEdge.isDwell()){
+				mergeRotationPorts.add(currentEdge.getFromNode().getPort());
+			}
+			currentEdge = currentEdge.getNextEdge();
+		}
+		removeConsecutivePorts(mergeRotationPorts);
+
+		System.out.println("Rotation 1");
+		for(Port p : r1.getPorts()){
+			System.out.println(p.getPortId());
+		}
+		System.out.println("Rotation 2");
+		for(Port p : r2.getPorts()){
+			System.out.println(p.getPortId());
+		}
+		System.out.println("Merged Rotation");
+		for(Port p : mergeRotationPorts){
+			System.out.println(p.getPortId());
+		}
+
+		
+		int previousNoVessels = r1.getNoOfVessels() + r2.getNoOfVessels();
+		int mergeNoVessels = calcNumberOfVessels(mergeRotationPorts, vessel);
+		System.out.println("previousNoVessels " + previousNoVessels + " mergeNoVessels " + mergeNoVessels);
+		if(mergeNoVessels <= previousNoVessels){
+			ArrayList<Integer> mergeRotationPortIds = new ArrayList<Integer>();
+			for(Port p : mergeRotationPorts){
+				mergeRotationPortIds.add(p.getPortId());
+			}
+			graph.deleteRotation(r1);
+			graph.deleteRotation(r2);
+			mergeRotation = graph.createRotationFromPorts(mergeRotationPortIds , vessel);
+			System.out.println("Merge rotations succesful with same or less ships");
+		} else {
+			System.out.println("Merge rotations unsuccesful, because number of ships needed were more than before");
+		}
+		
+		return mergeRotation;
+	}
+	
+	public static ArrayList<SortableEdge> getSortedSailEdges(Rotation rotation){
+		
+		ArrayList<SortableEdge> sortableEdges = new ArrayList<SortableEdge>();
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				SortableEdge sortableAuxEdge = new SortableEdge(e.getLoad(), e);
+				sortableEdges.add(sortableAuxEdge);
+			}
+		}
+		Collections.sort(sortableEdges, Collections.reverseOrder());
+		
+		return sortableEdges;
 	}
 	
 	public static boolean consecutiveEdges(int firstNo, int secondNo, int listSize){
@@ -265,15 +351,22 @@ public class ComputeRotations {
 	}
 
 	public static void removeConsecutivePorts(ArrayList<Port> ports){
-		if(ports.get(0).getPortId() == ports.get(1).getPortId()){
-			ports.remove(0);
-		}
-		if(ports.get(ports.size()-2).getPortId() == ports.get(ports.size()-1).getPortId()){
-			ports.remove(ports.size()-1);
+		for(int i=ports.size()-1; i>=1; i--){
+			if(ports.get(i).getPortId() == ports.get(i-1).getPortId()){
+				ports.remove(i);
+			}
 		}
 		if(ports.get(0).getPortId() == ports.get(ports.size()-1).getPortId()){
 			ports.remove(0);
 		}
+		
+//		if(ports.get(0).getPortId() == ports.get(1).getPortId()){
+//			ports.remove(0);
+//		}
+//		if(ports.get(ports.size()-2).getPortId() == ports.get(ports.size()-1).getPortId()){
+//			ports.remove(ports.size()-1);
+//		}
+		
 	}
 	
 	

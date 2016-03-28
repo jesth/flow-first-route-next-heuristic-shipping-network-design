@@ -26,13 +26,14 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testWorldSmall3Auto();
+//		testWorldSmall3Auto();
 //		testMedManual2();
+		testWorldLargeAuto();
 		
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
+		Graph testGraph = new Graph("Demand_WorldLarge.csv", "fleet_WorldLarge.csv");
 		AuxRun.initialize(testGraph.getData(), 10);
 		System.out.println("SaveAux is done");
 	}
@@ -823,8 +824,8 @@ public class RunModel {
 		
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		Rotation r2 = ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
+		Rotation r1 = ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
@@ -848,6 +849,124 @@ public class RunModel {
 		
 //		ComputeRotations.addPorts();
 		MulticommodityFlow.run();
+		
+		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
+//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
+//		for(Port p : r1.getPorts()){
+//			rotationPorts.add(p.getName());
+//		}
+//		RuneVisualization.makeVisualization(rotationPorts, "r1");
+//		rotationPorts = new ArrayList<String>(r2.getPorts().size());
+//		for(Port p : r2.getPorts()){
+//			rotationPorts.add(p.getName());
+//		}
+//		RuneVisualization.makeVisualization(rotationPorts, "r2");
+		
+		
+//		MulticommodityFlow.run();
+//		ComputeRotations.addPorts();
+//		ComputeRotations.removePorts();
+//		MulticommodityFlow.run();
+		System.out.println("Multicommodity run.");
+//		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+//		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		System.out.println();
+		System.out.println("Objective " + graph.getResult().getObjective());
+		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
+//		graph.saveOPLData("OPLData.dat");
+		
+	}
+	
+	public static void testWorldLargeAuto()throws FileNotFoundException{
+		Graph graph = new Graph("Demand_WorldLarge.csv", "fleet_WorldLarge.csv");
+		initialize(graph);
+		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
+		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
+		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
+		VesselClass panamax2400 = graph.getData().getVesselClasses().get(3);
+		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
+		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
+		
+		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
+		
+		Rotation r11 = ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		Rotation r10 = ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
+		
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
+		
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
+		
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
+		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
+	
+		System.out.println("Rotations generated.");
+		
+//		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+		
+//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
+//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
+//		for(Port p : r1.getPorts()){
+//			rotationPorts.add(p.getName());
+//		}
+//		RuneVisualization.makeVisualization(rotationPorts, "r1");
+		
+		
+//		MulticommodityFlow.run();
 //		ComputeRotations.addPorts();
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();

@@ -283,6 +283,13 @@ public class Node {
 	}
 	
 	public Edge getNextEdge(){
+		if(isArrival()){
+			for(Edge e : outgoingEdges){
+				if(e.isDwell()){
+					return e;
+				}
+			}
+		}
 		if(outgoingEdges.size() != 1){
 			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
 			System.out.println("Rotation id " + rotation.getId());

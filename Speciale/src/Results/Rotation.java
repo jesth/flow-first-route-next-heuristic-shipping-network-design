@@ -177,14 +177,14 @@ public class Rotation {
 		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
 		int TCCost = rotationDays * v.getTCRate();
 
-		System.out.println("Rotation number "+ this.id);
-		System.out.println("Voyage duration in nautical miles " + distance);
-		System.out.println(this.noOfVessels + " ships needed sailing with speed " + speed);
-		System.out.println("Port call cost " + portCost);
-		System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
-		System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
-		System.out.println("Total TC cost " + TCCost);
-		System.out.println();
+//		System.out.println("Rotation number "+ this.id);
+//		System.out.println("Voyage duration in nautical miles " + distance);
+//		System.out.println(this.noOfVessels + " ships needed sailing with speed " + speed);
+//		System.out.println("Port call cost " + portCost);
+//		System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
+//		System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
+//		System.out.println("Total TC cost " + TCCost);
+//		System.out.println();
 		obj += sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
 
 		return obj;
