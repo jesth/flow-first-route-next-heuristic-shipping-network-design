@@ -53,7 +53,7 @@ public class BellmanFord {
 	 * Also adds the demand load, shortest path OD relations, lagrange profit and real profit to relevant edges.
 	 */
 	public static void run(){
-//		reset();
+		reset();
 		for(Edge e : graph.getEdges()){
 			e.clearRoutes();
 		}

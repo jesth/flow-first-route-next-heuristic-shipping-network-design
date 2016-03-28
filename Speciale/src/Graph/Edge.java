@@ -182,13 +182,13 @@ public class Edge {
 			} 
 			 */
 			adjustLagrange(iteration, true);
-			BellmanFord.relaxEdge(this);
+//			BellmanFord.relaxEdge(this);
 			//
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
 			//					System.out.println();
 		} else if(capacity > getLoad()){
 			adjustLagrange(iteration, false);
-			BellmanFord.relaxEdge(this);
+//			BellmanFord.relaxEdge(this);
 			//			System.out.println(this.simplePrint());
 
 			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
@@ -213,7 +213,7 @@ public class Edge {
 				resetLagrangeDown();
 				 */
 			} else {
-				this.lagrange = Math.max(this.lagrange - lagrangeStep / 5, 1);
+				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 5), 1);
 
 				/*
 				if(getLagrangeDown() >= 3 && this.lagrange > 1){
@@ -230,6 +230,10 @@ public class Edge {
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
+		saveValues(iteration);
+	}
+	
+	public void saveValues(int iteration){
 		lagrangeValues[iteration] = this.lagrange;
 		loadValues[iteration] = this.getLoad();
 	}
@@ -247,6 +251,10 @@ public class Edge {
 	public void setLagrange(int lagrange){
 		this.lagrange = lagrange;
 		this.cost = this.realCost+this.lagrange;
+	}
+	
+	public void setLagrangeStep(int lagrangeStep){
+		this.lagrangeStep = lagrangeStep;
 	}
 
 	/**
@@ -477,8 +485,8 @@ public class Edge {
 	}
 
 	public void decreaseLagrangeStep(){
-		//				int decrement = lagrangeStep / 3;
-		int decrement = 0;
+						int decrement = lagrangeStep / 3;
+//		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
@@ -492,6 +500,9 @@ public class Edge {
 				if(r.getLagrangeProfit() < lowestProfit){
 					lowestProfit = r.getLagrangeProfit();
 					lowestProfitRoute = r;
+//					if(r.getDemand().getOrigin().getUNLocode().equals("CNSHA") && r.getDemand().getDestination().getUNLocode().equals("NLRTM")){
+//						System.out.println("Moving route CNSHA->NLRTM with profit " + lowestProfit);
+//					}
 				}
 			}
 		}
@@ -518,6 +529,9 @@ public class Edge {
 				if(profitDiff < lowestProfitDiff){
 					lowestProfitDiff = profitDiff;
 					lowestProfitRoute = r;
+//					if(r.getDemand().getOrigin().getUNLocode().equals("CNSHA") && r.getDemand().getDestination().getUNLocode().equals("NLRTM")){
+//						System.out.println("Moving route CNSHA->NLRTM with profitDiff " + profitDiff);
+//					}
 				}
 			}
 		}
@@ -530,7 +544,6 @@ public class Edge {
 		//		}
 		return lowestProfitRoute;
 	}
-	
 	
 	public void delete(){
 		fromNode.removeOutgoingEdge(this);

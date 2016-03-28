@@ -145,6 +145,7 @@ public class ComputeRotations {
 			}
 			if(bestRotation != null){
 				graph.insertPort(bestRotation, bestEdge, p);
+				System.out.println("Adding port.");
 			}
 		}
 	}
