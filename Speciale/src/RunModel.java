@@ -848,9 +848,12 @@ public class RunModel {
 		
 //		ComputeRotations.addPorts();
 		MulticommodityFlow.run();
-//		ComputeRotations.addPorts();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
+	/*	
+		ComputeRotations.removePorts();
+		MulticommodityFlow.run();
+		ComputeRotations.addPorts();
+		MulticommodityFlow.run();
+*/
 		System.out.println("Multicommodity run.");
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());

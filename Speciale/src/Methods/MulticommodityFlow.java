@@ -25,6 +25,15 @@ public class MulticommodityFlow {
 		BellmanFord.initialize(graph);
 	}
 
+	public static void reset(){
+		for(Edge e : graph.getEdges()){
+			if(e.isSail()){
+				e.setLagrangeStep(50);
+				e.setLagrange(1);
+			}
+		}
+	}
+
 	/** Runs the multicommodity flow algorithm by:
 	 * <br>1) Running the Bellman Ford-algorithm.
 	 * <br>2) If the flow is illegal: 
@@ -42,6 +51,7 @@ public class MulticommodityFlow {
 			}
 		}
 		BellmanFord.reset();
+		reset();
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 0;
@@ -50,17 +60,18 @@ public class MulticommodityFlow {
 		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
-		while (iteration < 100){
+		while (improvementCounter < 20){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
 			boolean validFlow = false;
 			double overflow = getOverflow();
 			if(overflow < 0.3){
-				System.out.println("Finding repair flow.");
-				validFlow = findRepairFlow();
-				repairCounter++;
 				improvementCounter++;
+				System.out.println("Finding repair flow.");
+				validFlow = findRepairFlow(improvementCounter);
+				repairCounter++;
+
 			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
 			if(validFlow && flowProfit > bestFlowProfit){
@@ -74,14 +85,15 @@ public class MulticommodityFlow {
 			//				if(e.isSail()){
 			for(Edge e : sailEdges){
 				if(repairCounter >= 5){
-					e.setLagrange(Math.max(e.getLagrange() / 3,1));
+					e.setLagrange(Math.max(e.getLagrange() / 2,1));
+					e.saveValues(iteration);
 				} else {
 					e.lagrangeAdjustment(iteration);
 				}
 				//				}
 			}
 			if(repairCounter >= 5){
-				System.out.println("Thirding Lagranges.");
+				System.out.println("Halving Lagranges.");
 				repairCounter = 0;
 			}
 			iteration++;
@@ -208,8 +220,8 @@ public class MulticommodityFlow {
 	}
 	 */
 
-	
-	private static boolean findRepairFlow(){
+
+	private static boolean findRepairFlow(int improvementCounter){
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
@@ -224,20 +236,27 @@ public class MulticommodityFlow {
 				}
 			}
 		}
-		
+
 		for(Route r : overflowRoutes){
 			//			System.out.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
 			Demand d = r.getDemand();
 			d.createRepRoute(r, r.getFFEforRemoval());
 		}
+		//		ArrayList<Demand> demands = new ArrayList<Demand>(graph.getData().getDemands());
+		//		int size = demands.size();
 		for(Demand d : graph.getData().getDemands()){
+			//		for(int i = 0; i < size; i++){
+			//			double rand = Math.random();
+			//			int pos = (int) (rand * (double) demands.size());
+			//			Demand d = demands.remove(pos);
 			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
-			findRepairFlow();
+			findRepairFlow(improvementCounter);
 		}
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
+			improvementCounter = 0;
 			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			updateBestFlow(flowProfit);
 			for(Edge e : graph.getEdges()){
