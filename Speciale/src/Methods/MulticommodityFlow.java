@@ -60,7 +60,7 @@ public class MulticommodityFlow {
 		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
-		while (improvementCounter < 20){
+		while (improvementCounter < 20 && iteration < 100){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			BellmanFord.run();
