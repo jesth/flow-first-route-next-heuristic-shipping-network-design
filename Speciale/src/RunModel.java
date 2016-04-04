@@ -17,7 +17,7 @@ import Results.Rotation;
 
 public class RunModel {
 	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-//		Thread.sleep(10000);
+//		Thread.sleep(15000);
 //		testBaltic();
 //		testBaltic();
 //		testAutomatic();
@@ -868,13 +868,13 @@ public class RunModel {
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
-//		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
-//		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
+		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
-//		graph.saveOPLData("OPLData.dat");
+		graph.saveOPLData("OPLData.dat");
 		
 	}
 	
