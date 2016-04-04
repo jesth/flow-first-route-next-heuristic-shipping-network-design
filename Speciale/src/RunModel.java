@@ -26,14 +26,14 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-//		testWorldSmall3Auto();
+		testWorldSmall3Auto();
 //		testMedManual2();
-		testWorldLargeAuto();
+//		testWorldLargeAuto();
 		
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_WorldLarge.csv", "fleet_WorldLarge.csv");
+		Graph testGraph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
 		AuxRun.initialize(testGraph.getData(), 10);
 		System.out.println("SaveAux is done");
 	}
@@ -850,7 +850,7 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		MulticommodityFlow.run();
 		
-		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
+//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
 //		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
 //		for(Port p : r1.getPorts()){
 //			rotationPorts.add(p.getName());
