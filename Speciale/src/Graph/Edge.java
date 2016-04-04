@@ -154,9 +154,7 @@ public class Edge {
 			this.lagrangeStart = lagrangeInput;
 		}
 	}
-	 */
-
-	/*
+	
 	public void resetLagrange(){
 		int lowestProfit = Integer.MAX_VALUE;
 		for(Route r : getRoutes()){
@@ -183,16 +181,14 @@ public class Edge {
 			 */
 			adjustLagrange(iteration, true);
 //			BellmanFord.relaxEdge(this);
-			//
-			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-			//					System.out.println();
+			//			System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+			//			System.out.println();
 		} else if(capacity > getLoad()){
 			adjustLagrange(iteration, false);
 //			BellmanFord.relaxEdge(this);
 			//			System.out.println(this.simplePrint());
-
-			//					System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
-			//					System.out.println();
+			//			System.out.println("Cost changed from " + wasCost + " to " + e.getCost());
+			//			System.out.println();
 		} 
 	}
 
@@ -214,7 +210,6 @@ public class Edge {
 				 */
 			} else {
 				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 5), 1);
-
 				/*
 				if(getLagrangeDown() >= 3 && this.lagrange > 1){
 					doubleLagrangeStep();
