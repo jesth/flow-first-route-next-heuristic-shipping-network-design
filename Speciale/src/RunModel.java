@@ -14,6 +14,7 @@ import Methods.ComputeRotations;
 import Methods.MulticommodityFlow;
 import Results.Result;
 import Results.Rotation;
+import RotationFlow.RotationGraph;
 
 public class RunModel {
 	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
@@ -119,6 +120,7 @@ public class RunModel {
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
 		MulticommodityFlow.initialize(graph);
+		RotationGraph.initialize(graph);
 	}
 	
 	public static void testBalticManual() throws FileNotFoundException{
@@ -849,6 +851,9 @@ public class RunModel {
 		
 //		ComputeRotations.addPorts();
 		MulticommodityFlow.run();
+		
+		r1.createRotationGraph();
+		r1.findRotationFlow();
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
 //		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());

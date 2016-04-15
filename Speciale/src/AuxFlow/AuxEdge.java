@@ -69,10 +69,13 @@ public class AuxEdge implements Serializable{
 
 	private void calcCostFunction(double startMultiplier, double endMultiplier){
 		VesselClass vessel = graph.getLargestVessel();
-		//TODO: Add canal cost.
+		int panamaCost = 0;
 		if(distance.isPanama()){
+			panamaCost = vessel.getPanamaFee();
 		}
+		int suezCost = 0;
 		if(distance.isSuez()){
+			suezCost = vessel.getSuezFee();
 		}
 		double sailTimeDays = (distance.getDistance() / vessel.getDesignSpeed()) / 24.0;
 		double fuelConsumptionSail = sailTimeDays * vessel.getFuelConsumptionDesign();
@@ -81,7 +84,7 @@ public class AuxEdge implements Serializable{
 		int portCostFrom = (int) 0.5 * (fromNode.getPort().getFixedCallCost() + fromNode.getPort().getVarCallCost() * vessel.getCapacity());
 		int portCostTo = (int) 0.5 * (toNode.getPort().getFixedCallCost() + toNode.getPort().getVarCallCost() * vessel.getCapacity());
 		int TCCost = (int) (vessel.getTCRate() * sailTimeDays);
-		int totalCost = fuelCost + portCostFrom + portCostTo + TCCost;
+		int totalCost = panamaCost + suezCost + fuelCost + portCostFrom + portCostTo + TCCost;
 		int avgCost = totalCost / vessel.getCapacity();
 
 		double startCost = avgCost * startMultiplier;
