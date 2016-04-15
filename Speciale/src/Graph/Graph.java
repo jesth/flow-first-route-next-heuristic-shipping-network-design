@@ -18,6 +18,8 @@ public class Graph {
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
 	
 	private ArrayList<Node> nodes;
+	private ArrayList<Node> fromCentroids;
+//	private ArrayList<Node> toCentroids;
 	private ArrayList<Edge> edges;
 	private Data data;
 	private Result result;
@@ -27,6 +29,8 @@ public class Graph {
 		result = new Result(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
+		this.fromCentroids = new ArrayList<Node>();
+//		this.toCentroids = new ArrayList<Node>();
 		createCentroids();
 		createOmissionEdges();
 	}
@@ -38,6 +42,7 @@ public class Graph {
 			if(i.isActive()){
 				Node fromCentroid = new Node(i, true);
 				Node toCentroid = new Node(i, false);
+				fromCentroids.add(fromCentroid);
 				nodes.add(fromCentroid);
 				nodes.add(toCentroid);
 			}
@@ -413,6 +418,13 @@ public class Graph {
 			}
 		}
 		out.write("];");
+	}
+
+	/**
+	 * @return the fromCentroids
+	 */
+	public ArrayList<Node> getFromCentroids() {
+		return fromCentroids;
 	}
 
 	public ArrayList<Node> getNodes() {

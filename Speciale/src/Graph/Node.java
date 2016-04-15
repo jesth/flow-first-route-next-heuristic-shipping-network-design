@@ -51,9 +51,9 @@ public class Node {
 		this.toCentroid = false;
 		this.departure = departure;
 		this.arrival = !departure;
-		this.distances = new int[noOfCentroids+1];
-		this.predecessors = new Edge[noOfCentroids+1];
-		this.unprocessed = new boolean[noOfCentroids+1];
+		this.distances = new int[noOfCentroids];
+		this.predecessors = new Edge[noOfCentroids];
+		this.unprocessed = new boolean[noOfCentroids];
 		this.distancesRep = new int[noOfCentroids];
 		this.predecessorsRep = new Edge[noOfCentroids];
 		this.unprocessedRep = new boolean[noOfCentroids];
@@ -150,13 +150,13 @@ public class Node {
 	/** Sets this node unprocessed for the Bellman Ford algorithm.
 	 * @param centroidId - the centroid <i>from</i> which the shortest path must be processed again.
 	 */
-	public void setUnprocessed(int centroidId){
-		BellmanFord.addUnprocessedNode(this);
+	public void setUnprocessed(BellmanFord bellmanFord, int centroidId){
+		bellmanFord.addUnprocessedNode(this);
 		unprocessed[centroidId] = true;
 	}
 	
-	public void setUnprocessedRep(int centroidId){
-		BellmanFord.addUnprocessedNodeRep(this);
+	public void setUnprocessedRep(BellmanFord bellmanFord, int centroidId){
+		bellmanFord.addUnprocessedNodeRep(this);
 		unprocessedRep[centroidId] = true;
 	}
 	

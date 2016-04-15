@@ -102,7 +102,7 @@ public class Demand {
 		routes.add(newRoute);
 		newRoute.setFFE(demand);
 		newRoute.setFFErep(demand);
-		ArrayList<Edge> route = BellmanFord.getRoute(this, false);
+		ArrayList<Edge> route = BellmanFord.getRoute(this);
 		newRoute.update(route);
 		return newRoute;
 	}

@@ -7,7 +7,7 @@ public class Data {
 	private HashMap<String, Port> portsMap;
 	private Port[] ports;
 	private Distance[][] distances;
-	private Demand[][] demandsArray;
+	private Demand[][] demandsMatrix;
 	private ArrayList<Demand> demandsList;
 	private ArrayList<VesselClass> vesselClasses;
 	private int portStay = 24;
@@ -17,11 +17,11 @@ public class Data {
 		convertPortsMap();
 		distances = ReadData.readDistances(portsMap);
 		demandsList = ReadData.readDemands(demandFileName, portsMap);
-		demandsArray = createDemandsArray();
+		demandsMatrix = createDemandsMatrix();
 		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
 	}
 
-	private Demand[][] createDemandsArray(){
+	private Demand[][] createDemandsMatrix(){
 		Demand[][] demands = new Demand[portsMap.size()][portsMap.size()];
 		for(Demand d : demandsList){
 			int fromPortId = d.getOrigin().getPortId();
@@ -74,7 +74,7 @@ public class Data {
 	}
 
 	public Demand getDemand(int fromPortId, int toPortId){
-		return demandsArray[fromPortId][toPortId];
+		return demandsMatrix[fromPortId][toPortId];
 	}
 
 	public DistanceElement getBestDistanceElement(String port1UNLo, String port2UNLo, VesselClass vesselClass){
@@ -107,5 +107,16 @@ public class Data {
 
 	public int getPortStay(){
 		return portStay;
+	}
+
+	/**
+	 * @return the demandsMatrix
+	 */
+	public Demand[][] getDemandsMatrix() {
+		return demandsMatrix;
+	}
+	
+	public Demand[] getFromDemandArray(int fromPortId){
+		return demandsMatrix[fromPortId];
 	}
 }

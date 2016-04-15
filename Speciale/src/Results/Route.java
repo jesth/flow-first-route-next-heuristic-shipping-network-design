@@ -30,12 +30,12 @@ public class Route {
 	/** Determines the shortest route using Bellman-Ford and respecting the prohibited edges defined.
 	 * 
 	 */
-	public void findRoute(){
-		if(!route.isEmpty()){
-			throw new RuntimeException("Tried to find a route for a non-empty Route.");
-		}
-		BellmanFord.runSingleRoute(this);
-	}
+//	public void findRoute(){
+//		if(!route.isEmpty()){
+//			throw new RuntimeException("Tried to find a route for a non-empty Route.");
+//		}
+//		BellmanFord.runSingleRoute(this);
+//	}
 
 	/** Updates the route and profit of this Route element.
 	 * @param route - the edges used in this Route element.

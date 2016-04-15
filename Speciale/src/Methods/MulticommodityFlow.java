@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import Data.Demand;
 import Graph.Edge;
 import Graph.Graph;
+import Graph.Node;
 import Results.Result;
 import Results.Rotation;
 import Results.Route;
@@ -16,13 +17,20 @@ public class MulticommodityFlow {
 	private static Graph graph;
 	private static int bestFlowProfit;
 	private static ArrayList<Route> bestRoutes;
+	private static ArrayList<BellmanFord> bellmanFords;
 
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
 	 */
 	public static void initialize(Graph inputGraph){
 		graph = inputGraph;
-		BellmanFord.initialize(graph);
+		bellmanFords = new ArrayList<BellmanFord>(graph.getData().getPortsMap().size());
+		BellmanFord bellmanFord = null;
+		System.out.println("Number of acvtive ports: " + graph.getFromCentroids().size());
+		for(Node n : graph.getFromCentroids()){
+			bellmanFord = new BellmanFord(inputGraph, n);
+			bellmanFords.add(bellmanFord);
+		}
 	}
 
 	public static void reset(){
@@ -50,7 +58,6 @@ public class MulticommodityFlow {
 				sailEdges.add(e);
 			}
 		}
-		BellmanFord.reset();
 		reset();
 		bestFlowProfit = Integer.MIN_VALUE;
 		bestRoutes = new ArrayList<Route>();
@@ -63,7 +70,12 @@ public class MulticommodityFlow {
 		while (improvementCounter < 20 && iteration < 100){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
-			BellmanFord.run();
+			for(Edge e : graph.getEdges()){
+				e.clearRoutes();
+			}
+			for(BellmanFord b : bellmanFords){
+				b.run();
+			}
 			boolean validFlow = false;
 			double overflow = getOverflow();
 			if(overflow < 0.3){
@@ -225,7 +237,10 @@ public class MulticommodityFlow {
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
-		BellmanFord.runRep();
+		for(BellmanFord b : bellmanFords){
+			b.runRep();
+		}
+
 		for(int i = graph.getEdges().size()-1; i>= 0; i--){
 			Edge e = graph.getEdges().get(i);
 			if(e.isSail()){
@@ -242,13 +257,7 @@ public class MulticommodityFlow {
 			Demand d = r.getDemand();
 			d.createRepRoute(r, r.getFFEforRemoval());
 		}
-		//		ArrayList<Demand> demands = new ArrayList<Demand>(graph.getData().getDemands());
-		//		int size = demands.size();
 		for(Demand d : graph.getData().getDemands()){
-			//		for(int i = 0; i < size; i++){
-			//			double rand = Math.random();
-			//			int pos = (int) (rand * (double) demands.size());
-			//			Demand d = demands.remove(pos);
 			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
@@ -315,13 +324,27 @@ public class MulticommodityFlow {
 			}
 		}
 		for(Edge e : graph.getEdges()){
+			if(e.isSail()){
+				//				System.out.println(e.simplePrint() + " with load " + e.getLoad());
+			}
+		}
+
+
+		for(Edge e : graph.getEdges()){
+			//			System.out.println(e.simplePrint() + " with load " + e.getLoad());
+			if(e.isSail()){
+				for(Route r : e.getRoutes()){
+					//					System.out.println("origin: " +r.getDemand().getOrigin().getUNLocode()+" destination: "+r.getDemand().getDestination().getUNLocode()+ " load on route " + r.getFFE());
+				}
+			}
 			if(e.getCapacity() < e.getLoad()){
-				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo());
+				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}
 		}
 		for(Demand d : graph.getData().getDemands()){
 			d.checkDemand();
 		}
+
 	}
 
 	/** Saves the routes of all demand pairs in csv-format for easy handling in Excel.
