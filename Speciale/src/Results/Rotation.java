@@ -5,12 +5,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import Data.Port;
 import Data.VesselClass;
 import Graph.*;
+import RotationFlow.RotationGraph;
 
 public class Rotation {
 	private int id;
 	private VesselClass vesselClass;
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
+	private RotationGraph rotationGraph;
 	private double speed;
 	private int noOfVessels;
 	private int distance;
@@ -31,6 +33,14 @@ public class Rotation {
 		this.noOfVessels = 0;
 		this.distance = 0;
 		//		calculateSpeed();
+	}
+	
+	public void createRotationGraph(){
+		this.rotationGraph = new RotationGraph(this);
+	}
+	
+	public void findRotationFlow(){
+		rotationGraph.findFlow();
 	}
 
 	public void calcOptimalSpeed(){

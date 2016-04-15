@@ -24,13 +24,6 @@ public class Node {
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private ArrayList<Edge> ingoingEdges;
 	private ArrayList<Edge> outgoingEdges;
-	
-	/** Constructor for setting the number of centroids. To be used one time only!
-	 * @param noOfCentroids
-	 */
-	public Node(int noOfCentroids){
-		Node.noOfCentroids = noOfCentroids;
-	}
 
 	/** Constructor for nodes, i.e. not centroids.
 	 * @param port - the port in which the node is located.
@@ -87,6 +80,10 @@ public class Node {
 		this.unprocessedRep = new boolean[noOfCentroids];
 		this.ingoingEdges = new ArrayList<Edge>();
 		this.outgoingEdges = new ArrayList<Edge>();
+	}
+	
+	public static void setNoOfCentroids(int newNoOfCentroids){
+		noOfCentroids = newNoOfCentroids;
 	}
 
 	/**

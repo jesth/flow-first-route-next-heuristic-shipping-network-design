@@ -13,6 +13,7 @@ import Data.Port;
 import Data.VesselClass;
 import Results.Result;
 import Results.Rotation;
+import RotationFlow.RotationGraph;
 
 public class Graph {
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
@@ -27,13 +28,12 @@ public class Graph {
 		result = new Result(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
+		Node.setNoOfCentroids(data.getPortsMap().size());
 		createCentroids();
 		createOmissionEdges();
 	}
 
 	private void createCentroids(){
-		//Sets the number of centroids in the Node class once and for all, and is then garbage collected.
-		new Node(data.getPortsMap().size());
 		for(Port i : data.getPortsMap().values()){
 			if(i.isActive()){
 				Node fromCentroid = new Node(i, true);
