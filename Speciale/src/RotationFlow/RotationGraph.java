@@ -42,7 +42,110 @@ public class RotationGraph {
 		multicommodityFlow.run();
 		multicommodityFlow.saveODSol("ODSolRotation.csv", rotationDemands);
 	}
+	
+	
+	
+	public void findWorstPort(){
+		for(int i=0; i<rotationEdges.size()-1; i++){
+			RotationEdge from = rotationEdges.get(i);
+			RotationEdge to = rotationEdges.get(+1);
+			
+		}
+		
+	}
+	
+	public int getFlowCost(){
+		multicommodityFlow.run();
+		int flowCost = 0;
+		for (RotationDemand d : rotationDemands){
+			flowCost += d.getTotalCost();
+		}
+		return flowCost;
+	}
+	
+	public int getRotationCost(){
+		int rotationCost = 0;
+		VesselClass v = rotation.getVesselClass();
+		double sailingTime = 0;
+		double idleTime = rotationEdges.size()*24;
+		int portCost = 0;
+		int suezCost = 0;
+		int panamaCost = 0;
+		int distance = 0;
+		for (RotationEdge e : rotationEdges){
+			int fromPortId = e.getFromNode().getPort().getPortId();
+			int toPortId = e.getFromNode().getPort().getPortId();
+			DistanceElement d = graph.getData().getBestDistanceElement(fromPortId, toPortId, v);
+			distance += d.getDistance();
+			Port p = e.getToNode().getPort();
+			portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
+			if(d.isSuez()){
+				suezCost += v.getSuezFee();
+			}
+			if(d.isPanama()){
+				panamaCost += v.getPanamaFee();
+			}
+		}
+		int bestSpeedCost = Integer.MAX_VALUE;
+		int noVessels = 0;
+		double bestSpeed = 0;
+		int lbNoVessels = calculateMinNoVessels(distance);
+		int ubNoVessels = calculateMaxNoVessels(distance);
+		if(lbNoVessels > ubNoVessels){
+			bestSpeed = v.getMinSpeed();
+			noVessels = lbNoVessels;
+		} else {
+			for(int i = lbNoVessels; i <= ubNoVessels; i++){
+				double speed = calculateSpeed(distance, i);
+				int bunkerCost = calcSailingBunkerCost(distance, speed, i);
+				int TCRate = i * v.getTCRate();
+				int speedCost = bunkerCost + TCRate;
+				if(speedCost < bestSpeedCost){
+					bestSpeedCost = speedCost;
+					bestSpeed = speed;
+					noVessels = i;
+				}
+			}
+		}
+		
+		//TODO USD per metric tons fuel = 600
+		
+		int sailingBunkerCost = calcSailingBunkerCost(distance, bestSpeed, noVessels);
+		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * 600;
 
+		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
+		int TCCost = rotationDays * v.getTCRate();
+
+		rotationCost += sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
+
+		return rotationCost;
+	}
+
+	public double calculateSpeed(int distance, int noOfVessels){
+		double availableTime = 168 * noOfVessels - 24 * rotationEdges.size();
+		return distance / availableTime;
+	}
+
+	public int calculateMinNoVessels(int distance){
+		double rotationTime = (24 * rotationEdges.size()+ (distance / rotation.getVesselClass().getMaxSpeed())) / 168.0;
+		int noVessels = (int) Math.ceil(rotationTime);
+		return noVessels;
+	}
+
+	public int calculateMaxNoVessels(int distance){
+		double rotationTime = (24 * rotationEdges.size() + (distance / rotation.getVesselClass().getMinSpeed())) / 168.0;
+		int noVessels = (int) Math.floor(rotationTime);
+		return noVessels;
+	}
+	
+	public int calcSailingBunkerCost(int distance, double speed, int noOfVessels){
+		double fuelConsumption = rotation.getVesselClass().getFuelConsumption(speed);
+		double sailTimeDays = (distance / speed) / 24.0;
+		double bunkerConsumption = sailTimeDays * fuelConsumption;
+		//TODO Fuel cost!!!
+		return (int) (bunkerConsumption * 600.0);
+	}
+	
 	public void createGraph(){
 		this.createDemands();
 		this.createNodes();
