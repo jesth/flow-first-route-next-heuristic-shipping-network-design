@@ -28,9 +28,9 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-//		testWorldSmall3Auto();
+		testWorldSmall3Auto();
 //		testMedManual2();
-		testWorldLargeAuto();
+//		testWorldLargeAuto();
 		
 	}
 	
@@ -854,8 +854,8 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		MulticommodityFlowThreads.run();
 		
-//		r1.createRotationGraph();
-//		r1.findRotationFlow();
+		r1.createRotationGraph();
+		r1.findRotationFlow();
 		
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
@@ -964,7 +964,7 @@ public class RunModel {
 		System.out.println("Rotations generated.");
 		
 //		ComputeRotations.addPorts();
-		MulticommodityFlow.run();
+		MulticommodityFlowThreads.run();
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
 //		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());

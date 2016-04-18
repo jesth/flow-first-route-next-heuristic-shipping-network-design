@@ -199,6 +199,14 @@ public class RotationGraph {
 		printRotation();
 	}
 
+	public void testAddPort(){
+		printRotation();
+		RotationEdge affectedEdge = rotationEdges.get(4);
+		Port newPort = graph.getPort(198);
+		addPort(affectedEdge, newPort);
+		printRotation();
+	}
+
 	public void removePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
 		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
 			throw new RuntimeException("Input mismatch.");
@@ -218,6 +226,23 @@ public class RotationGraph {
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
 		deleteEdges(deleteEdges);
 	}
+	
+	public void addPort(RotationEdge affectedEdge, Port newPort){
+		int noInRotation = affectedEdge.getNoInRotation();
+		RotationNode fromNode = affectedEdge.getFromNode();
+		RotationNode toNode = affectedEdge.getToNode();
+		RotationNode newNode = getRotationNode(newPort);
+		if(newNode.equals(fromNode) || newNode.equals(toNode)){
+			throw new RuntimeException("Adding port which is equal to either from or to port on passed edge.");
+		}
+		if(!affectedEdge.isSail()){
+			throw new RuntimeException("Adding port to a non-sail edge.");
+		}
+		incrementNoInRotation(noInRotation);
+		createSailEdge(fromNode, newNode, affectedEdge.getCapacity(), noInRotation);
+		createSailEdge(newNode, toNode, affectedEdge.getCapacity(), noInRotation+1);
+		affectedEdge.delete();
+	}
 
 	public void decrementNoInRotation(int noFrom){
 		for(RotationEdge e : rotationEdges){
@@ -227,27 +252,20 @@ public class RotationGraph {
 		}
 	}
 
-	public void deleteEdges(ArrayList<RotationEdge> edges){
-		ArrayList<RotationNode> affectedNodes = new ArrayList<RotationNode>();
-		for(RotationEdge e : edges){
-			RotationNode fromNode = e.getFromNode();
-			RotationNode toNode = e.getToNode();
-			if(!affectedNodes.contains(fromNode)){
-				affectedNodes.add(fromNode);
-			}
-			if(!affectedNodes.contains(toNode)){
-				affectedNodes.add(toNode);
-			}
-			e.delete();
-		}
-		for(RotationNode n : affectedNodes){
-			if(n.noSailEdges()){
-				n.delete();
+	public void incrementNoInRotation(int noFrom){
+		for(RotationEdge e : rotationEdges){
+			if(e.isSail() && e.getNoInRotation() > noFrom){
+				e.incrementNoInRotation();
 			}
 		}
-
 	}
 
+	public void deleteEdges(ArrayList<RotationEdge> edges){
+		for(RotationEdge e : edges){
+			e.delete();
+		}
+	}
+	
 	public ArrayList<RotationDemand> getRotationDemands(){
 		return rotationDemands;
 	}
@@ -278,6 +296,7 @@ public class RotationGraph {
 		for(RotationEdge e : rotationEdges){
 			if(e.isSail()){
 				String str = "NoInRotation: " + e.getNoInRotation() + " " + e.getFromPortUNLo() + "-" + e.getToPortUNLo();
+//				str += " " + e.getFromNode().getPort().getPortId() + "-" + e.getToNode().getPort().getPortId();
 				System.out.println(str);
 			}
 		}
