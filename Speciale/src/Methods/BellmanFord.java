@@ -10,11 +10,12 @@ import Graph.Node;
 import Results.Route;
 
 
-public class BellmanFord {
+public class BellmanFord implements Runnable {
 	private ArrayList<Node> unprocessedNodes = new ArrayList<Node>();
 	private ArrayList<Node> unprocessedNodesRep = new ArrayList<Node>();
 	private ArrayList<Node> changedRepNodes = new ArrayList<Node>();
 	private Node centroidNode;
+	private boolean rep;
 	
 	private static Graph graph;
 
@@ -45,11 +46,19 @@ public class BellmanFord {
 		centroidNode.setLabelsRep(centroidNode.getPortId(), 0, null);
 		centroidNode.setUnprocessedRep(this, centroidNode.getPortId());
 	}
+	
+	public void run(){
+		if(!rep){
+			runMain();
+		} else {
+			runRep();
+		}
+	}
 
 	/** Runs the BellmanFord algorithm.
 	 * Also adds the demand load, shortest path OD relations, lagrange profit and real profit to relevant edges.
 	 */
-	public void run(){
+	private void runMain(){
 		reset();
 
 		int counter = 0;
@@ -84,7 +93,7 @@ public class BellmanFord {
 //		}
 //	}
 
-	public void runRep(){
+	private void runRep(){
 		resetRep();
 		while(!unprocessedNodesRep.isEmpty()){
 			Node u = unprocessedNodesRep.remove(0);
@@ -339,6 +348,14 @@ public class BellmanFord {
 			}
 			u.setProcessed(arrayPos);
 		}
+	}
+	
+	public void setRep(){
+		rep = true;
+	}
+	
+	public void setMain(){
+		rep = false;
 	}
 
 	/** Bookkeeping for the separate array unprocessedRepNodes - updates this array with the relevant changes to the "official" array unprocessedNodes.

@@ -149,7 +149,7 @@ public class RotationGraph {
 
 	private void createSailEdge(RotationNode fromNode, RotationNode toNode, int capacity, int noInRotation){
 		RotationEdge sail = new RotationEdge(this, fromNode, toNode, capacity, 1, true, false, false, noInRotation);
-		rotationEdges.add(sail);
+		rotationEdges.add(noInRotation, sail);
 		fromNode.setRotation();
 		toNode.setRotation();
 	}
@@ -190,9 +190,17 @@ public class RotationGraph {
 
 		return avgCost;
 	}
-	
+
+	public void testRemovePort(){
+		printRotation();
+		RotationEdge ingoingEdge = rotationEdges.get(7);
+		RotationEdge outgoingEdge = rotationEdges.get(8);
+		removePort(ingoingEdge, outgoingEdge);
+		printRotation();
+	}
+
 	public void removePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
-		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode())){
+		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
 			throw new RuntimeException("Input mismatch.");
 		}
 		ArrayList<RotationEdge> deleteEdges = new ArrayList<RotationEdge>();
@@ -210,7 +218,7 @@ public class RotationGraph {
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
 		deleteEdges(deleteEdges);
 	}
-	
+
 	public void decrementNoInRotation(int noFrom){
 		for(RotationEdge e : rotationEdges){
 			if(e.isSail() && e.getNoInRotation() > noFrom){
@@ -218,7 +226,7 @@ public class RotationGraph {
 			}
 		}
 	}
-	
+
 	public void deleteEdges(ArrayList<RotationEdge> edges){
 		ArrayList<RotationNode> affectedNodes = new ArrayList<RotationNode>();
 		for(RotationEdge e : edges){
@@ -237,7 +245,7 @@ public class RotationGraph {
 				n.delete();
 			}
 		}
-		
+
 	}
 
 	public ArrayList<RotationDemand> getRotationDemands(){
@@ -265,5 +273,14 @@ public class RotationGraph {
 		rotationEdges.remove(rotationEdge);
 	}
 
+	private void printRotation() {
+		System.out.println("Rotation ID " + rotation.getId());
+		for(RotationEdge e : rotationEdges){
+			if(e.isSail()){
+				String str = "NoInRotation: " + e.getNoInRotation() + " " + e.getFromPortUNLo() + "-" + e.getToPortUNLo();
+				System.out.println(str);
+			}
+		}
 
+	}
 }

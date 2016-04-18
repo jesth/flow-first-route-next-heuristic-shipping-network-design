@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import Data.Demand;
 import Graph.Edge;
@@ -13,11 +16,12 @@ import Results.Result;
 import Results.Rotation;
 import Results.Route;
 
-public class MulticommodityFlow {
+public class MulticommodityFlowThreads {
 	private static Graph graph;
 	private static int bestFlowProfit;
 	private static ArrayList<Route> bestRoutes;
 	private static ArrayList<BellmanFord> bellmanFords;
+	
 
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
@@ -50,8 +54,10 @@ public class MulticommodityFlow {
 	 * <br>&nbsp&nbsp&nbsp c) The flow is repaired by findRepairFlow().
 	 * <br>&nbsp&nbsp&nbsp d) The process is repeated from step 1).
 	 * <br>3) If the flow is legal, the best found flow is implemented.
+	 * @throws InterruptedException 
 	 */
-	public static void run(){
+	public static void run() throws InterruptedException{
+		
 		ArrayList<Edge> sailEdges = new ArrayList<Edge>();
 		for(Edge e : graph.getEdges()){
 			if(e.isSail()){
@@ -67,15 +73,20 @@ public class MulticommodityFlow {
 		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
+
 		while (improvementCounter < 20 && iteration < 100){
 			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			for(Edge e : graph.getEdges()){
 				e.clearRoutes();
 			}
+			ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			for(BellmanFord b : bellmanFords){
 				b.setMain();
-				b.run();
+				executor.execute(b);
+			}
+			executor.shutdown();
+			while(!executor.isTerminated()){
 			}
 			boolean validFlow = false;
 			double overflow = getOverflow();
@@ -177,6 +188,7 @@ public class MulticommodityFlow {
 	 * <br>6) Containers are removed down to the capacity limit, or until all containers of the OD pair have been removed.
 	 * <br>7) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
 	 * @return The profit of the repaired flow.
+	 * @throws InterruptedException 
 	 */
 
 	/*
@@ -233,16 +245,19 @@ public class MulticommodityFlow {
 	}
 	 */
 
-	
-	private static boolean findRepairFlow(int improvementCounter){
+
+	private static boolean findRepairFlow(int improvementCounter) throws InterruptedException{
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		for(BellmanFord b : bellmanFords){
 			b.setRep();
-			b.run();
+			executor.execute(b);
 		}
-
+		executor.shutdown();
+		while(!executor.isTerminated()){
+		}
 		for(int i = graph.getEdges().size()-1; i>= 0; i--){
 			Edge e = graph.getEdges().get(i);
 			if(e.isSail()){

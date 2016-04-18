@@ -389,7 +389,7 @@ public class Edge {
 	/** Adds the input to the list of routes.
 	 * @param newRoute - the route to be added.
 	 */
-	public void addRoute(Route newRoute){
+	public synchronized void addRoute(Route newRoute){
 		routes.add(newRoute);
 	}
 

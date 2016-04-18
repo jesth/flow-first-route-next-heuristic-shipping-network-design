@@ -12,6 +12,7 @@ import Graph.Edge;
 import Graph.Graph;
 import Methods.ComputeRotations;
 import Methods.MulticommodityFlow;
+import Methods.MulticommodityFlowThreads;
 import Results.Result;
 import Results.Rotation;
 import RotationFlow.RotationGraph;
@@ -27,9 +28,9 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testWorldSmall3Auto();
+//		testWorldSmall3Auto();
 //		testMedManual2();
-//		testWorldLargeAuto();
+		testWorldLargeAuto();
 		
 	}
 	
@@ -120,6 +121,7 @@ public class RunModel {
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
 		MulticommodityFlow.initialize(graph);
+		MulticommodityFlowThreads.initialize(graph);
 		RotationGraph.initialize(graph);
 	}
 	
@@ -794,7 +796,7 @@ public class RunModel {
 	}
 	
 	
-	public static void testWorldSmall3Auto()throws FileNotFoundException{
+	public static void testWorldSmall3Auto()throws FileNotFoundException, InterruptedException{
 		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -850,10 +852,11 @@ public class RunModel {
 		System.out.println("Rotations generated.");
 		
 //		ComputeRotations.addPorts();
-		MulticommodityFlow.run();
+		MulticommodityFlowThreads.run();
 		
-		r1.createRotationGraph();
-		r1.findRotationFlow();
+//		r1.createRotationGraph();
+//		r1.findRotationFlow();
+		
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
 //		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
@@ -883,7 +886,7 @@ public class RunModel {
 		
 	}
 	
-	public static void testWorldLargeAuto()throws FileNotFoundException{
+	public static void testWorldLargeAuto()throws FileNotFoundException, InterruptedException{
 		Graph graph = new Graph("Demand_WorldLarge.csv", "fleet_WorldLarge.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();

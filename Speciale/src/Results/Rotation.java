@@ -41,6 +41,7 @@ public class Rotation {
 	
 	public void findRotationFlow(){
 		rotationGraph.findFlow();
+		rotationGraph.testRemovePort();
 	}
 
 	public void calcOptimalSpeed(){
