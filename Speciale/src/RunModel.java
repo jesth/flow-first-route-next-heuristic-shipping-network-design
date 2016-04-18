@@ -855,9 +855,7 @@ public class RunModel {
 		MulticommodityFlowThreads.run();
 		
 		r1.createRotationGraph();
-		
-//		r1.createRotationGraph();
-//		r1.findRotationFlow();
+		r1.findRotationFlow();
 		
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
