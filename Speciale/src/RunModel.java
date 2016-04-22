@@ -816,25 +816,27 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
 		
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400);
-		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400);
+		ArrayList<Rotation> rotations = new ArrayList<Rotation>();
 		
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		Rotation r2 = ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		Rotation r1 = ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
-		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200);
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400));
+		rotations.add(ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400));
+		
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200));
+		rotations.add(ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200));
 		
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
@@ -854,8 +856,12 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		MulticommodityFlowThreads.run();
 		
-		r1.createRotationGraph();
-		r1.findRotationFlow();
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).findRotationFlow();
+//		for(Rotation r : rotations){
+//			r.createRotationGraph();
+//			r.findRotationFlow();
+//		}
 		
 		
 //		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);

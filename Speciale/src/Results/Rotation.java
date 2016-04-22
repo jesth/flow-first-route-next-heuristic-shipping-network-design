@@ -42,7 +42,9 @@ public class Rotation {
 	public void findRotationFlow(){
 		rotationGraph.findFlow();
 //		rotationGraph.testRemovePort();
-		rotationGraph.testAddPort();
+//		rotationGraph.testAddPort();
+		rotationGraph.removeWorstPort();
+		rotationGraph.findFlow();
 	}
 
 	public void calcOptimalSpeed(){

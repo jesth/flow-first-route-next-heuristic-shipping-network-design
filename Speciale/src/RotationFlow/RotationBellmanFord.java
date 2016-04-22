@@ -68,7 +68,9 @@ public class RotationBellmanFord {
 		for(int i = 0; i < RotationNode.getNoOfCentroids(); i++){
 			if(u.isUnprocessed(i)){
 				for(RotationEdge e : u.getOutgoingEdges()){
-					relax(i, e);
+					if(e.isActive()){
+						relax(i, e);
+					}
 				}
 				u.setProcessed(i);
 			}
@@ -79,7 +81,9 @@ public class RotationBellmanFord {
 		for(int i = 0; i < RotationNode.getNoOfCentroids(); i++){
 			if(u.isUnprocessedRep(i)){
 				for(RotationEdge e : u.getOutgoingEdges()){
-					relaxRep(i, e);
+					if(e.isActive()){
+						relaxRep(i, e);	
+					}
 				}
 				u.setProcessedRep(i);
 			}
