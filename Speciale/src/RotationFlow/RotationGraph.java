@@ -54,6 +54,22 @@ public class RotationGraph {
 		
 		System.out.println("Before removing first: ");
 		testPrintRotation();
+		String str = "";
+		for(RotationDemand d : rotationDemands){
+			if(d.getDestination().getUNLocode().equals("USLAX")){
+				int noRoute = 0;
+				for(RotationRoute r : d.getRoutes()){
+					str = "noRoute: " + noRoute + " Demand from: " + d.getOrigin().getUNLocode();
+					noRoute++;
+					for(RotationEdge e : r.getRoute()){
+						str += "\n isActive(): " + e.isActive() + " ofType:  "  + e.printType() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
+						
+					}
+					System.out.println(str);
+					System.out.println();
+				}
+			}
+		}
 		
 		int bestRotationObj = getFlowCost() + getRotationCost();
 		System.out.println("Original Objective = " +bestRotationObj);
@@ -61,7 +77,7 @@ public class RotationGraph {
 		RotationEdge worstOut = rotationEdges.get(0);
 		Port worstPort = worstInto.getToNode().getPort();
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
-		handledEdges.get(0).isRotationOnly();
+//		handledEdges.get(0).isRotationOnly();
 		
 //		System.out.println("After removing first: ");
 //		testPrintRotation();
@@ -83,7 +99,7 @@ public class RotationGraph {
 			RotationEdge out = rotationEdges.get(i+1);
 			Port removedPort = into.getToNode().getPort();
 			handledEdges = tryRemovePort(into, out);
-			handledEdges.get(0).isRotationOnly();
+//			handledEdges.get(0).isRotationOnly();
 			rotationObj = getFlowCost() + getRotationCost();
 			System.out.println("Rotation Objective = " + rotationObj + " when removing port " + removedPort.getUNLocode());
 			if(rotationObj < bestRotationObj){
@@ -104,13 +120,16 @@ public class RotationGraph {
 		System.out.println();
 		System.out.println();
 		
-		String str = "";
+		str = "";
 		for(RotationDemand d : rotationDemands){
 			if(d.getDestination().getUNLocode().equals("USLAX")){
+				int noRoute = 0;
 				for(RotationRoute r : d.getRoutes()){
-					str = "Demand from: " + d.getOrigin().getUNLocode();
+					str = "noRoute: " + noRoute + " Demand from: " + d.getOrigin().getUNLocode();
+					noRoute++;
 					for(RotationEdge e : r.getRoute()){
-						str += "\n" + e.isActive() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
+						str += "\n isActive(): " + e.isActive() + " ofType:  "  + e.printType() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
+						
 					}
 					System.out.println(str);
 					System.out.println();
@@ -141,6 +160,7 @@ public class RotationGraph {
 		}
 //		handledEdges.get(1).incrementNoInRotation();
 		handledEdges.get(0).delete();
+		handledEdges.remove(0);
 	}
 
 	public int getFlowCost(){
@@ -155,7 +175,7 @@ public class RotationGraph {
 	public int getRotationCost(){
 		int rotationCost = 0;
 		VesselClass v = rotation.getVesselClass();
-		int idleTime = rotationEdges.size()*24;
+		int ports = 0;
 		int portCost = 0;
 		int suezCost = 0;
 		int panamaCost = 0;
@@ -174,6 +194,7 @@ public class RotationGraph {
 				if(d.isPanama()){
 					panamaCost += v.getPanamaFee();
 				}
+				ports++;
 			}
 		}
 		int bestSpeedCost = Integer.MAX_VALUE;
@@ -200,6 +221,7 @@ public class RotationGraph {
 		
 		//TODO USD per metric tons fuel = 600
 		
+		int idleTime = ports * 24;
 		int sailingBunkerCost = calcSailingBunkerCost(distance, bestSpeed, noVessels);
 		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * 600;
 
