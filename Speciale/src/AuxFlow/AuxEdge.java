@@ -83,7 +83,8 @@ public class AuxEdge implements Serializable{
 		int fuelCost = (int) (600 * (fuelConsumptionSail + fuelConsumptionPort));
 		int portCostFrom = (int) 0.5 * (fromNode.getPort().getFixedCallCost() + fromNode.getPort().getVarCallCost() * vessel.getCapacity());
 		int portCostTo = (int) 0.5 * (toNode.getPort().getFixedCallCost() + toNode.getPort().getVarCallCost() * vessel.getCapacity());
-		int TCCost = (int) (vessel.getTCRate() * sailTimeDays);
+		//sailTimeDays + 1 to pay for ½ * 2 port stays.
+		int TCCost = (int) (vessel.getTCRate() * (sailTimeDays + 1));
 		int totalCost = panamaCost + suezCost + fuelCost + portCostFrom + portCostTo + TCCost;
 		int avgCost = totalCost / vessel.getCapacity();
 
