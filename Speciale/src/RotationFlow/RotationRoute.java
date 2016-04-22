@@ -15,7 +15,6 @@ public class RotationRoute {
 		for(RotationEdge e : route){
 			cost += e.getCost();
 		}
-		
 	}
 	
 	public void setRoute(ArrayList<RotationEdge> route){

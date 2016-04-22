@@ -41,7 +41,7 @@ public class RotationMulticommodityFlow {
 			e.clearServicedRoutes();
 		}
 		for(RotationDemand d : graph.getRotationDemands()){
-			//			d.resetTransportedDemand();
+//						d.resetTransportedDemand();
 			d.clearRoutes();
 		}
 	}
