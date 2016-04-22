@@ -51,118 +51,78 @@ public class RotationGraph {
 				maxIndex = Math.max(maxIndex, e.getNoInRotation());
 			}
 		}
-		
-		System.out.println("Before removing first: ");
-		testPrintRotation();
-		String str = "";
-		for(RotationDemand d : rotationDemands){
-			if(d.getDestination().getUNLocode().equals("USLAX")){
-				int noRoute = 0;
-				for(RotationRoute r : d.getRoutes()){
-					str = "noRoute: " + noRoute + " Demand from: " + d.getOrigin().getUNLocode();
-					noRoute++;
-					for(RotationEdge e : r.getRoute()){
-						str += "\n isActive(): " + e.isActive() + " ofType:  "  + e.printType() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
-						
-					}
-					System.out.println(str);
-					System.out.println();
-				}
-			}
-		}
-		
 		int bestRotationObj = getFlowCost() + getRotationCost();
-		System.out.println("Original Objective = " +bestRotationObj);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
-		Port worstPort = worstInto.getToNode().getPort();
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
-//		handledEdges.get(0).isRotationOnly();
-		
-//		System.out.println("After removing first: ");
-//		testPrintRotation();
-		
 		int rotationObj = getFlowCost() + getRotationCost();
 		if(rotationObj < bestRotationObj){
 			bestRotationObj = rotationObj;
 			madeChange = true;
 		}
-		
-		undoRemovePort(handledEdges);
+		undoTryRemovePort(handledEdges);
 
-//		System.out.println("After putting first back in: ");
-//		testPrintRotation();
-		
 		for(int i=0; i<maxIndex; i++){
 			System.out.println("i = " + i);
 			RotationEdge into = rotationEdges.get(i);
 			RotationEdge out = rotationEdges.get(i+1);
-			Port removedPort = into.getToNode().getPort();
 			handledEdges = tryRemovePort(into, out);
-//			handledEdges.get(0).isRotationOnly();
 			rotationObj = getFlowCost() + getRotationCost();
-			System.out.println("Rotation Objective = " + rotationObj + " when removing port " + removedPort.getUNLocode());
 			if(rotationObj < bestRotationObj){
 				worstInto = into;
 				worstOut = out;
-				worstPort = removedPort;
 				bestRotationObj = rotationObj;
 				madeChange = true;
 			}
-			undoRemovePort(handledEdges);
+			undoTryRemovePort(handledEdges);
 		}
 		if(madeChange){
 			implementRemovePort(worstInto, worstOut);
-		}
-		System.out.println("mandeChange = " + madeChange);
-		System.out.println("in the end");
-		testPrintRotation();
-		System.out.println();
-		System.out.println();
-		
-		str = "";
-		for(RotationDemand d : rotationDemands){
-			if(d.getDestination().getUNLocode().equals("USLAX")){
-				int noRoute = 0;
-				for(RotationRoute r : d.getRoutes()){
-					str = "noRoute: " + noRoute + " Demand from: " + d.getOrigin().getUNLocode();
-					noRoute++;
-					for(RotationEdge e : r.getRoute()){
-						str += "\n isActive(): " + e.isActive() + " ofType:  "  + e.printType() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
-						
-					}
-					System.out.println(str);
-					System.out.println();
-				}
-			}
 		}
 		
 		return madeChange;
 	}
 	
-	private void testPrintRotation() {
-		for(RotationEdge e : rotationEdges){
-			if(e.isSail() && e.isActive())
-				System.out.print(e.getToPortUNLo() + " -> ");
-		}
-		System.out.println();
-		for(RotationEdge e : rotationEdges){
-			if(e.isSail() && e.isActive()){
-				System.out.print(e.getNoInRotation() + " -> ");
+	public ArrayList<RotationEdge> tryRemovePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
+			if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
+				throw new RuntimeException("Input mismatch.");
 			}
+			ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
+			handledEdges.add(ingoingEdge);
+			handledEdges.add(outgoingEdge);
+			RotationNode prevNode = ingoingEdge.getFromNode();
+			RotationNode nextNode = outgoingEdge.getToNode();
+			if(prevNode.equals(nextNode)){
+				RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
+				handledEdges.add(nextEdge);
+				nextNode = nextEdge.getToNode();
+	//			decrementNoInRotation(outgoingEdge.getNoInRotation());
+			}
+			RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+	//		decrementNoInRotation(ingoingEdge.getNoInRotation());
+			for(RotationEdge e : handledEdges){
+				e.setInactive();
+			}
+			handledEdges.add(0, newEdge);
+	//		deleteEdges(deleteEdges);
+			return handledEdges;
 		}
-		System.out.println();
-	}
 
-	private void undoRemovePort(ArrayList<RotationEdge> handledEdges) {
+	private void undoTryRemovePort(ArrayList<RotationEdge> handledEdges) {
 		for(int i = 1; i < handledEdges.size(); i++){
 			handledEdges.get(i).setActive();
 		}
-//		handledEdges.get(1).incrementNoInRotation();
 		handledEdges.get(0).delete();
 		handledEdges.remove(0);
 	}
 
+	public boolean insertBestPort(){
+		boolean madeChange = false;
+		
+		
+		return madeChange;
+	}
+	
 	public int getFlowCost(){
 		multicommodityFlow.run();
 		int flowCost = 0;
@@ -423,32 +383,6 @@ public class RotationGraph {
 		printRotation();
 	}
 
-	public ArrayList<RotationEdge> tryRemovePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
-		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
-			throw new RuntimeException("Input mismatch.");
-		}
-		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
-		handledEdges.add(ingoingEdge);
-		handledEdges.add(outgoingEdge);
-		RotationNode prevNode = ingoingEdge.getFromNode();
-		RotationNode nextNode = outgoingEdge.getToNode();
-		if(prevNode.equals(nextNode)){
-			RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
-			handledEdges.add(nextEdge);
-			nextNode = nextEdge.getToNode();
-//			decrementNoInRotation(outgoingEdge.getNoInRotation());
-		}
-		RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
-//		decrementNoInRotation(ingoingEdge.getNoInRotation());
-		for(RotationEdge e : handledEdges){
-			e.setInactive();
-		}
-		handledEdges.add(0, newEdge);
-//		deleteEdges(deleteEdges);
-		return handledEdges;
-	}
-	
-	
 	public void implementRemovePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
 		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
 			throw new RuntimeException("Input mismatch.");
