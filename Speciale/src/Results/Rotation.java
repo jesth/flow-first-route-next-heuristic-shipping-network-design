@@ -18,11 +18,12 @@ public class Rotation {
 	private int distance;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private boolean active;
+	private Graph graph;
 
 	public Rotation(){
 	}
 
-	public Rotation(VesselClass vesselClass) {
+	public Rotation(VesselClass vesselClass, Graph graph) {
 		super();
 		this.id = idCounter.getAndIncrement();
 		this.vesselClass = vesselClass;
@@ -32,6 +33,7 @@ public class Rotation {
 		this.speed = 0;
 		this.noOfVessels = 0;
 		this.distance = 0;
+		this.graph = graph;
 		//		calculateSpeed();
 	}
 	
@@ -338,6 +340,23 @@ public class Rotation {
 
 	public void subtractDistance(int subtractDistance) {
 		distance -= subtractDistance;
+	}
+	
+	public void removePort(int noInRotationIn, int noInRotationOut){
+		if(noInRotationIn != noInRotationOut + 1){
+			throw new RuntimeException("Input mismatch");
+		}
+		Edge ingoingEdge = rotationEdges.get(noInRotationOut);
+		Edge dwell = ingoingEdge.getNextEdge();
+		graph.removePort(dwell);
+	}
+	
+	public void insertPort(int noInRotation, Port p){
+		Edge edge = rotationEdges.get(noInRotation);
+		if(!edge.isSail()){
+			throw new RuntimeException("Wrong input");
+		}
+		graph.insertPort(this, edge, p);
 	}
 
 	public void delete(){

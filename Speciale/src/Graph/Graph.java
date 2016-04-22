@@ -59,7 +59,7 @@ public class Graph {
 	}
 
 	public Rotation createRotation(ArrayList<DistanceElement> distances, VesselClass vesselClass){
-		Rotation rotation = new Rotation(vesselClass);
+		Rotation rotation = new Rotation(vesselClass, this);
 		createRotationEdges(distances, rotation, vesselClass);
 		createLoadUnloadEdges(rotation);
 		createTransshipmentEdges(rotation);

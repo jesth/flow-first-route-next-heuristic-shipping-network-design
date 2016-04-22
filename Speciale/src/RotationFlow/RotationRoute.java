@@ -11,16 +11,16 @@ public class RotationRoute {
 	public RotationRoute(RotationDemand demand){
 		this.route = new ArrayList<RotationEdge>();
 		this.demand = demand;
-		this.cost = 0;
-		for(RotationEdge e : route){
-			cost += e.getCost();
-		}
 	}
 	
 	public void setRoute(ArrayList<RotationEdge> route){
 		this.route = route;
 		for(RotationEdge e : route){
 			e.addServicedRoute(this);
+		}
+		this.cost = 0;
+		for(RotationEdge e : route){
+			cost += e.getCost();
 		}
 	}
 

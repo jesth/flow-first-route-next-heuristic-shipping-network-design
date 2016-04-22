@@ -53,15 +53,15 @@ public class RotationGraph {
 		}
 		
 		System.out.println("Before removing first: ");
-		testPrintRotation();
+		printRotation();
 		
 		int bestRotationObj = getFlowCost() + getRotationCost();
 		System.out.println("Original Objective = " +bestRotationObj);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
-		Port worstPort = worstInto.getToNode().getPort();
+//		Port worstPort = worstInto.getToNode().getPort();
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
-		handledEdges.get(0).isRotationOnly();
+//		handledEdges.get(0).isRotationOnly();
 		
 //		System.out.println("After removing first: ");
 //		testPrintRotation();
@@ -83,13 +83,13 @@ public class RotationGraph {
 			RotationEdge out = rotationEdges.get(i+1);
 			Port removedPort = into.getToNode().getPort();
 			handledEdges = tryRemovePort(into, out);
-			handledEdges.get(0).isRotationOnly();
+//			handledEdges.get(0).isRotationOnly();
 			rotationObj = getFlowCost() + getRotationCost();
 			System.out.println("Rotation Objective = " + rotationObj + " when removing port " + removedPort.getUNLocode());
 			if(rotationObj < bestRotationObj){
 				worstInto = into;
 				worstOut = out;
-				worstPort = removedPort;
+//				worstPort = removedPort;
 				bestRotationObj = rotationObj;
 				madeChange = true;
 			}
@@ -100,24 +100,24 @@ public class RotationGraph {
 		}
 		System.out.println("mandeChange = " + madeChange);
 		System.out.println("in the end");
-		testPrintRotation();
+		printRotation();
 		System.out.println();
 		System.out.println();
 		
-		String str = "";
-		for(RotationDemand d : rotationDemands){
-			if(d.getDestination().getUNLocode().equals("USLAX")){
-				for(RotationRoute r : d.getRoutes()){
-					str = "Demand from: " + d.getOrigin().getUNLocode();
-					for(RotationEdge e : r.getRoute()){
-						str += "\n" + e.isActive() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
-					}
-					System.out.println(str);
-					System.out.println();
-				}
-			}
-		}
-		
+//		String str = "";
+//		for(RotationDemand d : rotationDemands){
+//			if(d.getDestination().getUNLocode().equals("USLAX")){
+//				for(RotationRoute r : d.getRoutes()){
+//					str = "Demand from: " + d.getOrigin().getUNLocode();
+//					for(RotationEdge e : r.getRoute()){
+//						str += "\n" + e.isActive() + " from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo();
+//					}
+//					System.out.println(str);
+//					System.out.println();
+//				}
+//			}
+//		}
+//		
 		return madeChange;
 	}
 	
@@ -397,7 +397,7 @@ public class RotationGraph {
 		printRotation();
 		RotationEdge affectedEdge = rotationEdges.get(4);
 		Port newPort = graph.getPort(198);
-		addPort(affectedEdge, newPort);
+		insertPort(affectedEdge, newPort);
 		printRotation();
 	}
 
@@ -431,6 +431,7 @@ public class RotationGraph {
 		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
 			throw new RuntimeException("Input mismatch.");
 		}
+		rotation.removePort(ingoingEdge.getNoInRotation(), outgoingEdge.getNoInRotation());
 		ArrayList<RotationEdge> deleteEdges = new ArrayList<RotationEdge>();
 		deleteEdges.add(ingoingEdge);
 		deleteEdges.add(outgoingEdge);
@@ -442,16 +443,18 @@ public class RotationGraph {
 			nextNode = nextEdge.getToNode();
 			decrementNoInRotation(outgoingEdge.getNoInRotation());
 		}
-		RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
 //		for(RotationEdge e : deleteEdges){
 //			e.setInactive();
 //		}
 //		deleteEdges.add(0, newEdge);
 		deleteEdges(deleteEdges);
+		
 	}
 	
-	public void addPort(RotationEdge affectedEdge, Port newPort){
+	public void insertPort(RotationEdge affectedEdge, Port newPort){
+		rotation.insertPort(affectedEdge.getNoInRotation(), newPort);
 		int noInRotation = affectedEdge.getNoInRotation();
 		RotationNode fromNode = affectedEdge.getFromNode();
 		RotationNode toNode = affectedEdge.getToNode();

@@ -14,7 +14,6 @@ public class RotationEdge {
 	private int cost;
 	private ArrayList<RotationRoute> servicedRoutes;
 	private boolean active;
-	private boolean rotationOnly;
 
 	public RotationEdge(RotationGraph graph, RotationNode fromNode, RotationNode toNode, int capacity, int cost, boolean sail, boolean feeder, boolean omission, int noInRotation) {
 		super();
@@ -31,17 +30,6 @@ public class RotationEdge {
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		active = true;
-	}
-	
-	/**
-	 * @return the rotationOnly
-	 */
-	public boolean isRotationOnly(){
-		return rotationOnly;
-	}
-	
-	public void setRotationOnly(){
-		rotationOnly = true;
 	}
 	
 	public void setActive(){
@@ -158,5 +146,6 @@ public class RotationEdge {
 		fromNode.removeIngoingEdge(this);
 		toNode.removeOutgoingEdge(this);
 		graph.removeRotationEdge(this);
+		active = false;
 	}
 }
