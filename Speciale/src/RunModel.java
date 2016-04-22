@@ -28,9 +28,9 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testWorldSmall3Auto();
+//		testWorldSmall3Auto();
 //		testMedManual2();
-//		testWorldLargeAuto();
+		testWorldLargeAuto();
 		
 	}
 	
