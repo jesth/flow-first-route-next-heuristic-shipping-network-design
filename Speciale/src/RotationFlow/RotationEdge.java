@@ -143,9 +143,20 @@ public class RotationEdge {
 	}
 	
 	public void delete(){
+		active = false;
 		fromNode.removeIngoingEdge(this);
 		toNode.removeOutgoingEdge(this);
 		graph.removeRotationEdge(this);
 		active = false;
+	}
+
+	public String printType() {
+		if(sail)
+			return "sail";
+		if(omission)
+			return "omission";
+		if(feeder)
+			return "feeder";
+		return null;
 	}
 }
