@@ -43,7 +43,8 @@ public class Rotation {
 		rotationGraph.findFlow();
 //		rotationGraph.testRemovePort();
 //		rotationGraph.testAddPort();
-		rotationGraph.removeWorstPort();
+//		rotationGraph.removeWorstPort();
+		rotationGraph.insertBestPort();
 		rotationGraph.findFlow();
 	}
 
