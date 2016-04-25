@@ -52,6 +52,7 @@ public class RotationGraph {
 			}
 		}
 		int bestRotationObj = getFlowCost() + getRotationCost();
+		System.out.println("Org obj: " + bestRotationObj);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
@@ -61,7 +62,6 @@ public class RotationGraph {
 			madeChange = true;
 		}
 		undoTryRemovePort(handledEdges);
-
 		for(int i=0; i<maxIndex; i++){
 			System.out.println("i = " + i);
 			RotationEdge into = rotationEdges.get(i);
@@ -77,9 +77,9 @@ public class RotationGraph {
 			undoTryRemovePort(handledEdges);
 		}
 		if(madeChange){
+			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
 			implementRemovePort(worstInto, worstOut);
 		}
-		
 		return madeChange;
 	}
 	
@@ -110,7 +110,6 @@ public class RotationGraph {
 			handledEdges.get(i).setActive();
 		}
 		handledEdges.get(0).delete();
-		handledEdges.remove(0);
 	}
 
 	public boolean insertBestPort(){
@@ -151,11 +150,8 @@ public class RotationGraph {
 			}
 		}
 		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
-//		int noInRotation = affectedEdge.getNoInRotation();
 		RotationNode fromNode = affectedEdge.getFromNode();
 		RotationNode toNode = affectedEdge.getToNode();
-//		RotationNode newNode = getRotationNode(newPort);
-//		incrementNoInRotation(noInRotation);
 		handledEdges.add(createSailEdge(fromNode, toNode, capacity, 0));
 		handledEdges.add(createSailEdge(toNode, fromNode, capacity, 1));
 		affectedEdge.setInactive();
@@ -453,6 +449,7 @@ public class RotationGraph {
 		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
 			throw new RuntimeException("Input mismatch.");
 		}
+		rotation.removePort(ingoingEdge.getNoInRotation(), outgoingEdge.getNoInRotation());
 		ArrayList<RotationEdge> deleteEdges = new ArrayList<RotationEdge>();
 		deleteEdges.add(ingoingEdge);
 		deleteEdges.add(outgoingEdge);
@@ -467,9 +464,11 @@ public class RotationGraph {
 		createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
 		deleteEdges(deleteEdges);
+		
 	}
 	
 	public void insertPort(RotationEdge affectedEdge, Port newPort){
+		rotation.insertPort(affectedEdge.getNoInRotation(), newPort);
 		int noInRotation = affectedEdge.getNoInRotation();
 		RotationNode fromNode = affectedEdge.getFromNode();
 		RotationNode toNode = affectedEdge.getToNode();

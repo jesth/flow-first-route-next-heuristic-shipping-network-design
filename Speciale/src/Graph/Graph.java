@@ -59,7 +59,7 @@ public class Graph {
 	}
 
 	public Rotation createRotation(ArrayList<DistanceElement> distances, VesselClass vesselClass){
-		Rotation rotation = new Rotation(vesselClass);
+		Rotation rotation = new Rotation(vesselClass, this);
 		createRotationEdges(distances, rotation, vesselClass);
 		createLoadUnloadEdges(rotation);
 		createTransshipmentEdges(rotation);
@@ -195,8 +195,6 @@ public class Graph {
 		r.decrementNoInRotation(outgoingEdge.getNoInRotation());
 		Node fromNode = dwell.getFromNode();
 		Node toNode = dwell.getToNode();
-		deleteNode(fromNode);
-		deleteNode(toNode);
 		Port prevPort = ingoingEdge.getFromNode().getPort();
 		Port nextPort = outgoingEdge.getToNode().getPort();
 		if(prevPort.equals(nextPort) && r.getNoOfPortStays() > 1){
@@ -213,6 +211,8 @@ public class Graph {
 			deleteNode(newDwell.getToNode());
 			nextPort = outgoingEdge.getToNode().getPort();
 		}
+		deleteNode(fromNode);
+		deleteNode(toNode);
 		fromNode = ingoingEdge.getFromNode();
 		toNode = outgoingEdge.getToNode();
 		if(fromNode.getPort().equals(toNode.getPort())){
