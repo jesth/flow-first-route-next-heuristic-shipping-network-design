@@ -28,9 +28,9 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-//		testWorldSmall3Auto();
+		testWorldSmall3Auto();
 //		testMedManual2();
-		testWorldLargeAuto();
+//		testWorldLargeAuto();
 		
 	}
 	
@@ -807,16 +807,16 @@ public class RunModel {
 		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
 		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
 		
-		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
-		
-		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
-		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
-		
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>();
+		
+		rotations.add(ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax));
+		
+		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
+		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
+		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax));
+		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax));
+		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax));
 		
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));

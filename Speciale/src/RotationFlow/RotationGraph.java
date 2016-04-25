@@ -96,15 +96,12 @@ public class RotationGraph {
 				RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
 				handledEdges.add(nextEdge);
 				nextNode = nextEdge.getToNode();
-	//			decrementNoInRotation(outgoingEdge.getNoInRotation());
 			}
 			RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
-	//		decrementNoInRotation(ingoingEdge.getNoInRotation());
 			for(RotationEdge e : handledEdges){
 				e.setInactive();
 			}
 			handledEdges.add(0, newEdge);
-	//		deleteEdges(deleteEdges);
 			return handledEdges;
 		}
 
@@ -118,9 +115,78 @@ public class RotationGraph {
 
 	public boolean insertBestPort(){
 		boolean madeChange = false;
-		
+		int bestRotationObj = getFlowCost() + getRotationCost();
+		System.out.println("Original objective " + bestRotationObj);
+		RotationEdge bestEdge = null;
+		for(int i = rotationEdges.size()-1; i >= 0; i--){
+			RotationEdge e = rotationEdges.get(i);
+			if(e.isFeeder()){
+				ArrayList<RotationEdge> handledEdges = tryInsertPort(e);
+				int rotationObj = getFlowCost() + getRotationCost();
+				System.out.println("Looking at replacing feeder edge from: " + e.getFromPortUNLo() + " to: " + e.getToPortUNLo() + " yielding objective = " + rotationObj);
+				if(rotationObj < bestRotationObj){
+					bestRotationObj = rotationObj;
+					bestEdge = e;
+					madeChange = true;
+				}
+				undoTryInsertPort(e, handledEdges);
+			}
+		}
+		if(madeChange){
+			System.out.println("Implementing insertBestPort()");
+			implementInsertPort(bestEdge);
+		}
 		
 		return madeChange;
+	}
+	
+	public ArrayList<RotationEdge> tryInsertPort(RotationEdge affectedEdge){
+		int capacity = -1;
+		for(RotationEdge e : rotationEdges){
+			if(e.isSail()){
+				capacity = e.getCapacity();
+			}
+			if(capacity > 0){
+				break;
+			}
+		}
+		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
+//		int noInRotation = affectedEdge.getNoInRotation();
+		RotationNode fromNode = affectedEdge.getFromNode();
+		RotationNode toNode = affectedEdge.getToNode();
+//		RotationNode newNode = getRotationNode(newPort);
+//		incrementNoInRotation(noInRotation);
+		handledEdges.add(createSailEdge(fromNode, toNode, capacity, 0));
+		handledEdges.add(createSailEdge(toNode, fromNode, capacity, 1));
+		affectedEdge.setInactive();
+		return handledEdges;
+	}
+	
+	public void undoTryInsertPort(RotationEdge feederEdge, ArrayList<RotationEdge> newSailEdges){
+		feederEdge.setActive();
+		for(int i = newSailEdges.size()-1; i >= 0; i--){
+			newSailEdges.get(i).delete();
+		}
+	}
+	
+	public void implementInsertPort(RotationEdge feeder){
+		RotationNode from = feeder.getFromNode();
+		RotationNode to = feeder.getToNode();
+		int noInRotation = -1;
+		int capacity = -1;
+		for(RotationEdge e : from.getOutgoingEdges()){
+			if(e.isSail()){
+				if(e.getNoInRotation() > noInRotation){
+					noInRotation = e.getNoInRotation();
+				}
+				capacity = e.getCapacity();
+			}
+		}
+		incrementNoInRotation(noInRotation);
+		incrementNoInRotation(noInRotation+1);
+		createSailEdge(from, to, capacity, noInRotation);
+		createSailEdge(to, from, capacity, noInRotation+1);
+		feeder.delete();
 	}
 	
 	public int getFlowCost(){
@@ -379,7 +445,7 @@ public class RotationGraph {
 		printRotation();
 		RotationEdge affectedEdge = rotationEdges.get(4);
 		Port newPort = graph.getPort(198);
-		addPort(affectedEdge, newPort);
+		insertPort(affectedEdge, newPort);
 		printRotation();
 	}
 
@@ -398,16 +464,12 @@ public class RotationGraph {
 			nextNode = nextEdge.getToNode();
 			decrementNoInRotation(outgoingEdge.getNoInRotation());
 		}
-		RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
-//		for(RotationEdge e : deleteEdges){
-//			e.setInactive();
-//		}
-//		deleteEdges.add(0, newEdge);
 		deleteEdges(deleteEdges);
 	}
 	
-	public void addPort(RotationEdge affectedEdge, Port newPort){
+	public void insertPort(RotationEdge affectedEdge, Port newPort){
 		int noInRotation = affectedEdge.getNoInRotation();
 		RotationNode fromNode = affectedEdge.getFromNode();
 		RotationNode toNode = affectedEdge.getToNode();
