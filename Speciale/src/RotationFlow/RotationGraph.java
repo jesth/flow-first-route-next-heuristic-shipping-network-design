@@ -52,6 +52,7 @@ public class RotationGraph {
 			}
 		}
 		int bestRotationObj = getFlowCost() + getRotationCost();
+		System.out.println("Org obj: " + bestRotationObj);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
@@ -77,6 +78,7 @@ public class RotationGraph {
 			undoRemovePort(handledEdges);
 		}
 		if(madeChange){
+			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
 			implementRemovePort(worstInto, worstOut);
 		}
 		return madeChange;

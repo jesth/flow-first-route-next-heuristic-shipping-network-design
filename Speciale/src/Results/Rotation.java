@@ -343,10 +343,10 @@ public class Rotation {
 	}
 	
 	public void removePort(int noInRotationIn, int noInRotationOut){
-		if(noInRotationIn != noInRotationOut + 1){
+		if(noInRotationIn != noInRotationOut - 1 && noInRotationOut != 0){
 			throw new RuntimeException("Input mismatch");
 		}
-		Edge ingoingEdge = rotationEdges.get(noInRotationOut);
+		Edge ingoingEdge = rotationEdges.get(noInRotationIn);
 		Edge dwell = ingoingEdge.getNextEdge();
 		graph.removePort(dwell);
 	}

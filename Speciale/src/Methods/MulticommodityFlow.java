@@ -474,4 +474,28 @@ public class MulticommodityFlow {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void saveTransferSol(String fileName){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("Port;RotationFrom;RotationTo;ODId;ODFrom;ODTo;#FFE");
+			out.newLine();
+			for(Edge e : graph.getEdges()){
+				if(e.isTransshipment()){
+					for(Route r : e.getRoutes()){
+						Demand d = r.getDemand();
+						out.write(e.getFromPortUNLo() + ";");
+						out.write(e.getPrevEdge().getRotation().getId() + ";" + e.getNextEdge().getRotation().getId() + ";");
+						out.write(d.getId() + ";" + d.getOrigin().getUNLocode() + ";" + d.getDestination().getUNLocode() + ";" + r.getFFE());
+						out.newLine();
+					}
+				}
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -21,7 +21,7 @@ public class MulticommodityFlowThreads {
 	private static int bestFlowProfit;
 	private static ArrayList<Route> bestRoutes;
 	private static ArrayList<BellmanFord> bellmanFords;
-	
+
 
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
@@ -57,7 +57,7 @@ public class MulticommodityFlowThreads {
 	 * @throws InterruptedException 
 	 */
 	public static void run() throws InterruptedException{
-		
+
 		ArrayList<Edge> sailEdges = new ArrayList<Edge>();
 		for(Edge e : graph.getEdges()){
 			if(e.isSail()){
@@ -432,6 +432,66 @@ public class MulticommodityFlowThreads {
 						out.newLine();
 					}
 				}
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveTransferSol(String fileName){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("Port;RotationFrom;RotationTo;ODId;ODFrom;ODTo;#FFE");
+			out.newLine();
+			for(Edge e : graph.getEdges()){
+				if(e.isTransshipment()){
+					for(Route r : e.getRoutes()){
+						Demand d = r.getDemand();
+						out.write(e.getFromPortUNLo() + ";");
+						out.write(e.getPrevEdge().getRotation().getId() + ";" + e.getNextEdge().getRotation().getId() + ";");
+						out.write(d.getId() + ";" + d.getOrigin().getUNLocode() + ";" + d.getDestination().getUNLocode() + ";");
+						out.write(r.getFFE());
+						out.newLine();
+					}
+				}
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void saveAllEdgesSol(String fileName){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("PortFrom;PortTo;Cost;Capacity;Load;Omission;Load;Unload;Transshipment;Sail/Dwell;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
+			out.newLine();
+			for(Edge e : graph.getEdges()){
+				out.write(e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";");
+				out.write(e.getCost() + ";" + e.getCapacity() + ";" + e.getLoad() + ";");
+				if(e.isOmission()){
+					out.write("1;0;0;0;0;;;;");
+				} else if(e.isLoadUnload()){
+					if(e.getFromNode().isFromCentroid()){
+						out.write("0;1;0;0;0;;" + e.getToNode().getNextEdge().getRotation().getId() + ";;" + e.getToNode().getNextEdge().getNoInRotation());
+					} else {
+						out.write("0;0;1;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";;" + e.getFromNode().getPrevEdge().getNoInRotation() + ";");
+					}
+					
+				} else if(e.isTransshipment()){
+					out.write("0;0;0;1;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";" + e.getToNode().getNextEdge().getRotation().getId() + 
+							";" + e.getFromNode().getPrevEdge().getNoInRotation() + ";" + e.getToNode().getNextEdge().getNoInRotation());
+				} else if(e.isSail() || e.isDwell()){
+					out.write("0;0;0;0;1;" + e.getRotation().getId() + ";" + e.getRotation().getId() + ";" + e.getNoInRotation() + ";" + e.getNoInRotation());
+				} else {
+					throw new RuntimeException("Edge does not fit any description.");
+				}
+				out.newLine();
 			}
 			out.close();
 		} catch (IOException e) {
