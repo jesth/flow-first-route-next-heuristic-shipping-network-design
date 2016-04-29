@@ -856,8 +856,9 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		MulticommodityFlowThreads.run();
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).findRotationFlow();
+		rotations.get(19).createRotationGraph();
+		rotations.get(19).findRotationFlow();
+		
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
 //			r.findRotationFlow();
@@ -876,14 +877,15 @@ public class RunModel {
 //		}
 //		RuneVisualization.makeVisualization(rotationPorts, "r2");
 		
-		
 //		MulticommodityFlow.run();
 //		ComputeRotations.addPorts();
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
+		
 		System.out.println("Multicommodity run.");
 		MulticommodityFlow.saveODSol("ODSol.csv", graph.getData().getDemands());
 		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		MulticommodityFlow.saveTransferSol("TransferSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
