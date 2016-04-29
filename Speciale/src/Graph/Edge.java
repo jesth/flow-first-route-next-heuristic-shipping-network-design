@@ -24,6 +24,7 @@ public class Edge {
 	private boolean dwell;
 	private boolean transshipment;
 	private boolean loadUnload;
+	private boolean feeder;
 	private Rotation rotation;
 	private int noInRotation;
 	private ArrayList<Route> routes;
@@ -45,7 +46,7 @@ public class Edge {
 	 * @param noInRotation - the number in the rotation for sail edges only. -1 if dwell, transshipment or load/unload.
 	 * @param distance - the DistanceElement associated with the edge. Null if dwell, transshipment or load/unload.
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, Rotation rotation, int noInRotation, DistanceElement distance){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, boolean feeder, Rotation rotation, int noInRotation, DistanceElement distance){
 		super();
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
@@ -62,6 +63,7 @@ public class Edge {
 		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
+		this.feeder = false;
 		this.rotation = rotation;
 		this.noInRotation = noInRotation;
 		if(fromNode.isDeparture() && toNode.isArrival() && rotationEdge){
@@ -72,7 +74,7 @@ public class Edge {
 			this.dwell = true;
 			//TODO hard-code
 			this.travelTime = 24;
-		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge) {
+		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge && !feeder) {
 			this.transshipment = true;
 			// TODO hard-code
 			this.travelTime = 24;
@@ -80,6 +82,8 @@ public class Edge {
 			this.loadUnload = true;
 			// TODO hard-code
 			this.travelTime = 0;
+		} else if(feeder){
+			feeder = true;
 		} else {
 			throw new RuntimeException("Tried to construct an edge that does not fit "
 					+ "with either sail, dwell, transshipment or load/unload definitions.");
@@ -112,6 +116,7 @@ public class Edge {
 		this.dwell = false;
 		this.transshipment = false;
 		this.loadUnload = false;
+		this.feeder = false;
 		this.rotation = null;
 		this.noInRotation = -1;
 		toNode.addIngoingEdge(this);
@@ -299,6 +304,10 @@ public class Edge {
 	 */
 	public boolean isLoadUnload() {
 		return loadUnload;
+	}
+	
+	public boolean isFeeder() {
+		return feeder;
 	}
 
 	/**

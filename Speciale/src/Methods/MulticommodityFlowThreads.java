@@ -27,17 +27,17 @@ public class MulticommodityFlowThreads {
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
 	 */
-//	public static void initialize(Graph inputGraph){
-//		graph = inputGraph;
-//		bellmanFords = new ArrayList<BellmanFord>(Data.getPortsMap().size());
-//		BellmanFord bellmanFord = null;
-//		System.out.println("Number of acvtive ports: " + graph.getFromCentroids().size());
-//		for(Node n : graph.getFromCentroids()){
-//			bellmanFord = new BellmanFord(inputGraph, n);
-//			bellmanFords.add(bellmanFord);
-//		}
-//	}
-	
+	//	public static void initialize(Graph inputGraph){
+	//		graph = inputGraph;
+	//		bellmanFords = new ArrayList<BellmanFord>(Data.getPortsMap().size());
+	//		BellmanFord bellmanFord = null;
+	//		System.out.println("Number of acvtive ports: " + graph.getFromCentroids().size());
+	//		for(Node n : graph.getFromCentroids()){
+	//			bellmanFord = new BellmanFord(inputGraph, n);
+	//			bellmanFords.add(bellmanFord);
+	//		}
+	//	}
+
 	public MulticommodityFlowThreads(Graph inputGraph){
 		graph = inputGraph;
 		bellmanFords = new ArrayList<BellmanFord>(Data.getPortsMap().size());
@@ -281,13 +281,13 @@ public class MulticommodityFlowThreads {
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
-			out.write("RotationId;NoInRotation;ODId;ODFrom;ODTo;LegFrom;LegTo;#FFE;Omission"); 
+			out.write("RotationId;NoInRotation;ODId;ODFrom;ODTo;LegFrom;LegTo;#FFE;Omission;Feeder"); 
 			out.newLine();
 			for(Demand d : demands){
 				for(Route r : d.getRoutes()){
 					for(Edge e : r.getRoute()){
-						if(e.isSail() || e.isOmission()){
-							if(e.isOmission()){
+						if(e.isSail() || e.isOmission() || e.isFeeder()){
+							if(e.isOmission() || e.isFeeder()){
 								out.write(";;");
 							} else {
 								out.write(e.getRotation().getId()+";"+e.getNoInRotation()+";");
@@ -297,9 +297,11 @@ public class MulticommodityFlowThreads {
 							out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
 							out.write(r.getFFE()+";");
 							if(e.isOmission()){
-								out.write("1");
+								out.write("1;0");
+							} else if(e.isFeeder()){
+								out.write("0;1");
 							} else {
-								out.write("0");
+								out.write("0;0");
 							}
 							out.newLine();
 						}
@@ -378,25 +380,27 @@ public class MulticommodityFlowThreads {
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
-			out.write("PortFrom;PortTo;Cost;Capacity;Load;Omission;Load;Unload;Transshipment;Sail/Dwell;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
+			out.write("PortFrom;PortTo;Cost;Capacity;Load;Omission;Load;Unload;Transshipment;Sail/Dwell;Feeder;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
 			out.newLine();
 			for(Edge e : graph.getEdges()){
 				out.write(e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";");
 				out.write(e.getCost() + ";" + e.getCapacity() + ";" + e.getLoad() + ";");
 				if(e.isOmission()){
-					out.write("1;0;0;0;0;;;;");
+					out.write("1;0;0;0;0;0;;;;");
 				} else if(e.isLoadUnload()){
 					if(e.getFromNode().isFromCentroid()){
-						out.write("0;1;0;0;0;;" + e.getToNode().getNextEdge().getRotation().getId() + ";;" + e.getToNode().getNextEdge().getNoInRotation());
+						out.write("0;1;0;0;0;0;;" + e.getToNode().getNextEdge().getRotation().getId() + ";;" + e.getToNode().getNextEdge().getNoInRotation());
 					} else {
-						out.write("0;0;1;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";;" + e.getFromNode().getPrevEdge().getNoInRotation() + ";");
+						out.write("0;0;1;0;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";;" + e.getFromNode().getPrevEdge().getNoInRotation() + ";");
 					}
-					
+
 				} else if(e.isTransshipment()){
-					out.write("0;0;0;1;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";" + e.getToNode().getNextEdge().getRotation().getId() + 
+					out.write("0;0;0;1;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";" + e.getToNode().getNextEdge().getRotation().getId() + 
 							";" + e.getFromNode().getPrevEdge().getNoInRotation() + ";" + e.getToNode().getNextEdge().getNoInRotation());
 				} else if(e.isSail() || e.isDwell()){
-					out.write("0;0;0;0;1;" + e.getRotation().getId() + ";" + e.getRotation().getId() + ";" + e.getNoInRotation() + ";" + e.getNoInRotation());
+					out.write("0;0;0;0;1;0;" + e.getRotation().getId() + ";" + e.getRotation().getId() + ";" + e.getNoInRotation() + ";" + e.getNoInRotation());
+				} else if(e.isFeeder()) {
+					out.write("0;0;0;0;0;1;;;;");
 				} else {
 					throw new RuntimeException("Edge does not fit any description.");
 				}
