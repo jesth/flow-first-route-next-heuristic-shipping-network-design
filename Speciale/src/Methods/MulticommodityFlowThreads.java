@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import Data.Data;
 import Data.Demand;
 import Graph.Edge;
 import Graph.Graph;
@@ -17,27 +18,37 @@ import Results.Rotation;
 import Results.Route;
 
 public class MulticommodityFlowThreads {
-	private static Graph graph;
-	private static int bestFlowProfit;
-	private static ArrayList<Route> bestRoutes;
-	private static ArrayList<BellmanFord> bellmanFords;
+	private Graph graph;
+	private int bestFlowProfit;
+	private ArrayList<Route> bestRoutes;
+	private ArrayList<BellmanFord> bellmanFords;
 
 
 	/** Initializes the multicommodity flow by saving the graph and initializing Bellman Ford.
 	 * @param inputGraph - the graph to be searched through to find the multicommodity flow.
 	 */
-	public static void initialize(Graph inputGraph){
+//	public static void initialize(Graph inputGraph){
+//		graph = inputGraph;
+//		bellmanFords = new ArrayList<BellmanFord>(Data.getPortsMap().size());
+//		BellmanFord bellmanFord = null;
+//		System.out.println("Number of acvtive ports: " + graph.getFromCentroids().size());
+//		for(Node n : graph.getFromCentroids()){
+//			bellmanFord = new BellmanFord(inputGraph, n);
+//			bellmanFords.add(bellmanFord);
+//		}
+//	}
+	
+	public MulticommodityFlowThreads(Graph inputGraph){
 		graph = inputGraph;
-		bellmanFords = new ArrayList<BellmanFord>(graph.getData().getPortsMap().size());
+		bellmanFords = new ArrayList<BellmanFord>(Data.getPortsMap().size());
 		BellmanFord bellmanFord = null;
-		System.out.println("Number of acvtive ports: " + graph.getFromCentroids().size());
 		for(Node n : graph.getFromCentroids()){
 			bellmanFord = new BellmanFord(inputGraph, n);
 			bellmanFords.add(bellmanFord);
 		}
 	}
 
-	public static void reset(){
+	public void reset(){
 		for(Edge e : graph.getEdges()){
 			if(e.isSail()){
 				e.setLagrangeStep(50);
@@ -56,7 +67,7 @@ public class MulticommodityFlowThreads {
 	 * <br>3) If the flow is legal, the best found flow is implemented.
 	 * @throws InterruptedException 
 	 */
-	public static void run() throws InterruptedException{
+	public void run() throws InterruptedException{
 
 		ArrayList<Edge> sailEdges = new ArrayList<Edge>();
 		for(Edge e : graph.getEdges()){
@@ -130,7 +141,7 @@ public class MulticommodityFlowThreads {
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
 
-	private static double getOverflow() {
+	private double getOverflow() {
 		double overflow = 0;
 		int sailEdges = 0;
 		for(Edge e : graph.getEdges()){
@@ -144,109 +155,7 @@ public class MulticommodityFlowThreads {
 		return overflow;
 	}
 
-	private static void startLagrange(){
-		for (Edge e : graph.getEdges()){
-			if(e.isSail()){
-				e.setLagrange(1000);
-
-			}
-		}
-	}
-
-	/*
-	//TODO: Update description.
-	private static void startLagrange() {
-		for (Edge e : graph.getEdges()){
-			//TODO only sail edges are relevant right?
-			if(!e.isSail())
-				continue;
-			//TODO if lagrange is already set (from previously) we reuse it
-			if(e.getLagrange() > 0)
-				continue;
-			int lowestProfit = Integer.MAX_VALUE;
-			for(Route r : e.getRoutes()){
-				if(r.getLagrangeProfit() < lowestProfit){
-					lowestProfit = r.getLagrangeProfit();
-				}
-			}
-			if(lowestProfit == Integer.MAX_VALUE){
-				System.out.println("Setting lagrange to -1");
-				lowestProfit = -1001;
-			}
-			e.addLagrange(lowestProfit+1000);
-		}
-	}
-	 */
-
-	/** Based on a flow obtained by the Bellman Ford-algorithm, a legal flow is computed by:
-	 * <br>1) Running through all edges in unprioritized order.
-	 * <br>2) Only sail edges are considered, as these are the only ones that can 
-	 * have a restricting capacity (dwell edges can never be restricting).
-	 * <br>3) If the capacity is violated, the profit per container of each of the serviced OD pairs is considered.
-	 * <br>4) The OD pair with the lowest profit is chosen for computation of an alternative repair route.
-	 * <br>5) The repair route is computed.
-	 * <br>6) Containers are removed down to the capacity limit, or until all containers of the OD pair have been removed.
-	 * <br>7) If a capacity violation was found on any edge in step 3), the process is repeated from 1).
-	 * @return The profit of the repaired flow.
-	 * @throws InterruptedException 
-	 */
-
-	/*
-	private static boolean findRepairFlow(){
-		System.out.println("Finding repair flow.");
-		boolean firstValid = true;
-		boolean invalidFlow = true;
-		ArrayList<Edge> overflowEdges = new ArrayList<Edge>();
-//		for(Edge e : graph.getEdges()){
-		for(int i = graph.getEdges().size()-1; i>= 0; i--){
-			Edge e = graph.getEdges().get(i);
-			int overflow = e.getRepLoad() - e.getCapacity();
-			if(e.isSail() && overflow > 0){
-				overflowEdges.add(e);
-			}
-		}
-		while(invalidFlow){
-			//			System.out.println("Iteration: " + counter);
-			invalidFlow = false;
-			for(int i = overflowEdges.size()-1; i >= 0; i--){
-				Edge e = overflowEdges.get(i);
-				int overflow = e.getRepLoad() - e.getCapacity();
-				if(overflow > 0){
-					invalidFlow = true;
-					firstValid = false;
-					int lowestProfit = Integer.MAX_VALUE;
-					Route lowestProfitRoute = null;
-					for(Route r : e.getRoutes()){
-						if(r.getLagrangeProfit() < lowestProfit){
-							lowestProfit = r.getLagrangeProfit();
-							lowestProfitRoute = r;
-						}
-					}
-					Demand repDemand = lowestProfitRoute.getDemand();
-					int FFErep = Math.min(lowestProfitRoute.getFFErep(), overflow);
-					FFErep = repDemand.createRepRoute(lowestProfitRoute, FFErep);
-					lowestProfitRoute.adjustFFErep(-FFErep);
-				} else {
-					overflowEdges.remove(i);
-				}
-			}
-		}
-		int flowProfit = graph.getResult().getFlowProfit(true);
-		if(flowProfit > bestFlowProfit){
-			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
-			updateBestFlow(flowProfit);
-			for(Edge e : graph.getEdges()){
-				if(e.isSail()){
-					e.decreaseLagrangeStep();
-				}
-			}
-		}
-		return firstValid;
-	}
-	 */
-
-
-	private static boolean findRepairFlow(int improvementCounter) throws InterruptedException{
+	private boolean findRepairFlow(int improvementCounter) throws InterruptedException{
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
@@ -274,7 +183,7 @@ public class MulticommodityFlowThreads {
 			Demand d = r.getDemand();
 			d.createRepRoute(r, r.getFFEforRemoval());
 		}
-		for(Demand d : graph.getData().getDemands()){
+		for(Demand d : graph.getDemands()){
 			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
@@ -295,7 +204,7 @@ public class MulticommodityFlowThreads {
 	}
 
 
-	private static void findOverflowRoutes(Edge e, int overflow, ArrayList<Route> overflowRoutes){
+	private void findOverflowRoutes(Edge e, int overflow, ArrayList<Route> overflowRoutes){
 		Route r = e.findLeastProfitableRoute();
 		int FFEforRemoval = Math.min(overflow, (r.getFFErep()-r.getFFEforRemoval()));
 		r.addFFEforRemoval(FFEforRemoval);
@@ -310,9 +219,9 @@ public class MulticommodityFlowThreads {
 	/** Updates the best flow to the current flow. Saves the best routes and objective value of the current flow. 
 	 * @param bestFlowProfitIn - the profit of the current flow that is to be saved as the best flow.
 	 */
-	private static void updateBestFlow(int bestFlowProfitIn){
+	private void updateBestFlow(int bestFlowProfitIn){
 		bestRoutes.clear();
-		for(Demand d : graph.getData().getDemands()){
+		for(Demand d : graph.getDemands()){
 			for(Route r : d.getRoutes()){
 				bestRoutes.add(r);
 			}
@@ -324,8 +233,8 @@ public class MulticommodityFlowThreads {
 	 * <br>1) Clearing all routes from all demand and edge elements.
 	 * <br>2) Adding the best routes to all demand and edge elements.
 	 */
-	public static void implementBestFlow(){
-		for(Demand d : graph.getData().getDemands()){
+	public void implementBestFlow(){
+		for(Demand d : graph.getDemands()){
 			d.clearRoutes();
 		}
 		for(Edge e : graph.getEdges()){
@@ -358,7 +267,7 @@ public class MulticommodityFlowThreads {
 				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}
 		}
-		for(Demand d : graph.getData().getDemands()){
+		for(Demand d : graph.getDemands()){
 			d.checkDemand();
 		}
 
@@ -368,7 +277,7 @@ public class MulticommodityFlowThreads {
 	 * @param fileName - the complete path or name of the file to be saved. End on .csv.
 	 * @param demands - the list of demands to be saved.
 	 */
-	public static void saveODSol(String fileName, ArrayList<Demand> demands){
+	public void saveODSol(String fileName, ArrayList<Demand> demands){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
@@ -404,7 +313,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
-	public static void saveRotationSol(String fileName, ArrayList<Rotation> rotations){
+	public void saveRotationSol(String fileName, ArrayList<Rotation> rotations){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
@@ -440,7 +349,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
-	public static void saveTransferSol(String fileName){
+	public void saveTransferSol(String fileName){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
@@ -465,7 +374,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
-	public static void saveAllEdgesSol(String fileName){
+	public void saveAllEdgesSol(String fileName){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
@@ -500,7 +409,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
-	public static void saveLagranges(String fileName, int iterations){
+	public void saveLagranges(String fileName, int iterations){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
@@ -525,7 +434,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
-	public static void saveLoads(String fileName, int iterations){
+	public void saveLoads(String fileName, int iterations){
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));

@@ -12,6 +12,7 @@ public class RotationEdge {
 	private int noInRotation;
 	private int capacity;
 	private int cost;
+//	private int allowedOdOrg;
 	private ArrayList<RotationRoute> servicedRoutes;
 	private boolean active;
 
@@ -30,6 +31,7 @@ public class RotationEdge {
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		active = true;
+//		this.allowedOdOrg = allowedOdOrg;
 	}
 	
 	public void setActive(){
@@ -123,6 +125,10 @@ public class RotationEdge {
 	public String getToPortUNLo() {
 		return toNode.getUNLocode();
 	}
+	
+//	public int getAllowedOdOrg(){
+//		return allowedOdOrg;
+//	}
 
 	public void removeServicedRoute(RotationRoute r) {
 		servicedRoutes.remove(r);		

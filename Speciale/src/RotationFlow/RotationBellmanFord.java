@@ -126,7 +126,7 @@ public class RotationBellmanFord {
 		}
 	}
 
-	public ArrayList<RotationEdge> getRoute(RotationDemand demand){
+	public static ArrayList<RotationEdge> getRoute(RotationDemand demand){
 		RotationNode fromNode = demand.getOrigin();
 		RotationNode toNode = demand.getDestination();
 		ArrayList<RotationEdge> usedEdges = new ArrayList<RotationEdge>();
@@ -140,7 +140,7 @@ public class RotationBellmanFord {
 		return usedEdges;
 	}
 
-	public ArrayList<RotationEdge> getRouteRep(RotationDemand demand){
+	public static ArrayList<RotationEdge> getRouteRep(RotationDemand demand){
 		RotationNode fromNode = demand.getOrigin();
 		RotationNode toNode = demand.getDestination();
 		ArrayList<RotationEdge> usedEdges = new ArrayList<RotationEdge>();

@@ -9,7 +9,7 @@ public class AuxDijkstra {
 	private static AuxHeap heap;
 
 	public static void run(){
-		ArrayList<Demand> demandsList = graph.getData().getDemands();
+		ArrayList<Demand> demandsList = graph.getDemands();
 		Demand[] demands = new Demand[demandsList.size()];
 		int[] remainingDemand = new int[demandsList.size()];
 		int totRemainingDemand = 0;

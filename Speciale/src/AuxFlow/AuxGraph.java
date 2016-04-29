@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import Data.Data;
+import Data.Demand;
 import Data.Distance;
 import Data.DistanceElement;
 import Data.Port;
@@ -22,13 +23,13 @@ public class AuxGraph implements Serializable{
 	private transient VesselClass largestVessel;
 	private AuxNode[] nodes;
 	private ArrayList<AuxEdge> edges;
-	private transient Data data;
+	private transient ArrayList<Demand> demandsList;
 
-	public AuxGraph(Data data){
-		this.data = data;
-		nodes = new AuxNode[data.getPorts().length];
+	public AuxGraph(ArrayList<Demand> demandsList){
+		this.demandsList = demandsList;
+		nodes = new AuxNode[Data.getPorts().length];
 		edges = new ArrayList<AuxEdge>();
-		ArrayList<VesselClass> vessels = data.getVesselClasses();
+		ArrayList<VesselClass> vessels = Data.getVesselClasses();
 		for(int i = 0; i < vessels.size(); i++){
 			VesselClass vessel = vessels.get(i);
 			if(vessel.getNoAvailable() > 0){
@@ -41,16 +42,16 @@ public class AuxGraph implements Serializable{
 	}
 	
 	private void generateNodes(){
-		for(Port p : data.getPorts()){
+		for(Port p : Data.getPorts()){
 			AuxNode newNode = new AuxNode(p);
 			nodes[p.getPortId()] = newNode;
 		}
 	}
 
 	private void generateEdges(){
-		Distance[][] distances = data.getDistances();
-		for(int i = 0; i < data.getPorts().length; i++){
-			for(int j = 0; j < data.getPorts().length; j++){
+		Distance[][] distances = Data.getDistances();
+		for(int i = 0; i < Data.getPorts().length; i++){
+			for(int j = 0; j < Data.getPorts().length; j++){
 				Distance distance = distances[i][j];
 				DistanceElement[] distanceElements = distance.getDistances();
 				for(int k = 0; k <= 3; k++){
@@ -83,12 +84,8 @@ public class AuxGraph implements Serializable{
 		return edges;
 	}
 
-	public Data getData(){
-		return data;
-	}
-
 	public void addFirstRotationManual() {
-		VesselClass vessel = data.getVesselClasses().get(2);
+		VesselClass vessel = Data.getVesselClasses().get(2);
 		int capacity = vessel.getCapacity();
 		AuxEdge edge1 = findEdge("EGPSD", "MACAS");
 		AuxEdge edge2 = findEdge("MACAS", "MAPTM");
@@ -103,7 +100,7 @@ public class AuxGraph implements Serializable{
 	}
 
 	public void addSecondRotationManual() {
-		VesselClass vessel = data.getVesselClasses().get(1);
+		VesselClass vessel = Data.getVesselClasses().get(1);
 		int capacity = vessel.getCapacity();
 		AuxEdge edge1 = findEdge("TRAMB", "EGALY");
 		AuxEdge edge2 = findEdge("EGALY", "EGPSD");
@@ -116,7 +113,7 @@ public class AuxGraph implements Serializable{
 	}
 
 	public void addThirdRotationManual() {
-		VesselClass vessel = data.getVesselClasses().get(1);
+		VesselClass vessel = Data.getVesselClasses().get(1);
 		int capacity = vessel.getCapacity();
 		AuxEdge edge1 = findEdge("ESALG", "TNTUN");
 		AuxEdge edge2 = findEdge("TNTUN", "ITGIT");
@@ -129,7 +126,7 @@ public class AuxGraph implements Serializable{
 	}
 
 	public void addFourthRotationManual() {
-		VesselClass vessel = data.getVesselClasses().get(1);
+		VesselClass vessel = Data.getVesselClasses().get(1);
 		int capacity = vessel.getCapacity();
 		AuxEdge edge1 = findEdge("ESALG", "DZORN");
 		AuxEdge edge2 = findEdge("DZORN", "TNTUN");
@@ -156,7 +153,7 @@ public class AuxGraph implements Serializable{
 	}
 
 	public void addFifthRotationManual() {
-		VesselClass vessel = data.getVesselClasses().get(0);
+		VesselClass vessel = Data.getVesselClasses().get(0);
 		int capacity = vessel.getCapacity();
 		AuxEdge edge1 = findEdge("ESALG", "ESAGP");
 		AuxEdge edge2 = findEdge("ESAGP", "DZORN");
@@ -244,5 +241,9 @@ public class AuxGraph implements Serializable{
 			auxEdges.add(sortableAuxEdges.get(i).getAuxEdge());
 		}
 		return auxEdges;
+	}
+
+	public ArrayList<Demand> getDemands() {
+		return demandsList;
 	}
 }

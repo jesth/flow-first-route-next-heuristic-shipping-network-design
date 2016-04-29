@@ -2,6 +2,7 @@ package RotationFlow;
 
 import java.util.ArrayList;
 
+import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
@@ -32,7 +33,7 @@ public class RotationGraph {
 	}
 	
 	public static void initialize(Graph newGraph){
-		noOfCentroids = newGraph.getData().getPortsMap().size();
+		noOfCentroids = Data.getPortsMap().size();
 		RotationNode.setNoOfCentroids(noOfCentroids);
 		graph = newGraph;
 	}
@@ -44,6 +45,11 @@ public class RotationGraph {
 	
 	
 	public boolean removeWorstPort(){
+//		for(RotationEdge e : rotationEdges){
+//			if(e.isFeeder()){
+//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+//			}
+//		}
 		boolean madeChange = false;
 		int maxIndex = -1;
 		for(RotationEdge e : rotationEdges){
@@ -51,8 +57,10 @@ public class RotationGraph {
 				maxIndex = Math.max(maxIndex, e.getNoInRotation());
 			}
 		}
-		int bestRotationObj = getFlowCost() + getRotationCost();
-		System.out.println("Org obj: " + bestRotationObj);
+		int flowCost = getFlowCost();
+		int rotationCost = getRotationCost();
+		int bestRotationObj = flowCost + rotationCost;
+		System.out.println("Org flowCost: " + flowCost + " & rotationCost " + rotationCost);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
@@ -63,11 +71,13 @@ public class RotationGraph {
 		}
 		undoTryRemovePort(handledEdges);
 		for(int i=0; i<maxIndex; i++){
-			System.out.println("i = " + i);
 			RotationEdge into = rotationEdges.get(i);
 			RotationEdge out = rotationEdges.get(i+1);
 			handledEdges = tryRemovePort(into, out);
-			rotationObj = getFlowCost() + getRotationCost();
+			flowCost = getFlowCost();
+			rotationCost = getRotationCost();
+			rotationObj = flowCost + rotationCost;
+			System.out.println("Removing port " + into.getToPortUNLo() + " with flowCost " + flowCost + " & rotationCost " + rotationCost);
 			if(rotationObj < bestRotationObj){
 				worstInto = into;
 				worstOut = out;
@@ -80,6 +90,11 @@ public class RotationGraph {
 			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
 			implementRemovePort(worstInto, worstOut);
 		}
+//		for(RotationEdge e : rotationEdges){
+//			if(e.isFeeder()){
+//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+//			}
+//		}
 		return madeChange;
 	}
 	
@@ -206,7 +221,7 @@ public class RotationGraph {
 			if(e.isSail() && e.isActive()){
 				int fromPortId = e.getFromNode().getPort().getPortId();
 				int toPortId = e.getToNode().getPort().getPortId();
-				DistanceElement d = graph.getData().getBestDistanceElement(fromPortId, toPortId, v);
+				DistanceElement d = Data.getBestDistanceElement(fromPortId, toPortId, v);
 				distance += d.getDistance();
 				Port p = e.getToNode().getPort();
 				portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
@@ -400,7 +415,7 @@ public class RotationGraph {
 
 	private int computeFeederCost(RotationNode fromNode, RotationNode toNode){
 		VesselClass v = rotation.getVesselClass();
-		DistanceElement distance = graph.getData().getBestDistanceElement(fromNode.getPort(), toNode.getPort(), v);
+		DistanceElement distance = Data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), v);
 		int panamaCost = 0;
 		if(distance.isPanama()){
 			panamaCost = v.getPanamaFee();
@@ -431,8 +446,8 @@ public class RotationGraph {
 
 	public void testRemovePort(){
 		printRotation();
-		RotationEdge ingoingEdge = rotationEdges.get(7);
-		RotationEdge outgoingEdge = rotationEdges.get(8);
+		RotationEdge ingoingEdge = rotationEdges.get(2);
+		RotationEdge outgoingEdge = rotationEdges.get(3);
 		implementRemovePort(ingoingEdge, outgoingEdge);
 		printRotation();
 	}

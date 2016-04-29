@@ -67,7 +67,7 @@ public class Result {
 			
 		}
 		int flowRevenue = 0;
-		for (Demand d : graph.getData().getDemands()){
+		for (Demand d : graph.getDemands()){
 			for(Route r : d.getRoutes()){
 				if(r.getRoute().size() > 1 && repair){
 					flowRevenue += r.getFFErep() * d.getRate();
@@ -85,7 +85,7 @@ public class Result {
 	public Demand getLargestODLoss(){
 		Demand OD = null;
 		int largestODLoss = Integer.MAX_VALUE;
-		for(Demand d : graph.getData().getDemands()){
+		for(Demand d : graph.getDemands()){
 			int odLoss = 0;
 			for(Route r : d.getRoutes()){
 				odLoss += r.getRealProfit() *  r.getFFE();

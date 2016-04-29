@@ -17,6 +17,7 @@ public class Demand {
 	//	private int repOmissionFFE;
 	private ArrayList<Route> routes;
 	private int maxTransitTime;
+	private Demand orgDemand;
 	private static AtomicInteger idCounter = new AtomicInteger();
 
 	public Demand(){
@@ -45,6 +46,19 @@ public class Demand {
 		destination.setActive();
 		origin.addDemand(demand, rate);
 		destination.addDemand(demand, rate);
+		this.orgDemand = null;
+	}
+	
+	public Demand(Demand orgDemand, int demand) {
+		super();
+		this.id = orgDemand.getId();
+		this.origin = orgDemand.getOrigin();
+		this.destination = orgDemand.getDestination();
+		this.demand = demand;
+		this.rate = orgDemand.getRate();
+		this.routes = new ArrayList<Route>();
+		this.maxTransitTime = orgDemand.getMaxTransitTime();
+		this.orgDemand = orgDemand;
 	}
 
 	/**
