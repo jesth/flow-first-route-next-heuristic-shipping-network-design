@@ -576,6 +576,7 @@ public class Edge {
 				fromNode.getPort().removeDwellEdge(this);
 			}
 		}
+		setInactive();
 	}
 
 	/**
