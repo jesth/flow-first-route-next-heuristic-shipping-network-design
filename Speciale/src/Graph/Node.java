@@ -321,7 +321,7 @@ public class Node {
 	public int getLoadedFFE(){
 		int load = 0;
 		for(Edge e : ingoingEdges){
-			if(e.isLoadUnload()){
+			if(e.isLoadUnload() && e.isActive()){
 				load += e.getLoad();
 			}
 		}
@@ -331,7 +331,7 @@ public class Node {
 	public int getTransshippedToFFE(){
 		int transshippedTo = 0;
 		for(Edge e : ingoingEdges){
-			if(e.isTransshipment()){
+			if(e.isTransshipment() && e.isActive()){
 				transshippedTo += e.getLoad();
 			}
 		}
@@ -341,7 +341,7 @@ public class Node {
 	public int getUnloadedFFE(){
 		int unload = 0;
 		for(Edge e : outgoingEdges){
-			if(e.isLoadUnload()){
+			if(e.isLoadUnload() && e.isActive()){
 				unload += e.getLoad();
 			}
 		}
@@ -351,7 +351,7 @@ public class Node {
 	public int getTransshippedFromFFE(){
 		int transshippedFrom = 0;
 		for(Edge e : outgoingEdges){
-			if(e.isTransshipment()){
+			if(e.isTransshipment() && e.isActive()){
 				transshippedFrom += e.getLoad();
 			}
 		}

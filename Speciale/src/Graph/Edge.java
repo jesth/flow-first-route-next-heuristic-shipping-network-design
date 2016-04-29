@@ -9,6 +9,7 @@ import Results.Route;
 
 public class Edge {
 	private int id;
+	private boolean active;
 	private Node fromNode;
 	private Node toNode;
 	private int cost; 
@@ -50,6 +51,7 @@ public class Edge {
 		super();
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
+		this.active = true;
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.realCost = cost;
@@ -103,6 +105,7 @@ public class Edge {
 	public Edge(Node fromNode, Node toNode, int rate){
 		super();
 		this.id = idCounter.getAndIncrement();
+		this.active = true;
 		this.fromNode = fromNode;
 		this.toNode = toNode;
 		this.cost = 1000 + rate;
@@ -130,6 +133,18 @@ public class Edge {
 	 */
 	public int getId(){
 		return id;
+	}
+	
+	public void setActive(){
+		active = true;
+	}
+	
+	public void setInactive(){
+		active = false;
+	}
+	
+	public boolean isActive(){
+		return active;
 	}
 
 	/**

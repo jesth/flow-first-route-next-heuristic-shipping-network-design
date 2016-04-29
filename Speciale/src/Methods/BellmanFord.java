@@ -131,7 +131,7 @@ public class BellmanFord implements Runnable {
 	public void relax(int centroidId, Edge e){
 		Node u = e.getFromNode();
 		Node v = e.getToNode();
-		if(u.getDistance(centroidId) < Integer.MAX_VALUE){
+		if(u.getDistance(centroidId) < Integer.MAX_VALUE && e.isActive()){
 			if(v.getDistance(centroidId) > u.getDistance(centroidId) + e.getCost()){
 				v.setLabels(centroidId, u.getDistance(centroidId) + e.getCost(), e);
 				v.setUnprocessed(this, centroidId);
@@ -142,7 +142,7 @@ public class BellmanFord implements Runnable {
 	public void relaxRep(int centroidId, Edge e){
 		Node u = e.getFromNode();
 		Node v = e.getToNode();
-		if(u.getDistanceRep(centroidId) < Integer.MAX_VALUE){
+		if(u.getDistanceRep(centroidId) < Integer.MAX_VALUE && e.isActive()){
 			if(v.getDistanceRep(centroidId) > u.getDistanceRep(centroidId) + e.getCost()){
 				if(e.getRepLoad() < e.getCapacity()){
 					v.setLabelsRep(centroidId, u.getDistanceRep(centroidId) + e.getCost(), e);

@@ -20,6 +20,7 @@ public class Rotation {
 	private boolean active;
 	private Graph mainGraph;
 	private Graph rotationGraph;
+	private Rotation subRotation;
 
 	public Rotation(){
 	}
@@ -35,11 +36,17 @@ public class Rotation {
 		this.noOfVessels = 0;
 		this.distance = 0;
 		this.mainGraph = mainGraph;
+		this.rotationGraph = null;
+		this.subRotation = null;
 		//		calculateSpeed();
 	}
 	
 	public void createRotationGraph(){
 		this.rotationGraph = new Graph(this);
+	}
+	
+	public void setSubRotation(Rotation r){
+		this.subRotation = r;
 	}
 	
 //	public void findRotationFlow(){
@@ -240,7 +247,7 @@ public class Rotation {
 		int suezCost = 0;
 		int panamaCost = 0;
 		for (Edge e : rotationEdges){
-			if(e.isSail()){
+			if(e.isSail() && e.isActive()){
 				sailingTime += e.getTravelTime();
 				Port p = e.getToNode().getPort();
 				portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
@@ -251,7 +258,7 @@ public class Rotation {
 					panamaCost += v.getPanamaFee();
 				}
 			}
-			if(e.isDwell()){
+			if(e.isDwell() && e.isActive()){
 				idleTime += e.getTravelTime();
 			}
 		}
