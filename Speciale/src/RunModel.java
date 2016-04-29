@@ -42,9 +42,9 @@ public class RunModel {
 		System.out.println("SaveAux is done");
 	}
 	
-	public static void testAux() throws FileNotFoundException{
-		
-		Graph graph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+	public static void testAux() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Mediterranean.csv");
+		Graph graph = new Graph("Demand_Mediterranean.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
 		VesselClass feeder450 = Data.getVesselClasses().get(0);
@@ -67,11 +67,11 @@ public class RunModel {
 		graph.removePort(optRotation, remove);
 		*/
 		ComputeRotations.addPorts();
-		MulticommodityFlow.run();
+		graph.getMcf().run();
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		ComputeRotations.removePorts();
-		MulticommodityFlow.run();	
+		graph.getMcf().run();	
 		ComputeRotations.addPorts();
 		
 //		rotationPorts = new ArrayList<String>(r.getPorts().size());
@@ -80,10 +80,10 @@ public class RunModel {
 //		}
 //		RuneVisualization.makeVisualization(rotationPorts, "afterOptimization");
 		
-		MulticommodityFlow.run();
+		graph.getMcf().run();
 		
-		MulticommodityFlow.saveODSol("ODSol.csv", Data.getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
@@ -123,13 +123,14 @@ public class RunModel {
 	
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
-		MulticommodityFlow.initialize(graph);
-		MulticommodityFlowThreads.initialize(graph);
+//		MulticommodityFlow.initialize(graph);
+//		MulticommodityFlowThreads.initialize(graph);
 		RotationGraph.initialize(graph);
 	}
 	
-	public static void testBalticManual() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
+	public static void testBalticManual() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Baltic.csv");
+		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = Data.getBestDistanceElement("DEBRV", "RULED", vesselClass);
@@ -172,13 +173,12 @@ public class RunModel {
 //		distances3.add(leg21);
 //		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
 		
-		MulticommodityFlow.initialize(testGraph);
 //		Result.addRotation(r3);
 		long time = System.currentTimeMillis();
-		MulticommodityFlow.run();
+		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		MulticommodityFlow.saveODSol("test.csv", Data.getDemands());
+		testGraph.getMcf().saveODSol("test.csv", testGraph.getDemands());
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -186,8 +186,9 @@ public class RunModel {
 		testGraph.saveOPLData("OPLData.dat");
 	}
 	
-	public static void testBaltic() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Baltic.csv", "fleet_Baltic.csv");
+	public static void testBaltic() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Baltic.csv");
+		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = Data.getBestDistanceElement("RULED", "FIKTK", vesselClass);
@@ -227,12 +228,11 @@ public class RunModel {
 		distances3.add(leg21);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
 		
-		MulticommodityFlow.initialize(testGraph);
 		long time = System.currentTimeMillis();
-		MulticommodityFlow.run();
+		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		MulticommodityFlow.saveODSol("test.csv", Data.getDemands());
+		testGraph.getMcf().saveODSol("test.csv", testGraph.getDemands());
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -240,8 +240,9 @@ public class RunModel {
 		testGraph.saveOPLData("OPLData.dat");
 	}
 	
-	public static void testMedManual() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+	public static void testMedManual() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Mediterranean.csv");
+		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = Data.getBestDistanceElement("TRAMB", "ESALG", vesselClass);
@@ -343,13 +344,12 @@ public class RunModel {
 		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
 
 		
-		MulticommodityFlow.initialize(testGraph);
 		long time = System.currentTimeMillis();
-		MulticommodityFlow.run();
+		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		MulticommodityFlow.saveODSol("ODSol.csv", Data.getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
+		testGraph.getMcf().saveODSol("ODSol.csv", testGraph.getDemands());
+		testGraph.getMcf().saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -357,8 +357,9 @@ public class RunModel {
 		testGraph.saveOPLData("OPLData.dat");
 	}
 	
-	public static void testMedManual2() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+	public static void testMedManual2() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Mediterranean.csv");
+		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = Data.getBestDistanceElement("EGPSD", "ESALG", vesselClass);
@@ -488,13 +489,12 @@ public class RunModel {
 		distances7.add(leg74);
 		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
 		
-		MulticommodityFlow.initialize(testGraph);
 		long time = System.currentTimeMillis();
-		MulticommodityFlow.run();
+		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		MulticommodityFlow.saveODSol("ODSol.csv", Data.getDemands());
-		MulticommodityFlow.saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
+		testGraph.getMcf().saveODSol("ODSol.csv", testGraph.getDemands());
+		testGraph.getMcf().saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -503,8 +503,9 @@ public class RunModel {
 	}
 
 	
-	public static void testMed() throws FileNotFoundException{
-		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
+	public static void testMed() throws FileNotFoundException, InterruptedException{
+		Data.initialize("fleet_Mediterranean.csv");
+		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
 		DistanceElement leg1 = Data.getBestDistanceElement("MACAS", "MAAGA", vesselClass);
@@ -643,7 +644,6 @@ public class RunModel {
 		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
 		
 		
-		MulticommodityFlow.initialize(testGraph);
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -862,10 +862,10 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
-		rotations.get(19).createRotationGraph();
-		rotations.get(19).findRotationFlow();
-		
-		graph.runMcf();
+//		rotations.get(19).createRotationGraph();
+//		rotations.get(19).findRotationFlow();
+//		
+//		graph.runMcf();
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
 //			r.findRotationFlow();
