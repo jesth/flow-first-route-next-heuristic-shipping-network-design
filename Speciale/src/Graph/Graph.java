@@ -632,27 +632,38 @@ public class Graph {
 		return mcf;
 	}
 	
-	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Edge ingoingEdge, Edge outgoingEdge){
-		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
+	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Rotation r){
+		if(!dwellEdge.isDwell()){
 			throw new RuntimeException("Input mismatch.");
 		}
 		ArrayList<Edge> handledEdges = new ArrayList<Edge>();
 		handledEdges.add(dwellEdge);
 		handledEdges.add(dwellEdge.getPrevEdge());
 		handledEdges.add(dwellEdge.getNextEdge());
-		Node prevNode = dwellEdge.getFromNode();
-		Node nextNode = dwellEdge.getToNode();
-//		if(prevNode.equals(nextNode)){
-//			Edge nextEdge = nextNode.getNextEdge()(outgoingEdge.getNoInRotation() + 1);
-//			handledEdges.add(nextEdge);
-//			nextNode = nextEdge.getToNode();
-//		}
-		Edge newEdge = createRotationEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		Node prevNode = dwellEdge.getPrevEdge().getFromNode();
+		Node nextNode = dwellEdge.getNextEdge().getToNode();
+		if(prevNode.getPort().equals(nextNode.getPort())){
+			Edge nextDwell = nextNode.getNextEdge();
+			handledEdges.add(nextDwell);
+			Edge nextSail = nextDwell.getNextEdge();
+			handledEdges.add(nextSail);
+			nextNode = nextSail.getToNode();
+		}
+		Edge newEdge = createRotationEdge(r, prevNode, nextNode, 0, dwellEdge.getCapacity(), -1, Data.getBestDistanceElement(prevNode.getPortId(), nextNode.getPortId(), r.getVesselClass()));
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}
 		handledEdges.add(0, newEdge);
+		r.calcOptimalSpeed();
 		return handledEdges;
+	}
+	
+	public void undoTryRemovePort(ArrayList<Edge> handledEdges, Rotation r) {
+		for(int i = 1; i < handledEdges.size(); i++){
+			handledEdges.get(i).setActive();
+		}
+		handledEdges.get(0).delete();
+		r.calcOptimalSpeed();
 	}
 	
 }
