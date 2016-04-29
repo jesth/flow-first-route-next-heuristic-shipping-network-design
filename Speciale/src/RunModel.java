@@ -858,10 +858,10 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
-		rotations.get(19).createRotationGraph();
-		rotations.get(19).findRotationFlow();
-		
-		graph.runMcf();
+//		rotations.get(19).createRotationGraph();
+//		rotations.get(19).findRotationFlow();
+//		
+//		graph.runMcf();
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
 //			r.findRotationFlow();

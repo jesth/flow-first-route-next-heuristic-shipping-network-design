@@ -18,6 +18,7 @@ import Results.Rotation;
 import Results.Route;
 import RotationFlow.RotationDemand;
 import RotationFlow.RotationGraph;
+import RotationFlow.RotationNode;
 
 public class Graph {
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
@@ -54,6 +55,7 @@ public class Graph {
 		createDemands(rotation);
 		createCentroids();
 		createOmissionEdges();
+		createRotation(rotation);
 		mcf = new MulticommodityFlowThreads(this);
 	}
 
@@ -127,7 +129,7 @@ public class Graph {
 		result.addRotation(rotation);
 		return rotation;
 	}
-	
+
 	public Rotation createRotation(Rotation rotation){
 		ArrayList<Integer> ports = new ArrayList<Integer>();
 		for(Node i : rotation.getRotationNodes()){
@@ -136,7 +138,84 @@ public class Graph {
 			}
 		}
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass());
+		createFeederEdges(rotation);
 		return newRotation;
+	}
+
+	private void createFeederEdges(Rotation rotation){
+		ArrayList<Route> orgRoutes = new ArrayList<Route>();
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				for(Route r : e.getRoutes()){
+					if(!orgRoutes.contains(r)){
+						orgRoutes.add(r);
+					}
+				}
+			}
+		}
+		for(Route r : orgRoutes){
+			Node fromNode = null;
+			Node toNode = null;
+			for(Edge e : r.getRoute()){
+				if(e.isTransshipment()){
+					if(e.getToNode().getRotation().equals(rotation)){
+						toNode = e.getToNode();
+						createFeederEdge(fromNode, toNode, rotation);
+						fromNode = null;
+						toNode = null;
+					} else if(e.getFromNode().getRotation().equals(rotation)){
+						fromNode = e.getFromNode();
+					}
+
+				} else if(e.isLoadUnload()){
+					if(e.getToNode().isToCentroid()){
+						toNode = e.getToNode();
+						createFeederEdge(fromNode, toNode, rotation);
+					} else if(e.getFromNode().isFromCentroid()){
+						fromNode = e.getFromNode();
+					}
+				}
+			}
+		}
+	}
+
+	private Edge createFeederEdge(Node fromNode, Node toNode, Rotation rotation){
+		int cost = computeFeederCost(fromNode, toNode, rotation);
+		Edge newEdge = new Edge(fromNode, toNode, cost, Integer.MAX_VALUE, false, true, null, -1, null);
+		edges.add(newEdge);
+		return newEdge;
+	}
+	
+
+	private int computeFeederCost(Node fromNode, Node toNode, Rotation rotation){
+		VesselClass v = rotation.getVesselClass();
+		DistanceElement distance = Data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), v);
+		int panamaCost = 0;
+		if(distance.isPanama()){
+			panamaCost = v.getPanamaFee();
+		}
+		int suezCost = 0;
+		if(distance.isSuez()){
+			suezCost = v.getSuezFee();
+		}
+		double sailTimeDays = (distance.getDistance() / v.getDesignSpeed()) / 24.0;
+		double fuelConsumptionSail = sailTimeDays * v.getFuelConsumptionDesign();
+		double fuelConsumptionPort = v.getFuelConsumptionIdle();
+		int fuelCost = (int) (600 * (fuelConsumptionSail + fuelConsumptionPort));
+		int portCostFrom = fromNode.getPort().getFixedCallCost() + fromNode.getPort().getVarCallCost() * v.getCapacity();
+		int portCostTo = toNode.getPort().getFixedCallCost() + toNode.getPort().getVarCallCost() * v.getCapacity();
+		int TCCost = (int) (v.getTCRate() * sailTimeDays);
+		int totalCost = panamaCost + suezCost + fuelCost + portCostFrom + portCostTo + TCCost;
+		int transferCost = 0;
+		if(fromNode.isArrival()){
+			transferCost += fromNode.getPort().getTransshipCost();
+		}
+		if(toNode.isDeparture()){
+			transferCost += toNode.getPort().getTransshipCost();
+		}
+		int avgCost = totalCost / v.getCapacity() + transferCost;
+
+		return avgCost;
 	}
 
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
@@ -170,6 +249,7 @@ public class Graph {
 		createTransshipmentEdges(rotationNodes, e.getRotation());
 	}
 
+	//TODO: ERROR!!! Method does not support transshipment within rotation.
 	private void createTransshipmentEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotationNodes){
 			Port p = i.getPort();
@@ -191,7 +271,7 @@ public class Graph {
 
 	private void createTransshipmentEdge(Node fromNode, Node toNode){
 		int transshipCost = fromNode.getPort().getTransshipCost();
-		Edge newEdge = new Edge(fromNode, toNode, transshipCost, Integer.MAX_VALUE, false, null, -1, null);
+		Edge newEdge = new Edge(fromNode, toNode, transshipCost, Integer.MAX_VALUE, false, false, null, -1, null);
 		edges.add(newEdge);
 	}
 
@@ -230,7 +310,7 @@ public class Graph {
 	}
 
 	public Edge createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
-		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, rotation, noInRotation, distance);
+		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, false, rotation, noInRotation, distance);
 		rotation.addRotationEdge(newEdge);
 		edges.add(newEdge);
 		return newEdge;
@@ -388,7 +468,7 @@ public class Graph {
 
 	public void createLoadUnloadEdge(Node fromNode, Node toNode){
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
-		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, false, null, -1, null);
+		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, false, false, null, -1, null);
 		edges.add(newEdge);
 	}
 
