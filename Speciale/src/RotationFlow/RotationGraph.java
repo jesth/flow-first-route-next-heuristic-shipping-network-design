@@ -2,6 +2,7 @@ package RotationFlow;
 
 import java.util.ArrayList;
 
+import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
@@ -32,7 +33,7 @@ public class RotationGraph {
 	}
 	
 	public static void initialize(Graph newGraph){
-		noOfCentroids = newGraph.getData().getPortsMap().size();
+		noOfCentroids = Data.getPortsMap().size();
 		RotationNode.setNoOfCentroids(noOfCentroids);
 		graph = newGraph;
 	}
@@ -220,7 +221,7 @@ public class RotationGraph {
 			if(e.isSail() && e.isActive()){
 				int fromPortId = e.getFromNode().getPort().getPortId();
 				int toPortId = e.getToNode().getPort().getPortId();
-				DistanceElement d = graph.getData().getBestDistanceElement(fromPortId, toPortId, v);
+				DistanceElement d = Data.getBestDistanceElement(fromPortId, toPortId, v);
 				distance += d.getDistance();
 				Port p = e.getToNode().getPort();
 				portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
@@ -414,7 +415,7 @@ public class RotationGraph {
 
 	private int computeFeederCost(RotationNode fromNode, RotationNode toNode){
 		VesselClass v = rotation.getVesselClass();
-		DistanceElement distance = graph.getData().getBestDistanceElement(fromNode.getPort(), toNode.getPort(), v);
+		DistanceElement distance = Data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), v);
 		int panamaCost = 0;
 		if(distance.isPanama()){
 			panamaCost = v.getPanamaFee();

@@ -7,13 +7,14 @@ import java.util.ArrayList;
 
 import Data.Data;
 import Data.Demand;
+import Graph.Graph;
 
 public class AuxRun {
 	private static AuxGraph graph;
 	private static int iterations;
 
-	public static void initialize(ArrayList<Demand> demandsList, int iterationsIn){
-		graph = new AuxGraph(demandsList);
+	public static void initialize(Graph originalGraph, int iterationsIn){
+		graph = new AuxGraph(originalGraph.getDemands());
 		iterations = iterationsIn;
 //		graph.addFirstRotationManual();
 //		graph.addSecondRotationManual();

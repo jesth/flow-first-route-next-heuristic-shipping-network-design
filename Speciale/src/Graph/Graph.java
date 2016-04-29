@@ -618,4 +618,11 @@ public class Graph {
 		int toPortId = toPort.getPortId();
 		return getDemand(fromPortId, toPortId);
 	}
+
+	/**
+	 * @return the mcf
+	 */
+	public MulticommodityFlowThreads getMcf() {
+		return mcf;
+	}
 }
