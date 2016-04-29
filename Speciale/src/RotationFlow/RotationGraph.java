@@ -31,7 +31,7 @@ public class RotationGraph {
 		this.multicommodityFlow = new RotationMulticommodityFlow(this);
 		this.createGraph();
 	}
-	
+
 	public static void initialize(Graph newGraph){
 		noOfCentroids = Data.getPortsMap().size();
 		RotationNode.setNoOfCentroids(noOfCentroids);
@@ -42,14 +42,14 @@ public class RotationGraph {
 		multicommodityFlow.run();
 		multicommodityFlow.saveODSol("ODSolRotation.csv", rotationDemands);
 	}
-	
-	
+
+
 	public boolean removeWorstPort(){
-//		for(RotationEdge e : rotationEdges){
-//			if(e.isFeeder()){
-//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
-//			}
-//		}
+		//		for(RotationEdge e : rotationEdges){
+		//			if(e.isFeeder()){
+		//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+		//			}
+		//		}
 		boolean madeChange = false;
 		int maxIndex = -1;
 		for(RotationEdge e : rotationEdges){
@@ -90,35 +90,35 @@ public class RotationGraph {
 			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
 			implementRemovePort(worstInto, worstOut);
 		}
-//		for(RotationEdge e : rotationEdges){
-//			if(e.isFeeder()){
-//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
-//			}
-//		}
+		//		for(RotationEdge e : rotationEdges){
+		//			if(e.isFeeder()){
+		//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+		//			}
+		//		}
 		return madeChange;
 	}
-	
+
 	public ArrayList<RotationEdge> tryRemovePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
-			if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
-				throw new RuntimeException("Input mismatch.");
-			}
-			ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
-			handledEdges.add(ingoingEdge);
-			handledEdges.add(outgoingEdge);
-			RotationNode prevNode = ingoingEdge.getFromNode();
-			RotationNode nextNode = outgoingEdge.getToNode();
-			if(prevNode.equals(nextNode)){
-				RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
-				handledEdges.add(nextEdge);
-				nextNode = nextEdge.getToNode();
-			}
-			RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
-			for(RotationEdge e : handledEdges){
-				e.setInactive();
-			}
-			handledEdges.add(0, newEdge);
-			return handledEdges;
+		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
+			throw new RuntimeException("Input mismatch.");
 		}
+		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
+		handledEdges.add(ingoingEdge);
+		handledEdges.add(outgoingEdge);
+		RotationNode prevNode = ingoingEdge.getFromNode();
+		RotationNode nextNode = outgoingEdge.getToNode();
+		if(prevNode.equals(nextNode)){
+			RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
+			handledEdges.add(nextEdge);
+			nextNode = nextEdge.getToNode();
+		}
+		RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		for(RotationEdge e : handledEdges){
+			e.setInactive();
+		}
+		handledEdges.add(0, newEdge);
+		return handledEdges;
+	}
 
 	private void undoTryRemovePort(ArrayList<RotationEdge> handledEdges) {
 		for(int i = 1; i < handledEdges.size(); i++){
@@ -150,10 +150,10 @@ public class RotationGraph {
 			System.out.println("Implementing insertBestPort()");
 			implementInsertPort(bestEdge);
 		}
-		
+
 		return madeChange;
 	}
-	
+
 	public ArrayList<RotationEdge> tryInsertPort(RotationEdge affectedEdge){
 		int capacity = -1;
 		for(RotationEdge e : rotationEdges){
@@ -172,14 +172,14 @@ public class RotationGraph {
 		affectedEdge.setInactive();
 		return handledEdges;
 	}
-	
+
 	public void undoTryInsertPort(RotationEdge feederEdge, ArrayList<RotationEdge> newSailEdges){
 		feederEdge.setActive();
 		for(int i = newSailEdges.size()-1; i >= 0; i--){
 			newSailEdges.get(i).delete();
 		}
 	}
-	
+
 	public void implementInsertPort(RotationEdge feeder){
 		RotationNode from = feeder.getFromNode();
 		RotationNode to = feeder.getToNode();
@@ -199,7 +199,7 @@ public class RotationGraph {
 		createSailEdge(to, from, capacity, noInRotation+1);
 		feeder.delete();
 	}
-	
+
 	public int getFlowCost(){
 		multicommodityFlow.run();
 		int flowCost = 0;
@@ -208,7 +208,7 @@ public class RotationGraph {
 		}
 		return flowCost;
 	}
-	
+
 	public int getRotationCost(){
 		int rotationCost = 0;
 		VesselClass v = rotation.getVesselClass();
@@ -255,9 +255,9 @@ public class RotationGraph {
 				}
 			}
 		}
-		
+
 		//TODO USD per metric tons fuel = 600
-		
+
 		int idleTime = ports * 24;
 		int sailingBunkerCost = calcSailingBunkerCost(distance, bestSpeed, noVessels);
 		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * 600;
@@ -286,7 +286,7 @@ public class RotationGraph {
 		int noVessels = (int) Math.floor(rotationTime);
 		return noVessels;
 	}
-	
+
 	public int calcSailingBunkerCost(int distance, double speed, int noOfVessels){
 		double fuelConsumption = rotation.getVesselClass().getFuelConsumption(speed);
 		double sailTimeDays = (distance / speed) / 24.0;
@@ -294,7 +294,7 @@ public class RotationGraph {
 		//TODO Fuel cost!!!
 		return (int) (bunkerConsumption * 600.0);
 	}
-	
+
 	public void createGraph(){
 		this.createDemands();
 		this.createNodes();
@@ -479,9 +479,9 @@ public class RotationGraph {
 		createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
 		decrementNoInRotation(ingoingEdge.getNoInRotation());
 		deleteEdges(deleteEdges);
-		
+
 	}
-	
+
 	public void insertPort(RotationEdge affectedEdge, Port newPort){
 		rotation.insertPort(affectedEdge.getNoInRotation(), newPort);
 		int noInRotation = affectedEdge.getNoInRotation();
@@ -521,7 +521,7 @@ public class RotationGraph {
 			e.delete();
 		}
 	}
-	
+
 	public ArrayList<RotationDemand> getRotationDemands(){
 		return rotationDemands;
 	}
@@ -552,7 +552,7 @@ public class RotationGraph {
 		for(RotationEdge e : rotationEdges){
 			if(e.isSail()){
 				String str = "NoInRotation: " + e.getNoInRotation() + " " + e.getFromPortUNLo() + "-" + e.getToPortUNLo();
-//				str += " " + e.getFromNode().getPort().getPortId() + "-" + e.getToNode().getPort().getPortId();
+				//				str += " " + e.getFromNode().getPort().getPortId() + "-" + e.getToNode().getPort().getPortId();
 				System.out.println(str);
 			}
 		}

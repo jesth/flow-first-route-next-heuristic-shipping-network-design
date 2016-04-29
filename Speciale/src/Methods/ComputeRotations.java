@@ -332,7 +332,7 @@ public class ComputeRotations {
 		
 		ArrayList<SortableEdge> sortableEdges = new ArrayList<SortableEdge>();
 		for(Edge e : rotation.getRotationEdges()){
-			if(e.isSail()){
+			if(e.isSail() && e.isActive()){
 				SortableEdge sortableAuxEdge = new SortableEdge(e.getLoad(), e);
 				sortableEdges.add(sortableAuxEdge);
 			}
@@ -516,7 +516,7 @@ public class ComputeRotations {
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		double loadFactor = 0;
 		for(Edge e : rotation.getRotationEdges()){
-			if(e.isSail()){
+			if(e.isSail() && e.isActive()){
 				loadFactor = (double) e.getLoad() / (double) e.getCapacity();
 				if(loadFactor < maxLoadFactor){
 					distances.add(e.getDistance());

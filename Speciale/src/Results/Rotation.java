@@ -180,7 +180,7 @@ public class Rotation {
 		int suezCost = 0;
 		int panamaCost = 0;
 		for (Edge e : rotationEdges){
-			if(e.isSail()){
+			if(e.isSail() && e.isActive()){
 				sailingTime += e.getTravelTime();
 				Port p = e.getToNode().getPort();
 				portCost += p.getFixedCallCost() + p.getVarCallCost() * v.getCapacity();
@@ -191,7 +191,7 @@ public class Rotation {
 					panamaCost += v.getPanamaFee();
 				}
 			}
-			if(e.isDwell()){
+			if(e.isDwell() && e.isActive()){
 				idleTime += e.getTravelTime();
 			}
 		}
