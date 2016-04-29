@@ -17,6 +17,7 @@ import Results.Result;
 import Results.Rotation;
 import Results.Route;
 import RotationFlow.RotationDemand;
+import RotationFlow.RotationEdge;
 import RotationFlow.RotationGraph;
 import RotationFlow.RotationNode;
 
@@ -335,7 +336,7 @@ public class Graph {
 		r.calcOptimalSpeed();
 	}
 
-	public void removePort(Edge dwell){
+	public Edge removePort(Edge dwell){
 		Rotation r = dwell.getRotation();
 		if(!dwell.isDwell()){
 			throw new RuntimeException("Passed edge is not dwell.");
@@ -366,6 +367,7 @@ public class Graph {
 		deleteNode(toNode);
 		fromNode = ingoingEdge.getFromNode();
 		toNode = outgoingEdge.getToNode();
+		Edge newSailEdge = null;
 		if(fromNode.getPort().equals(toNode.getPort())){
 			System.err.println("Rotation dying");
 			deleteNode(fromNode);
@@ -375,9 +377,10 @@ public class Graph {
 
 		} else {
 			DistanceElement distance = Data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), r.getVesselClass());
-			createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
+			newSailEdge = createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
 			r.calcOptimalSpeed();
 		}
+		return newSailEdge;
 	}
 
 	public void deleteEdge(Edge e){
@@ -625,4 +628,28 @@ public class Graph {
 	public MulticommodityFlowThreads getMcf() {
 		return mcf;
 	}
+	
+	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Edge ingoingEdge, Edge outgoingEdge){
+		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
+			throw new RuntimeException("Input mismatch.");
+		}
+		ArrayList<Edge> handledEdges = new ArrayList<Edge>();
+		handledEdges.add(dwellEdge);
+		handledEdges.add(dwellEdge.getPrevEdge());
+		handledEdges.add(dwellEdge.getNextEdge());
+		Node prevNode = dwellEdge.getFromNode();
+		Node nextNode = dwellEdge.getToNode();
+//		if(prevNode.equals(nextNode)){
+//			Edge nextEdge = nextNode.getNextEdge()(outgoingEdge.getNoInRotation() + 1);
+//			handledEdges.add(nextEdge);
+//			nextNode = nextEdge.getToNode();
+//		}
+		Edge newEdge = createRotationEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		for(Edge e : handledEdges){
+			e.setInactive();
+		}
+		handledEdges.add(0, newEdge);
+		return handledEdges;
+	}
+	
 }

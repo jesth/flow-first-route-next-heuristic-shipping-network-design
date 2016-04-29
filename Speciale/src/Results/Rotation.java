@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import Data.Port;
 import Data.VesselClass;
 import Graph.*;
+import RotationFlow.RotationEdge;
 import RotationFlow.RotationGraph;
 
 public class Rotation {
@@ -50,6 +51,72 @@ public class Rotation {
 ////		rotationGraph.insertBestPort();
 //		rotationGraph.findFlow();
 //	}
+	
+	public void removeWorstPort() throws InterruptedException{
+//		for(RotationEdge e : rotationEdges){
+////			if(e.isFeeder()){
+////				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+////			}
+////		}
+//		boolean madeChange = false;
+//		int maxIndex = -1;
+//		for(RotationEdge e : rotationEdges){
+//			if(e.isSail() && e.isActive()){
+//				maxIndex = Math.max(maxIndex, e.getNoInRotation());
+//			}
+//		}
+//		int flowCost = rotationGraph.getResult().getObjective();
+//		int rotationCost = getRotationCost();
+		rotationGraph.runMcf();
+		int bestObj = rotationGraph.getResult().getObjective();
+		System.out.println("Org obj: " + bestObj);
+//		RotationEdge worstInto = rotationEdges.get(maxIndex);
+//		RotationEdge worstOut = rotationEdges.get(0);
+//		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
+//		int rotationObj = getFlowCost() + getRotationCost();
+//		if(rotationObj < bestRotationObj){
+//			bestRotationObj = rotationObj;
+//			madeChange = true;
+//		}
+//		undoTryRemovePort(handledEdges);
+		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
+			Edge e = rotationGraph.getEdges().get(i);
+			if(e.isDwell()){
+				Edge newSail = rotationGraph.removePort(e);
+				rotationGraph.runMcf();
+				int obj = rotationGraph.getResult().getObjective();
+				if(obj > bestObj){
+					
+				}
+			}
+		}
+			
+//			RotationEdge into = rotationEdges.get(i);
+//			RotationEdge out = rotationEdges.get(i+1);
+//			handledEdges = tryRemovePort(into, out);
+//			flowCost = getFlowCost();
+//			rotationCost = getRotationCost();
+//			rotationObj = flowCost + rotationCost;
+//			System.out.println("Removing port " + into.getToPortUNLo() + " with flowCost " + flowCost + " & rotationCost " + rotationCost);
+//			if(rotationObj < bestRotationObj){
+//				worstInto = into;
+//				worstOut = out;
+//				bestRotationObj = rotationObj;
+//				madeChange = true;
+//			}
+//			undoTryRemovePort(handledEdges);
+//		}
+//		if(madeChange){
+//			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
+//			implementRemovePort(worstInto, worstOut);
+//		}
+////		for(RotationEdge e : rotationEdges){
+////			if(e.isFeeder()){
+////				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+////			}
+////		}
+//		
+	}
 
 	public void calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;

@@ -99,26 +99,26 @@ public class RotationGraph {
 	}
 	
 	public ArrayList<RotationEdge> tryRemovePort(RotationEdge ingoingEdge, RotationEdge outgoingEdge){
-			if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
-				throw new RuntimeException("Input mismatch.");
-			}
-			ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
-			handledEdges.add(ingoingEdge);
-			handledEdges.add(outgoingEdge);
-			RotationNode prevNode = ingoingEdge.getFromNode();
-			RotationNode nextNode = outgoingEdge.getToNode();
-			if(prevNode.equals(nextNode)){
-				RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
-				handledEdges.add(nextEdge);
-				nextNode = nextEdge.getToNode();
-			}
-			RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
-			for(RotationEdge e : handledEdges){
-				e.setInactive();
-			}
-			handledEdges.add(0, newEdge);
-			return handledEdges;
+		if(!ingoingEdge.getToNode().equals(outgoingEdge.getFromNode()) || !ingoingEdge.isSail() || !outgoingEdge.isSail()){
+			throw new RuntimeException("Input mismatch.");
 		}
+		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
+		handledEdges.add(ingoingEdge);
+		handledEdges.add(outgoingEdge);
+		RotationNode prevNode = ingoingEdge.getFromNode();
+		RotationNode nextNode = outgoingEdge.getToNode();
+		if(prevNode.equals(nextNode)){
+			RotationEdge nextEdge = nextNode.getOutgoingSailEdge(outgoingEdge.getNoInRotation() + 1);
+			handledEdges.add(nextEdge);
+			nextNode = nextEdge.getToNode();
+		}
+		RotationEdge newEdge = createSailEdge(prevNode, nextNode, ingoingEdge.getCapacity(), ingoingEdge.getNoInRotation());
+		for(RotationEdge e : handledEdges){
+			e.setInactive();
+		}
+		handledEdges.add(0, newEdge);
+		return handledEdges;
+	}
 
 	private void undoTryRemovePort(ArrayList<RotationEdge> handledEdges) {
 		for(int i = 1; i < handledEdges.size(); i++){
