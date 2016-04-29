@@ -137,7 +137,7 @@ public class Edge {
 	
 	public void setActive(){
 		if(rotation != null && !active){
-			rotation.addDistance(distance.getDistance())
+			rotation.addDistance(distance.getDistance());
 		}
 		active = true;
 	}
