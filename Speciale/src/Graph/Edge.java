@@ -136,10 +136,16 @@ public class Edge {
 	}
 	
 	public void setActive(){
+		if(rotation != null && !active){
+			rotation.addDistance(distance.getDistance())
+		}
 		active = true;
 	}
 	
 	public void setInactive(){
+		if(rotation != null && active){
+			rotation.subtractDistance(distance.getDistance());
+		}
 		active = false;
 	}
 	

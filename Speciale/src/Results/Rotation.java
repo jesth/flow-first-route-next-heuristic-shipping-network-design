@@ -350,6 +350,10 @@ public class Rotation {
 	public void subtractDistance(int subtractDistance) {
 		distance -= subtractDistance;
 	}
+
+	public void addDistance(int addDistance) {
+		distance += addDistance;
+	}
 	
 	public void removePort(int noInRotationIn, int noInRotationOut){
 		if(noInRotationIn != noInRotationOut - 1 && noInRotationOut != 0){
