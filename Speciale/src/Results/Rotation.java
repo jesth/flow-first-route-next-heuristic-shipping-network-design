@@ -12,18 +12,18 @@ public class Rotation {
 	private VesselClass vesselClass;
 	private ArrayList<Node> rotationNodes;
 	private ArrayList<Edge> rotationEdges;
-	private RotationGraph rotationGraph;
 	private double speed;
 	private int noOfVessels;
 	private int distance;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	private boolean active;
-	private Graph graph;
+	private Graph mainGraph;
+	private Graph rotationGraph;
 
 	public Rotation(){
 	}
 
-	public Rotation(VesselClass vesselClass, Graph graph) {
+	public Rotation(VesselClass vesselClass, Graph mainGraph) {
 		super();
 		this.id = idCounter.getAndIncrement();
 		this.vesselClass = vesselClass;
@@ -33,22 +33,23 @@ public class Rotation {
 		this.speed = 0;
 		this.noOfVessels = 0;
 		this.distance = 0;
-		this.graph = graph;
+		this.mainGraph = mainGraph;
 		//		calculateSpeed();
 	}
 	
 	public void createRotationGraph(){
-		this.rotationGraph = new RotationGraph(this);
+		this.rotationGraph = new Graph(this);
 	}
 	
-	public void findRotationFlow(){
-		rotationGraph.findFlow();
+//	public void findRotationFlow(){
+//		System.out.println("Checking rotation no. " + id);
+//		rotationGraph.findFlow();
 //		rotationGraph.testRemovePort();
-//		rotationGraph.testAddPort();
-//		rotationGraph.removeWorstPort();
-		rotationGraph.insertBestPort();
-		rotationGraph.findFlow();
-	}
+////		rotationGraph.testAddPort();
+////		rotationGraph.removeWorstPort();
+////		rotationGraph.insertBestPort();
+//		rotationGraph.findFlow();
+//	}
 
 	public void calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;
@@ -349,7 +350,7 @@ public class Rotation {
 		}
 		Edge ingoingEdge = rotationEdges.get(noInRotationIn);
 		Edge dwell = ingoingEdge.getNextEdge();
-		graph.removePort(dwell);
+		mainGraph.removePort(dwell);
 	}
 	
 	public void insertPort(int noInRotation, Port p){
@@ -357,7 +358,7 @@ public class Rotation {
 		if(!edge.isSail()){
 			throw new RuntimeException("Wrong input");
 		}
-		graph.insertPort(this, edge, p);
+		mainGraph.insertPort(this, edge, p);
 	}
 
 	public void delete(){

@@ -5,6 +5,7 @@ import AuxFlow.AuxDijkstra;
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
 import AuxFlow.AuxRun;
+import Data.Data;
 import Data.DistanceElement;
 import Data.Port;
 import Data.VesselClass;
@@ -797,15 +798,16 @@ public class RunModel {
 	
 	
 	public static void testWorldSmall3Auto()throws FileNotFoundException, InterruptedException{
-		Graph graph = new Graph("Demand_WorldSmall.csv", "fleet_WorldSmall.csv");
+		Data.initialize("fleet_WorldSmall.csv");
+		Graph graph = new Graph("Demand_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
-		VesselClass feeder450 = graph.getData().getVesselClasses().get(0);
-		VesselClass feeder800 = graph.getData().getVesselClasses().get(1);
-		VesselClass panamax1200 = graph.getData().getVesselClasses().get(2);
-		VesselClass panamax2400 = graph.getData().getVesselClasses().get(3);
-		VesselClass postPanamax = graph.getData().getVesselClasses().get(4);
-		VesselClass superPanamax = graph.getData().getVesselClasses().get(5);
+		VesselClass feeder450 = Data.getVesselClasses().get(0);
+		VesselClass feeder800 = Data.getVesselClasses().get(1);
+		VesselClass panamax1200 = Data.getVesselClasses().get(2);
+		VesselClass panamax2400 = Data.getVesselClasses().get(3);
+		VesselClass postPanamax = Data.getVesselClasses().get(4);
+		VesselClass superPanamax = Data.getVesselClasses().get(5);
 		
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>();
 		
@@ -854,12 +856,12 @@ public class RunModel {
 		System.out.println("Rotations generated.");
 		
 //		ComputeRotations.addPorts();
-		MulticommodityFlowThreads.run();
+		graph.runMcf();
 		
-		rotations.get(12).createRotationGraph();
-		rotations.get(12).findRotationFlow();
+		rotations.get(19).createRotationGraph();
+		rotations.get(19).findRotationFlow();
 		
-		MulticommodityFlowThreads.run();	
+		graph.runMcf();
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
 //			r.findRotationFlow();

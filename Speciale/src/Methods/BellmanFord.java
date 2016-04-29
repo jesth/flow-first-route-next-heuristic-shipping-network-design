@@ -17,8 +17,7 @@ public class BellmanFord implements Runnable {
 	private ArrayList<Node> changedRepNodes = new ArrayList<Node>();
 	private Node centroidNode;
 	private boolean rep;
-	
-	private static Graph graph;
+	private Graph graph;
 
 	/** Initializes all nodes to distance Integer.MAX_VALUE and predecessor to null. Exception: Centroids.
 	 * @param graph
@@ -68,7 +67,7 @@ public class BellmanFord implements Runnable {
 			relaxAll(u);
 //			System.out.println(counter++);
 		}
-		Demand[] demands = graph.getData().getFromDemandArray(centroidNode.getPortId());
+		Demand[] demands = graph.getFromDemandArray(centroidNode.getPortId());
 		for(Demand d : demands){
 			if(d == null)
 				continue;

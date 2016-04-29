@@ -33,6 +33,9 @@ public class RotationMulticommodityFlow {
 					e.removeLoad(bellmanFord, overflow);
 				}
 			}
+			for(RotationDemand d : graph.getRotationDemands()){
+				d.rerouteOmissionFFEs();
+			}
 		}
 	}
 
@@ -58,7 +61,7 @@ public class RotationMulticommodityFlow {
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
-			out.write("NoInRotation;ODId;ODFrom;ODTo;LegFrom;LegTo;#FFE;Feeder;Omission"); 
+			out.write("NoInRotation;ODId;ODFrom;ODTo;LegFrom;LegTo;LegCost;#FFE;Feeder;Omission"); 
 			out.newLine();
 			for(RotationDemand d : demands){
 				for(RotationRoute r : d.getRoutes()){
@@ -71,7 +74,7 @@ public class RotationMulticommodityFlow {
 						out.write(d.getOrgDemand().getId()+";");
 						out.write(d.getOrigin().getUNLocode()+";"+d.getDestination().getUNLocode()+";");
 						out.write(e.getFromPortUNLo()+";"+e.getToPortUNLo()+";");
-						out.write(r.getFFE()+";");
+						out.write(e.getCost() + ";" + r.getFFE()+";");
 						if(e.isFeeder()){
 							out.write("1;");
 						} else {

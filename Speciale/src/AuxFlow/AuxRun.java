@@ -3,15 +3,17 @@ package AuxFlow;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import Data.Data;
+import Data.Demand;
 
 public class AuxRun {
 	private static AuxGraph graph;
 	private static int iterations;
 
-	public static void initialize(Data data, int iterationsIn){
-		graph = new AuxGraph(data);
+	public static void initialize(ArrayList<Demand> demandsList, int iterationsIn){
+		graph = new AuxGraph(demandsList);
 		iterations = iterationsIn;
 //		graph.addFirstRotationManual();
 //		graph.addSecondRotationManual();

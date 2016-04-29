@@ -10,35 +10,95 @@ import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
+import Data.ReadData;
 import Data.VesselClass;
+import Methods.MulticommodityFlowThreads;
 import Results.Result;
 import Results.Rotation;
+import Results.Route;
+import RotationFlow.RotationDemand;
 import RotationFlow.RotationGraph;
 
 public class Graph {
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
-	
+
 	private ArrayList<Node> nodes;
 	private ArrayList<Node> fromCentroids;
-//	private ArrayList<Node> toCentroids;
+	//	private ArrayList<Node> toCentroids;
 	private ArrayList<Edge> edges;
-	private Data data;
 	private Result result;
+	private MulticommodityFlowThreads mcf;
+	private Demand[][] demandsMatrix;
+	private ArrayList<Demand> demandsList;
 
-	public Graph(String demandFileName, String fleetFileName) throws FileNotFoundException {
-		data = new Data(demandFileName, fleetFileName);
+	public Graph(String demandFileName) throws FileNotFoundException {
 		result = new Result(this);
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		this.fromCentroids = new ArrayList<Node>();
-//		this.toCentroids = new ArrayList<Node>();
-		Node.setNoOfCentroids(data.getPortsMap().size());
+		//		this.toCentroids = new ArrayList<Node>();
+		Node.setNoOfCentroids(Data.getPortsMap().size());
+		readDemands(demandFileName);
 		createCentroids();
 		createOmissionEdges();
+		mcf = new MulticommodityFlowThreads(this);
+	}
+
+	public Graph(Rotation rotation) {
+		result = new Result(this);
+		this.nodes = new ArrayList<Node>();
+		this.edges = new ArrayList<Edge>();
+		this.fromCentroids = new ArrayList<Node>();
+		//		this.toCentroids = new ArrayList<Node>();
+		Node.setNoOfCentroids(Data.getPortsMap().size());
+		createDemands(rotation);
+		createCentroids();
+		createOmissionEdges();
+		mcf = new MulticommodityFlowThreads(this);
+	}
+
+	public void runMcf() throws InterruptedException{
+		mcf.run();
+	}
+
+	public void readDemands(String demandFileName) throws FileNotFoundException{
+		demandsList = ReadData.readDemands(demandFileName, Data.getPortsMap());
+		demandsMatrix = createDemandsMatrix();
+	}
+
+	private void createDemands(Rotation rotation){
+		ArrayList<Route> orgRoutes = new ArrayList<Route>();
+		demandsList = new ArrayList<Demand>();
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.isSail()){
+				for(Route r : e.getRoutes()){
+					if(!orgRoutes.contains(r)){
+						orgRoutes.add(r);
+					}
+				}
+			}
+		}
+		for(Route r : orgRoutes){
+			Demand d = r.getDemand();
+			if(!demandsList.contains(d)){
+				demandsList.add(d);
+			}
+		}
+		demandsMatrix = createDemandsMatrix();
+	}
+
+	private Demand[][] createDemandsMatrix(){
+		Demand[][] demands = new Demand[Data.getPortsMap().size()][Data.getPortsMap().size()];
+		for(Demand d : demandsList){
+			int fromPortId = d.getOrigin().getPortId();
+			int toPortId = d.getDestination().getPortId();
+			demands[fromPortId][toPortId] = d;
+		}
+		return demands;
 	}
 
 	private void createCentroids(){
-		for(Port i : data.getPortsMap().values()){
+		for(Port i : Data.getPortsMap().values()){
 			if(i.isActive()){
 				Node fromCentroid = new Node(i, true);
 				Node toCentroid = new Node(i, false);
@@ -50,7 +110,7 @@ public class Graph {
 	}
 
 	private void createOmissionEdges(){
-		for(Demand i : data.getDemands()){
+		for(Demand i : getDemands()){
 			Node fromCentroid = i.getOrigin().getFromCentroidNode();
 			Node toCentroid = i.getDestination().getToCentroidNode();
 			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, i.getRate());
@@ -67,6 +127,17 @@ public class Graph {
 		result.addRotation(rotation);
 		return rotation;
 	}
+	
+	public Rotation createRotation(Rotation rotation){
+		ArrayList<Integer> ports = new ArrayList<Integer>();
+		for(Node i : rotation.getRotationNodes()){
+			if(i.isDeparture()){
+				ports.add(i.getId());
+			}
+		}
+		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass());
+		return newRotation;
+	}
 
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
 		ArrayList<DistanceElement> distances = findDistances(ports, vesselClass);
@@ -79,11 +150,11 @@ public class Graph {
 		for(int i = 0; i < ports.size() - 1; i++){
 			int port1 = ports.get(i);
 			int port2 = ports.get(i+1);
-			distances.add(data.getBestDistanceElement(port1, port2, vesselClass));
+			distances.add(Data.getBestDistanceElement(port1, port2, vesselClass));
 		}
 		int lastPort = ports.get(ports.size()-1);
 		int firstPort = ports.get(0);
-		distances.add(data.getBestDistanceElement(lastPort, firstPort, vesselClass));
+		distances.add(Data.getBestDistanceElement(lastPort, firstPort, vesselClass));
 		return distances;
 	}
 
@@ -174,8 +245,8 @@ public class Graph {
 		r.incrementNoInRotation(e.getNoInRotation());
 		Node newArrNode = createRotationNode(p, r, false);
 		Node newDepNode = createRotationNode(p, r, true);
-		DistanceElement newIngoing = data.getBestDistanceElement(fromNode.getPort(), newArrNode.getPort(), r.getVesselClass());
-		DistanceElement newOutgoing = data.getBestDistanceElement(newDepNode.getPort(), toNode.getPort(), r.getVesselClass());
+		DistanceElement newIngoing = Data.getBestDistanceElement(fromNode.getPort(), newArrNode.getPort(), r.getVesselClass());
+		DistanceElement newOutgoing = Data.getBestDistanceElement(newDepNode.getPort(), toNode.getPort(), r.getVesselClass());
 		createRotationEdge(r, fromNode, newArrNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation(), newIngoing);
 		Edge dwell = createRotationEdge(r, newArrNode, newDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
 		createRotationEdge(r, newDepNode, toNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+1, newOutgoing);
@@ -223,7 +294,7 @@ public class Graph {
 			result.removeRotation(r);
 
 		} else {
-			DistanceElement distance = data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), r.getVesselClass());
+			DistanceElement distance = Data.getBestDistanceElement(fromNode.getPort(), toNode.getPort(), r.getVesselClass());
 			createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
 			r.calcOptimalSpeed();
 		}
@@ -249,14 +320,14 @@ public class Graph {
 		decrementNodeIds(i.getId());
 		nodes.remove(i);
 	}
-	
+
 	public void deleteRotation(Rotation rotation){
 		for(int i = rotation.getRotationEdges().size()-1; i >= 0; i--){
 			deleteNode(rotation.getRotationNodes().get(i));
 		}
 		rotation.delete();
 	}
-	
+
 	private void decrementNodeIds(int id){
 		for(Node i : nodes){
 			if(i.getId() > id){
@@ -324,7 +395,7 @@ public class Graph {
 	public void saveOPLData(String fileName){
 		try {
 			int noOfNodes = nodes.size();
-			int noOfDemands = data.getDemands().size();
+			int noOfDemands = getDemands().size();
 			int[][] capacity = new int[noOfNodes][noOfNodes];
 			int[][] cost = new int[noOfNodes][noOfNodes];
 			int[] demandFrom = new int[noOfDemands];
@@ -338,7 +409,7 @@ public class Graph {
 				cost[fromNode][toNode] = e.getRealCost();
 			}
 			for(int i = 0; i < noOfDemands; i++){
-				Demand d = data.getDemands().get(i);
+				Demand d = getDemands().get(i);
 				demandFrom[i] = d.getOrigin().getFromCentroidNode().getId();
 				demandTo[i] = d.getDestination().getToCentroidNode().getId();
 				demand[i] = d.getDemand();
@@ -351,7 +422,7 @@ public class Graph {
 
 			out = new BufferedWriter(new FileWriter(fileOut));
 			outLegend = new BufferedWriter(new FileWriter(fileOutLegend));
-			
+
 			outLegend.write("NodeId;Port;RotationId;Centroid");
 			for(Node i : nodes){
 				outLegend.newLine();
@@ -398,7 +469,7 @@ public class Graph {
 			e1.printStackTrace();
 		}
 	}
-	
+
 	private void writeSingle(BufferedWriter out, int[] array, int number) throws IOException{
 		for(int i = 0; i < number; i++){
 			out.write(array[i] + " ");				
@@ -435,15 +506,36 @@ public class Graph {
 		return edges;
 	}
 
-	public Data getData() {
-		return data;
-	}
-
 	public Port getPort(int portId){
-		return data.getPort(portId);
+		return Data.getPort(portId);
 	}
 
 	public Result getResult(){
 		return result;
+	}
+
+	public ArrayList<Demand> getDemands() {
+		return demandsList;
+	}
+
+	/**
+	 * @return the demandsMatrix
+	 */
+	public Demand[][] getDemandsMatrix() {
+		return demandsMatrix;
+	}
+
+	public Demand[] getFromDemandArray(int fromPortId){
+		return demandsMatrix[fromPortId];
+	}
+
+	public Demand getDemand(int fromPortId, int toPortId){
+		return demandsMatrix[fromPortId][toPortId];
+	}
+
+	public Demand getDemand(Port fromPort, Port toPort){
+		int fromPortId = fromPort.getPortId();
+		int toPortId = toPort.getPortId();
+		return getDemand(fromPortId, toPortId);
 	}
 }

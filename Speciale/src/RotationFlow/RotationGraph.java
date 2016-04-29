@@ -44,6 +44,11 @@ public class RotationGraph {
 	
 	
 	public boolean removeWorstPort(){
+//		for(RotationEdge e : rotationEdges){
+//			if(e.isFeeder()){
+//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+//			}
+//		}
 		boolean madeChange = false;
 		int maxIndex = -1;
 		for(RotationEdge e : rotationEdges){
@@ -51,8 +56,10 @@ public class RotationGraph {
 				maxIndex = Math.max(maxIndex, e.getNoInRotation());
 			}
 		}
-		int bestRotationObj = getFlowCost() + getRotationCost();
-		System.out.println("Org obj: " + bestRotationObj);
+		int flowCost = getFlowCost();
+		int rotationCost = getRotationCost();
+		int bestRotationObj = flowCost + rotationCost;
+		System.out.println("Org flowCost: " + flowCost + " & rotationCost " + rotationCost);
 		RotationEdge worstInto = rotationEdges.get(maxIndex);
 		RotationEdge worstOut = rotationEdges.get(0);
 		ArrayList<RotationEdge> handledEdges = tryRemovePort(worstInto, worstOut);
@@ -63,11 +70,13 @@ public class RotationGraph {
 		}
 		undoTryRemovePort(handledEdges);
 		for(int i=0; i<maxIndex; i++){
-			System.out.println("i = " + i);
 			RotationEdge into = rotationEdges.get(i);
 			RotationEdge out = rotationEdges.get(i+1);
 			handledEdges = tryRemovePort(into, out);
-			rotationObj = getFlowCost() + getRotationCost();
+			flowCost = getFlowCost();
+			rotationCost = getRotationCost();
+			rotationObj = flowCost + rotationCost;
+			System.out.println("Removing port " + into.getToPortUNLo() + " with flowCost " + flowCost + " & rotationCost " + rotationCost);
 			if(rotationObj < bestRotationObj){
 				worstInto = into;
 				worstOut = out;
@@ -80,6 +89,11 @@ public class RotationGraph {
 			System.out.println("Best obj: " + bestRotationObj + " by removing port " + worstInto.getToPortUNLo() + " noInRotation from " + worstInto.getNoInRotation());
 			implementRemovePort(worstInto, worstOut);
 		}
+//		for(RotationEdge e : rotationEdges){
+//			if(e.isFeeder()){
+//				System.out.println(e.getFromPortUNLo() + "-" + e.getToPortUNLo() + " cost: " + e.getCost());
+//			}
+//		}
 		return madeChange;
 	}
 	
@@ -431,8 +445,8 @@ public class RotationGraph {
 
 	public void testRemovePort(){
 		printRotation();
-		RotationEdge ingoingEdge = rotationEdges.get(7);
-		RotationEdge outgoingEdge = rotationEdges.get(8);
+		RotationEdge ingoingEdge = rotationEdges.get(2);
+		RotationEdge outgoingEdge = rotationEdges.get(3);
 		implementRemovePort(ingoingEdge, outgoingEdge);
 		printRotation();
 	}

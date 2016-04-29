@@ -12,6 +12,7 @@ import javax.tools.ToolProvider;
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
 import AuxFlow.AuxNode;
+import Data.Data;
 import Data.Demand;
 import Data.Distance;
 import Data.DistanceElement;
@@ -394,7 +395,7 @@ public class ComputeRotations {
 
 	private static ArrayList<Port> findUnservicedPorts(){
 		ArrayList<Port> unservicedPorts = new ArrayList<Port>();
-		for(Port p : graph.getData().getPorts()){
+		for(Port p : Data.getPorts()){
 			if(p.isActive() && p.getDwellEdges().isEmpty() && p.getTotalDemand() > 0){
 				/*
 				double rand = Math.random() * (unservicedPorts.size() + 1);
@@ -430,7 +431,7 @@ public class ComputeRotations {
 
 	private static ArrayList<Port> findServicedPorts(){
 		ArrayList<Port> servicedPorts = new ArrayList<Port>();
-		for(Port p : graph.getData().getPorts()){
+		for(Port p : Data.getPorts()){
 			if(p.isActive() && !p.getDwellEdges().isEmpty() && p.getTotalDemand() > 0){
 				servicedPorts.add(p);
 			}
@@ -622,8 +623,8 @@ public class ComputeRotations {
 	public static int calcCostOfPortInsert(VesselClass v, DistanceElement leg, Port insertPort){
 		int prevCost = leg.getDesignSpeedCost(v);
 
-		DistanceElement newLeg1 = graph.getData().getBestDistanceElement(leg.getOrigin(), insertPort, v);
-		DistanceElement newLeg2 = graph.getData().getBestDistanceElement(insertPort, leg.getDestination(), v);
+		DistanceElement newLeg1 = Data.getBestDistanceElement(leg.getOrigin(), insertPort, v);
+		DistanceElement newLeg2 = Data.getBestDistanceElement(insertPort, leg.getDestination(), v);
 		int newLegCost = newLeg1.getDesignSpeedCost(v) + newLeg2.getDesignSpeedCost(v);
 		int fuelDwell = (int) v.getFuelConsumptionIdle();
 		int fixedCall = insertPort.getFixedCallCost();
@@ -638,7 +639,7 @@ public class ComputeRotations {
 		Port prevPort = dwell.getPrevEdge().getFromNode().getPort();
 		Port nextPort = dwell.getNextEdge().getToNode().getPort();
 		if(!prevPort.equals(nextPort)){
-			DistanceElement newDist = graph.getData().getBestDistanceElement(prevPort, nextPort, r.getVesselClass());
+			DistanceElement newDist = Data.getBestDistanceElement(prevPort, nextPort, r.getVesselClass());
 			return calcCostOfPortInsert(r.getVesselClass(), newDist, removePort);
 		}
 		Edge newDwell = null;
@@ -652,9 +653,9 @@ public class ComputeRotations {
 		if(prevPort.equals(nextPort)){
 			return r.calcCost();
 		}
-		DistanceElement newDist = graph.getData().getBestDistanceElement(prevPort, nextPort, r.getVesselClass());
+		DistanceElement newDist = Data.getBestDistanceElement(prevPort, nextPort, r.getVesselClass());
 		int cost = calcCostOfPortInsert(r.getVesselClass(), newDist, removePort);
-		newDist = graph.getData().getBestDistanceElement(removePort, nextPort, r.getVesselClass());
+		newDist = Data.getBestDistanceElement(removePort, nextPort, r.getVesselClass());
 		cost += calcCostOfPortInsert(r.getVesselClass(), newDist, prevPort);
 		return cost;
 	}
@@ -671,15 +672,15 @@ public class ComputeRotations {
 		int port1 = currentLeg.getOrigin().getPortId();
 		int port2 = addPortId;
 		int port3 = currentLeg.getDestination().getPortId();
-		DistanceElement prevLeg = graph.getData().getBestDistanceElement(port1, port3, vesselClass);
-		DistanceElement leg1 = graph.getData().getBestDistanceElement(port1, port2, vesselClass);
-		DistanceElement leg2 = graph.getData().getBestDistanceElement(port2, port3, vesselClass);
+		DistanceElement prevLeg = Data.getBestDistanceElement(port1, port3, vesselClass);
+		DistanceElement leg1 = Data.getBestDistanceElement(port1, port2, vesselClass);
+		DistanceElement leg2 = Data.getBestDistanceElement(port2, port3, vesselClass);
 		int extraDist = leg1.getDistance() + leg2.getDistance() - prevLeg.getDistance();
 		return extraDist;
 	}
 
 	public static double getDetourTime(int fromPortId, int toPortId, int addPortId, VesselClass vesselClass){
-		DistanceElement prevLeg = graph.getData().getBestDistanceElement(fromPortId, toPortId, vesselClass);
+		DistanceElement prevLeg = Data.getBestDistanceElement(fromPortId, toPortId, vesselClass);
 		double extraDist = getDetour(prevLeg, addPortId, vesselClass);
 		double extraTime = extraDist / vesselClass.getDesignSpeed() + 24;
 		return extraTime;
@@ -704,8 +705,8 @@ public class ComputeRotations {
 		}
 		int prePortId = preEdge.getFromNode().getPortId();
 		int postPortId = postEdge.getFromNode().getPortId();
-		DistanceElement leg = graph.getData().getBestDistanceElement(prePortId, postPortId, rotation.getVesselClass());
-		Port port = graph.getData().getPort(portId);
+		DistanceElement leg = Data.getBestDistanceElement(prePortId, postPortId, rotation.getVesselClass());
+		Port port = Data.getPort(portId);
 		cost = calcCostOfPortInsert(rotation.getVesselClass(), leg, port);
 
 		return cost;
@@ -748,11 +749,11 @@ public class ComputeRotations {
 		for(int i = 0; i < ports.size()-1; i++){
 			int prePortId = ports.get(i).getPortId();
 			int postPortId = ports.get(i+1).getPortId();
-			DistanceElement dist = graph.getData().getBestDistanceElement(prePortId, postPortId, vesselClass);
+			DistanceElement dist = Data.getBestDistanceElement(prePortId, postPortId, vesselClass);
 			distance += dist.getDistance();
 			//			System.out.println("Distance from " + ports.get(i).getUNLocode() + " to " + ports.get(i+1).getUNLocode() + " is " + dist.getDistance());
 		}
-		distance += graph.getData().getBestDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), vesselClass).getDistance();
+		distance += Data.getBestDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), vesselClass).getDistance();
 		return distance;
 	}
 }
