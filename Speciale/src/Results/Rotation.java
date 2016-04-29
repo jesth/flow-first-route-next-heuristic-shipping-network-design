@@ -19,6 +19,7 @@ public class Rotation {
 	private boolean active;
 	private Graph mainGraph;
 	private Graph rotationGraph;
+	private Rotation subRotation;
 
 	public Rotation(){
 	}
@@ -34,11 +35,17 @@ public class Rotation {
 		this.noOfVessels = 0;
 		this.distance = 0;
 		this.mainGraph = mainGraph;
+		this.rotationGraph = null;
+		this.subRotation = null;
 		//		calculateSpeed();
 	}
 	
 	public void createRotationGraph(){
 		this.rotationGraph = new Graph(this);
+	}
+	
+	public void setSubRotation(Rotation r){
+		this.subRotation = r;
 	}
 	
 //	public void findRotationFlow(){

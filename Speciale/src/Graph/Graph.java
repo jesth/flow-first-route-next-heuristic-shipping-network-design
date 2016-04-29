@@ -55,7 +55,8 @@ public class Graph {
 		createDemands(rotation);
 		createCentroids();
 		createOmissionEdges();
-		createRotation(rotation);
+		Rotation subRotation = createRotation(rotation);
+		rotation.setSubRotation(subRotation);
 		mcf = new MulticommodityFlowThreads(this);
 	}
 
@@ -249,19 +250,21 @@ public class Graph {
 		createTransshipmentEdges(rotationNodes, e.getRotation());
 	}
 
-	//TODO: ERROR!!! Method does not support transshipment within rotation.
+	//TODO: ERROR? Method does not support transshipment within rotation.
 	private void createTransshipmentEdges(ArrayList<Node> rotationNodes, Rotation rotation){
 		for(Node i : rotationNodes){
 			Port p = i.getPort();
 			if(i.isDeparture()){
 				for(Node j : p.getArrivalNodes()){
 					if(!j.getRotation().equals(rotation)){
+//					if(!j.getNextEdge().equals(i.getPrevEdge())){
 						createTransshipmentEdge(j, i);
 					}
 				}
 			} else {
 				for(Node j : p.getDepartureNodes()){
 					if(!j.getRotation().equals(rotation)){
+//					if(!i.getNextEdge().equals(j.getPrevEdge())){
 						createTransshipmentEdge(i, j);
 					}
 				}
