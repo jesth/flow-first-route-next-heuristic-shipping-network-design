@@ -49,15 +49,15 @@ public class Rotation {
 		this.subRotation = r;
 	}
 	
-//	public void findRotationFlow(){
-//		System.out.println("Checking rotation no. " + id);
+	public void findRotationFlow() throws InterruptedException{
+		System.out.println("Checking rotation no. " + id);
+		rotationGraph.runMcf();
+//		removeWorstPort();
+//		rotationGraph.testAddPort();
+//		rotationGraph.removeWorstPort();
+//		rotationGraph.insertBestPort();
 //		rotationGraph.findFlow();
-//		rotationGraph.testRemovePort();
-////		rotationGraph.testAddPort();
-////		rotationGraph.removeWorstPort();
-////		rotationGraph.insertBestPort();
-//		rotationGraph.findFlow();
-//	}
+	}
 	
 	public boolean addBestPort() throws InterruptedException{
 		boolean madeChange = false;

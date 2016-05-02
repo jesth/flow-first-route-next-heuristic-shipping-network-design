@@ -137,6 +137,8 @@ public class MulticommodityFlowThreads {
 		long endTime = System.currentTimeMillis();
 		saveLagranges("lagranges.csv", iteration);
 		saveLoads("loads.csv", iteration);
+		saveODSol("ODSol.csv", graph.getDemands());
+		saveRotationSol("RotationSol", graph.getResult().getRotations());
 		System.out.println("RunningTime " + (endTime-startTime));
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}

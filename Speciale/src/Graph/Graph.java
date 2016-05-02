@@ -632,6 +632,34 @@ public class Graph {
 		return mcf;
 	}
 	
+//	public ArrayList<RotationEdge> tryInsertPort(Rotation r, Edge feederEdge){
+//		Edge dwellEdge = feederEdge.getFromNode().getNextEdge();
+//		
+////		for(Edge e : edges){
+////			if(e.isSail()){
+////				capacity = e.getCapacity();
+////			}
+////			if(capacity > 0){
+////				break;
+////			}
+////		}
+//		ArrayList<RotationEdge> handledEdges = new ArrayList<RotationEdge>();
+//		Node fromNode = affectedEdge.getFromNode();
+//		Node toNode = affectedEdge.getToNode();
+//		createRotationEdge(r, prevNode, nextNode, 0, dwellEdge.getCapacity(), -1, Data.getBestDistanceElement(prevNode.getPortId(), nextNode.getPortId(), r.getVesselClass()));
+//		handledEdges.add(createSailEdge(fromNode, toNode, 0, affectedEdge.getCapacity(), 0));
+//		handledEdges.add(createSailEdge(toNode, fromNode, capacity, 1));
+//		affectedEdge.setInactive();
+//		return handledEdges;
+//	}
+
+	public void undoTryInsertPort(Edge feederEdge, ArrayList<Edge> newSailEdges){
+		feederEdge.setActive();
+		for(int i = newSailEdges.size()-1; i >= 0; i--){
+			newSailEdges.get(i).delete();
+		}
+	}
+	
 	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Rotation r){
 		if(!dwellEdge.isDwell()){
 			throw new RuntimeException("Input mismatch.");

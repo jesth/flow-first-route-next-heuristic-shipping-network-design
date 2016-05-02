@@ -862,8 +862,9 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
-//		rotations.get(19).createRotationGraph();
-//		rotations.get(19).findRotationFlow();
+		rotations.get(0).createRotationGraph();
+		
+		rotations.get(0).findRotationFlow();
 //		
 //		graph.runMcf();
 //		for(Rotation r : rotations){
@@ -890,8 +891,8 @@ public class RunModel {
 //		MulticommodityFlow.run();
 		
 		System.out.println("Multicommodity run.");
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+//		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+//		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		graph.getMcf().saveTransferSol("TransferSol.csv");
 		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println();
