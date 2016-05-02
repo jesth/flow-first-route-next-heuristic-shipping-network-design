@@ -85,6 +85,26 @@ public class Node {
 	public static void setNoOfCentroids(int newNoOfCentroids){
 		noOfCentroids = newNoOfCentroids;
 	}
+	
+	public boolean isEqualTo(Node i){
+		if(fromCentroid != i.isFromCentroid() || toCentroid != i.isToCentroid() || arrival != i.isArrival() || departure != i.isDeparture()){
+			return false;
+		}
+		int prevNoInRotation = getPrevEdge().getNoInRotation();
+		int nextNoInRotation = getNextEdge().getNoInRotation();
+		if(prevNoInRotation != i.getPrevEdge().getNoInRotation() || nextNoInRotation != i.getNextEdge().getNoInRotation()){
+			return false;
+		}
+		int prevRotationId = getPrevEdge().getRotation().getId();
+		int nextRotationId = getNextEdge().getRotation().getId();
+		if(prevRotationId != i.getPrevEdge().getRotation().getId() || nextRotationId != i.getNextEdge().getRotation().getId()){
+			return false;
+		}
+		if(!port.getPortData().equals(i.getPort().getPortData())){
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * @return The port.
@@ -383,6 +403,15 @@ public class Node {
 		}
 		str += "at port " + port.getUNLocode();
 		return str;
+	}
+
+	public Edge getFeeder(Node toNode) {
+		for(Edge e : outgoingEdges){
+			if(e.getToNode().equals(toNode) && e.isFeeder()){
+				return e;
+			}
+		}
+		return null;
 	}
 
 	

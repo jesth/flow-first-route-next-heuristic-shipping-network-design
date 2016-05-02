@@ -52,11 +52,11 @@ public class DistanceElement {
 		return panama;
 	}
 	
-	public Port getOrigin(){
+	public PortData getOrigin(){
 		return parent.getOrigin();
 	}
 	
-	public Port getDestination(){
+	public PortData getDestination(){
 		return parent.getDestination();
 	}
 	

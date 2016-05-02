@@ -14,6 +14,7 @@ import Data.Demand;
 import Data.Distance;
 import Data.DistanceElement;
 import Data.Port;
+import Data.PortData;
 import Data.VesselClass;
 import Sortables.SortableAuxEdge;
 
@@ -42,7 +43,7 @@ public class AuxGraph implements Serializable{
 	}
 	
 	private void generateNodes(){
-		for(Port p : Data.getPorts()){
+		for(PortData p : Data.getPorts()){
 			AuxNode newNode = new AuxNode(p);
 			nodes[p.getPortId()] = newNode;
 		}

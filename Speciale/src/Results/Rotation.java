@@ -25,9 +25,13 @@ public class Rotation {
 	public Rotation(){
 	}
 
-	public Rotation(VesselClass vesselClass, Graph mainGraph) {
+	public Rotation(VesselClass vesselClass, Graph mainGraph, int id) {
 		super();
-		this.id = idCounter.getAndIncrement();
+		if(id == -1){
+			this.id = idCounter.getAndIncrement();
+		} else {
+			this.id = id;
+		}
 		this.vesselClass = vesselClass;
 		this.rotationNodes = new ArrayList<Node>();
 		this.rotationEdges = new ArrayList<Edge>();
@@ -38,39 +42,40 @@ public class Rotation {
 		this.mainGraph = mainGraph;
 		this.rotationGraph = null;
 		this.subRotation = null;
+		mainGraph.getResult().addRotation(this);
 		//		calculateSpeed();
 	}
-	
+
 	public void createRotationGraph(){
 		this.rotationGraph = new Graph(this);
 	}
-	
+
 	public void setSubRotation(Rotation r){
 		this.subRotation = r;
 	}
-	
+
 	public void findRotationFlow() throws InterruptedException{
 		System.out.println("Checking rotation no. " + id);
 		rotationGraph.runMcf();
-//		removeWorstPort();
-//		rotationGraph.testAddPort();
-//		rotationGraph.removeWorstPort();
-//		rotationGraph.insertBestPort();
-//		rotationGraph.findFlow();
+		//		removeWorstPort();
+		//		rotationGraph.testAddPort();
+		//		rotationGraph.removeWorstPort();
+		//		rotationGraph.insertBestPort();
+		//		rotationGraph.findFlow();
 	}
-	
+
 	public boolean addBestPort() throws InterruptedException{
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
 		System.out.println("Org obj: " + bestObj);
-		
+
 		Edge bestFeeder = null;
-		
-		
+
+
 		return madeChange;
 	}
-	
+
 	public boolean removeWorstPort() throws InterruptedException{
 		boolean madeChange = false;
 		rotationGraph.runMcf();
@@ -142,9 +147,9 @@ public class Rotation {
 	}
 
 	private void setNoOfVessels(int newNoOfVessels){
-		vesselClass.removeNoUsed(noOfVessels);
+		mainGraph.removeNoUsed(vesselClass, noOfVessels);
 		noOfVessels = newNoOfVessels;
-		vesselClass.addNoUsed(newNoOfVessels);
+		mainGraph.addNoUsed(vesselClass, newNoOfVessels);
 	}
 
 	private void setSailTimes() {
@@ -258,14 +263,14 @@ public class Rotation {
 		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
 		int TCCost = rotationDays * v.getTCRate();
 
-//		System.out.println("Rotation number "+ this.id);
-//		System.out.println("Voyage duration in nautical miles " + distance);
-//		System.out.println(this.noOfVessels + " ships needed sailing with speed " + speed);
-//		System.out.println("Port call cost " + portCost);
-//		System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
-//		System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
-//		System.out.println("Total TC cost " + TCCost);
-//		System.out.println();
+		//		System.out.println("Rotation number "+ this.id);
+		//		System.out.println("Voyage duration in nautical miles " + distance);
+		//		System.out.println(this.noOfVessels + " ships needed sailing with speed " + speed);
+		//		System.out.println("Port call cost " + portCost);
+		//		System.out.println("Bunker idle burn in Ton " + idleBunkerCost/600.0);
+		//		System.out.println("Bunker fuel burn in Ton " + sailingBunkerCost/600.0);
+		//		System.out.println("Total TC cost " + TCCost);
+		//		System.out.println();
 		obj += sailingBunkerCost + idleBunkerCost + portCost + suezCost + panamaCost + TCCost;
 
 		return obj;
@@ -410,7 +415,7 @@ public class Rotation {
 	public void addDistance(int addDistance) {
 		distance += addDistance;
 	}
-	
+
 	public void removePort(int noInRotationIn, int noInRotationOut){
 		if(noInRotationIn != noInRotationOut - 1 && noInRotationOut != 0){
 			throw new RuntimeException("Input mismatch");
@@ -419,7 +424,7 @@ public class Rotation {
 		Edge dwell = ingoingEdge.getNextEdge();
 		mainGraph.removePort(dwell);
 	}
-	
+
 	public void insertPort(int noInRotation, Port p){
 		Edge edge = rotationEdges.get(noInRotation);
 		if(!edge.isSail()){

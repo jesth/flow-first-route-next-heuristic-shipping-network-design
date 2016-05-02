@@ -13,8 +13,8 @@ public class ReadData {
 
 	}
 
-	public static HashMap<String, Port> readPorts() throws FileNotFoundException{
-		HashMap<String, Port> ports = new HashMap<String, Port>();
+	public static HashMap<String, PortData> readPorts() throws FileNotFoundException{
+		HashMap<String, PortData> ports = new HashMap<String, PortData>();
 		File input = new File("LinerLib_Data\\ports.csv");
 		Scanner scanner = new Scanner(input);
 		scanner.useDelimiter("\t|\n");
@@ -40,7 +40,7 @@ public class ReadData {
 			int fixedCallCost = (int) Double.parseDouble(textIn);
 			textIn = scanner.next();
 			int varCallCost = (int) Double.parseDouble(textIn);
-			Port newPort = new Port(UNLocode, name, country, cabotage, region, lng, lat, 
+			PortData newPort = new PortData(UNLocode, name, country, cabotage, region, lng, lat, 
 					draft, moveCost, transshipCost, fixedCallCost, varCallCost, counter);
 			ports.put(UNLocode, newPort);
 			counter++;
@@ -50,7 +50,7 @@ public class ReadData {
 		return ports;
 	}
 
-	public static ArrayList<Demand> readDemands(String fileName, HashMap<String, Port> ports) throws FileNotFoundException{
+	public static ArrayList<Demand> readDemands(String fileName, HashMap<String, PortData> portsMap, Port[] ports) throws FileNotFoundException{
 		ArrayList<Demand> demands = new ArrayList<Demand>();
 		File input = new File("LinerLib_Data\\"+fileName);
 		Scanner scanner = new Scanner(input);
@@ -58,9 +58,11 @@ public class ReadData {
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String originUNLo = scanner.next();
-			Port origin = ports.get(originUNLo);
+			PortData originData = portsMap.get(originUNLo);
+			Port origin = ports[originData.getPortId()];
 			String destinationUNLo = scanner.next();
-			Port destination = ports.get(destinationUNLo);
+			PortData destinationData = portsMap.get(destinationUNLo);
+			Port destination = ports[destinationData.getPortId()];
 			String textIn = scanner.next();
 			textIn = textIn.replaceAll("\\s+","");
 			textIn = textIn.replace(".", "");
@@ -78,7 +80,7 @@ public class ReadData {
 		return demands;
 	}
 
-	public static Distance[][] readDistances(HashMap<String, Port> ports) throws FileNotFoundException{
+	public static Distance[][] readDistances(HashMap<String, PortData> ports) throws FileNotFoundException{
 		Distance[][] distances = new Distance[ports.size()][ports.size()];
 		for(int i = 0; i < distances.length; i++){
 			for(int j = 0; j < distances[i].length; j++){
@@ -92,9 +94,9 @@ public class ReadData {
 		scanner.nextLine();
 		while(scanner.hasNextLine()){
 			String originUNLo = scanner.next();
-			Port origin = ports.get(originUNLo);
+			PortData origin = ports.get(originUNLo);
 			String destinationUNLo = scanner.next();
-			Port destination = ports.get(destinationUNLo);
+			PortData destination = ports.get(destinationUNLo);
 			String textIn = scanner.next();
 			int distance = Integer.parseInt(textIn);	
 			textIn = scanner.next();
@@ -174,7 +176,7 @@ public class ReadData {
 			int suezFee = Integer.parseInt(textIn);
 			VesselClass newVesselClass = new VesselClass(name, capacity, TCRate, draft, minSpeed, maxSpeed, 
 					designSpeed, fuelConsumptionDesign, fuelConsumptionIdle, panamaFee, suezFee);
-			vesselClasses.add(newVesselClass);
+			vesselClasses.add(newVesselClass.getId(), newVesselClass);
 			scanner.nextLine();
 		}
 		scanner.close();

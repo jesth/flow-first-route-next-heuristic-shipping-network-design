@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Data {
-	private static HashMap<String, Port> portsMap;
-	private static Port[] ports;
+	private static HashMap<String, PortData> portsMap;
+	private static PortData[] ports;
 	private static Distance[][] distances;
 	private static ArrayList<VesselClass> vesselClasses;
 	private static int portStay = 24;
@@ -18,21 +18,21 @@ public class Data {
 	}
 
 	private static void convertPortsMap(){
-		ports = new Port[portsMap.size()];
-		for(Port p : portsMap.values()){
+		ports = new PortData[portsMap.size()];
+		for(PortData p : portsMap.values()){
 			ports[p.getPortId()] = p;
 		}
 	}
 
-	public static HashMap<String, Port> getPortsMap() {
+	public static HashMap<String, PortData> getPortsMap() {
 		return portsMap;
 	}
 
-	public static Port[] getPorts(){
+	public static PortData[] getPorts(){
 		return ports;
 	}
 
-	public static Port getPort(int portId){
+	public static PortData getPort(int portId){
 		return ports[portId];
 	}
 
@@ -68,6 +68,11 @@ public class Data {
 		return distance.getBestDistanceElement(vesselClass);
 	}
 
+	public static DistanceElement getBestDistanceElement(PortData port1, PortData port2, VesselClass vesselClass){
+		Distance distance = getDistance(port1.getPortId(), port2.getPortId());
+		return distance.getBestDistanceElement(vesselClass);
+	}
+
 	public static DistanceElement getDistanceElement(Port port1, Port port2, boolean suez, boolean panama){
 		Distance distance = getDistance(port1.getPortId(), port2.getPortId());
 		return distance.getDistanceElement(suez, panama);
@@ -75,6 +80,15 @@ public class Data {
 
 	public static ArrayList<VesselClass> getVesselClasses() {
 		return vesselClasses;
+	}
+	
+	public static VesselClass getVesselClassId(int id){
+		for(VesselClass i : vesselClasses){
+			if(i.getId() == id){
+				return i;
+			}
+		}
+		return null;
 	}
 
 	public static int getPortStay(){

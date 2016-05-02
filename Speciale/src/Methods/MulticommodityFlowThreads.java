@@ -137,8 +137,9 @@ public class MulticommodityFlowThreads {
 		long endTime = System.currentTimeMillis();
 		saveLagranges("lagranges.csv", iteration);
 		saveLoads("loads.csv", iteration);
-		saveODSol("ODSol.csv", graph.getDemands());
-		saveRotationSol("RotationSol", graph.getResult().getRotations());
+		saveODSol("ODSolRotation.csv", graph.getDemands());
+		saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println("RunningTime " + (endTime-startTime));
 		System.out.println("Exiting while loop after iteration " + iteration);
 	}
@@ -396,14 +397,20 @@ public class MulticommodityFlowThreads {
 						} else {
 							out.write("0;0;1;0;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";;" + e.getFromNode().getPrevEdge().getNoInRotation() + ";");
 						}
-
 					} else if(e.isTransshipment()){
 						out.write("0;0;0;1;0;0;" + e.getFromNode().getPrevEdge().getRotation().getId() + ";" + e.getToNode().getNextEdge().getRotation().getId() + 
 								";" + e.getFromNode().getPrevEdge().getNoInRotation() + ";" + e.getToNode().getNextEdge().getNoInRotation());
 					} else if(e.isSail() || e.isDwell()){
 						out.write("0;0;0;0;1;0;" + e.getRotation().getId() + ";" + e.getRotation().getId() + ";" + e.getNoInRotation() + ";" + e.getNoInRotation());
 					} else if(e.isFeeder()) {
-						out.write("0;0;0;0;0;1;;;;");
+						if(e.getFromNode().isArrival() && e.getToNode().isDeparture()){
+							out.write("0;0;0;0;0;1;" + + e.getFromNode().getPrevEdge().getRotation().getId() + ";" + e.getToNode().getNextEdge().getRotation().getId() +
+									";" + e.getFromNode().getPrevEdge().getNoInRotation() + ";" + e.getToNode().getNextEdge().getNoInRotation());
+						} else if(e.getFromNode().isArrival()){
+							out.write("0;0;0;0;0;1;" + + e.getFromNode().getPrevEdge().getRotation().getId() + ";;" + e.getFromNode().getPrevEdge().getNoInRotation() + ";");
+						} else{
+							out.write("0;0;0;0;0;1;;" + e.getToNode().getNextEdge().getRotation().getId() + ";;" + e.getToNode().getNextEdge().getNoInRotation());
+						}
 					} else {
 						throw new RuntimeException("Edge does not fit any description.");
 					}

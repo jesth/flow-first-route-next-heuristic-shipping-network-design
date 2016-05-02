@@ -6,27 +6,15 @@ import Graph.Node;
 import Results.Rotation;
 
 public class Port {
-	private String UNLocode;
-	private String name;
-	private String country;
-	private String cabotage;
-	private String region;
-	private double lng;
-	private double lat;
-	private double draft;
-	private int moveCost;
-	private int transshipCost;
-	private int fixedCallCost;
-	private int varCallCost;
 	private Node fromCentroidNode;
 	private Node toCentroidNode;
 	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
 	private ArrayList<Node> departureNodes = new ArrayList<Node>();
 	private ArrayList<Edge> dwellEdges = new ArrayList<Edge>();
-	private int portId;
 	private boolean active;
 	private int totalDemand = 0;
 	private int totalProfitPotential = 0;
+	private PortData portData;
 	
 	public Port(){
 		
@@ -46,85 +34,40 @@ public class Port {
 	 * @param fixedCallCost
 	 * @param varCallCost
 	 */
-	public Port(String UNLocode, String name, String country, String cabotage, String region, double lng, double lat,
-			double draft, int moveCost, int transshipCost, int fixedCallCost, int varCallCost, int portId) {
+	public Port(PortData portData) {
 		super();
-		this.UNLocode = UNLocode;
-		this.name = name;
-		this.country = country;
-		this.cabotage = cabotage;
-		this.region = region;
-		this.lng = lng;
-		this.lat = lat;
-		this.draft = draft;
-		this.moveCost = moveCost;
-		this.transshipCost = transshipCost;
-		this.fixedCallCost = fixedCallCost;
-		this.varCallCost = varCallCost;
 		this.fromCentroidNode = null;
 		this.toCentroidNode = null;
-		this.portId = portId;
 		this.active = false;
+		this.portData = portData;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Port [UNLocode=" + UNLocode + ", name=" + name + ", country=" + country + ", cabotage=" + cabotage
-				+ ", region=" + region + ", lng=" + lng + ", lat=" + lat + ", draft=" + draft + ", moveCost=" + moveCost
-				+ ", transshipCost=" + transshipCost + ", fixedCallCost=" + fixedCallCost + ", varCallCost="
-				+ varCallCost + "]";
+	public int getPortId(){
+		return portData.getPortId();
 	}
-
+	
 	public String getUNLocode() {
-		return UNLocode;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public String getCabotage() {
-		return cabotage;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public double getLng() {
-		return lng;
-	}
-
-	public double getLat() {
-		return lat;
+		return portData.getUNLocode();
 	}
 
 	public double getDraft() {
-		return draft;
+		return portData.getDraft();
 	}
 
 	public int getMoveCost() {
-		return moveCost;
+		return portData.getMoveCost();
 	}
 
 	public int getTransshipCost() {
-		return transshipCost;
+		return portData.getTransshipCost();
 	}
 
 	public int getFixedCallCost() {
-		return fixedCallCost;
+		return portData.getFixedCallCost();
 	}
 
 	public int getVarCallCost() {
-		return varCallCost;
+		return portData.getVarCallCost();
 	}
 	
 	public Node getFromCentroidNode() {
@@ -151,10 +94,6 @@ public class Port {
 		departureNodes.add(departureNode);
 	}
 	
-	public int getPortId(){
-		return portId;
-	}
-
 	public void setFromCentroidNode(Node fromCentroidNode) {
 		this.fromCentroidNode = fromCentroidNode;
 	}
@@ -214,5 +153,9 @@ public class Port {
 			}
 		}
 		return spareCapacity;
+	}
+
+	public PortData getPortData() {
+		return portData;
 	}
 }
