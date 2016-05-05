@@ -899,10 +899,9 @@ public class Graph {
 		DistanceElement newToFeederPortDist = Data.getBestDistanceElement(orgDepNode.getPort(), newFeederArrNode.getPort(), r.getVesselClass());
 		DistanceElement newFromFeederPortDist = Data.getBestDistanceElement(newFeederDepNode.getPort(), newOrgArrNode.getPort(), r.getVesselClass());
 		DistanceElement newOrgSailDist = Data.getBestDistanceElement(newOrgDepNode.getPort(), orgNextArrPortNode.getPort(), r.getVesselClass());
-		Edge newToFeederPort = createRotationEdge(r, orgDepNode, newFeederArrNode, 0, r.getVesselClass().getCapacity(), -1, newToFeederPortDist);
-		Edge newFromFeederPort = createRotationEdge(r, newFeederDepNode, newOrgArrNode, 0, r.getVesselClass().getCapacity(), -1, newFromFeederPortDist);
-		Edge newOrgSail = createRotationEdge(r, newOrgDepNode, orgNextArrPortNode, 0, r.getVesselClass().getCapacity(), -1, newOrgSailDist);
-
+		Edge newToFeederPort = createRotationEdge(r, orgDepNode, newFeederArrNode, 0, r.getVesselClass().getCapacity(), 0, newToFeederPortDist);
+		Edge newFromFeederPort = createRotationEdge(r, newFeederDepNode, newOrgArrNode, 0, r.getVesselClass().getCapacity(), 0, newFromFeederPortDist);
+		Edge newOrgSail = createRotationEdge(r, newOrgDepNode, orgNextArrPortNode, 0, r.getVesselClass().getCapacity(), 0, newOrgSailDist);
 		Edge newFeederDwell = createRotationEdge(r, newFeederArrNode, newFeederDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
 		ArrayList<Edge> transhipmentFeederPort = createTransshipmentEdges(newFeederDwell);
 		insertEdges.addAll(transhipmentFeederPort);
@@ -934,6 +933,13 @@ public class Graph {
 
 	public Port[] getPorts() {
 		return ports;
+	}
+	
+	/**
+	 * @return the noVesselsAvailable
+	 */
+	public int getNoVesselsAvailable(int vesselId) {
+		return noVesselsAvailable[vesselId];
 	}
 
 }

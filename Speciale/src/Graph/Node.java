@@ -273,28 +273,42 @@ public class Node {
 	}
 	
 	public Edge getPrevEdge(){
+		Edge prevEdge = null;
 		if(isDeparture()){
 			for(Edge e : ingoingEdges){
 				if(e.isDwell()){
 					return e;
 				}
 			}
-		}
-		if(ingoingEdges.size() != 1){
-//			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
-//			System.out.println("Rotation id " + rotation.getId());
-//			throw new RuntimeException("More than one or no ingoing edge.");
-			System.out.println("Zero or multiple ingoing edges in " + port.getUNLocode());
-			for(int i = 0; i < ingoingEdges.size(); i++){
-				System.out.print(i + " " + ingoingEdges.get(i).simplePrint());
-				if(ingoingEdges.get(i).isActive()){
-					System.out.println(" active");
-				} else {
-					System.out.println(" inactive");
+		} else if (isArrival()){
+			int counter = 0;
+			for(Edge e : ingoingEdges){
+				if(e.isActive() && e.isSail()){
+					prevEdge = e;
+					counter++;
 				}
-				
 			}
+//			System.out.println("Ingoing sailedge counter for arrival node = " + counter );
+			if(counter > 1){
+				System.out.println("TOO MANY ACTIVE INGOING EDGES");
+			}
+			return prevEdge;
 		}
+//		if(ingoingEdges.size() != 1){
+////			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+////			System.out.println("Rotation id " + rotation.getId());
+////			throw new RuntimeException("More than one or no ingoing edge.");
+//			System.out.println("Zero or multiple ingoing edges in " + port.getUNLocode());
+//			for(int i = 0; i < ingoingEdges.size(); i++){
+//				System.out.print(i + " " + ingoingEdges.get(i).simplePrint());
+//				if(ingoingEdges.get(i).isActive()){
+//					System.out.println(" active");
+//				} else {
+//					System.out.println(" inactive");
+//				}
+//				
+//			}
+//		}
 		return ingoingEdges.get(0);
 	}
 	
@@ -310,14 +324,34 @@ public class Node {
 	}
 	
 	public Edge getNextEdge(){
+		Edge nextEdge = null;
 		if(isArrival()){
 			for(Edge e : outgoingEdges){
 				if(e.isDwell()){
 					return e;
 				}
 			}
+		} else if (isDeparture()){
+			int counter = 0;
+			for(Edge e : outgoingEdges){
+				if(e.isActive() && e.isSail()){
+					nextEdge = e;
+					counter++;
+				}
+			}
+//			System.out.println("Outgoing sailedge counter for departure node = " + counter );
+			if(counter > 1){
+				System.out.println("TOO MANY ACTIVE OUTGOING EDGES");
+			}
+			return nextEdge;
 		}
-		if(outgoingEdges.size() != 1){
+//		if(outgoingEdges.size() != 1){
+//			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+//			System.out.println("Rotation id " + rotation.getId());
+//			throw new RuntimeException("More than one or no outgoing edge.");
+//		}
+		
+//		if(outgoingEdges.size() != 1){
 //			System.out.println("Removing in port " + port.getUNLocode() + " with outgoing edges size " + ingoingEdges.size());
 //			System.out.println("Rotation id " + rotation.getId());
 //			throw new RuntimeException("More than one or no outgoing edge.");
@@ -331,7 +365,7 @@ public class Node {
 //				}
 //				
 //			}
-		}
+//		}
 		return outgoingEdges.get(0);
 	}
 	
