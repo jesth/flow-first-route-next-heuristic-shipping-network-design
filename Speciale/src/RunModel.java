@@ -802,7 +802,7 @@ public class RunModel {
 	
 	
 	public static void testWorldSmall3Auto()throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_WorldSmall.csv");
+		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -862,10 +862,56 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
-		rotations.get(0).createRotationGraph();
+		int orgObj = graph.getResult().getObjective();
+		int orgFlow = graph.getResult().getFlowProfit(false);
 		
-		rotations.get(0).findRotationFlow();
-//		
+		for(Rotation r : rotations){
+			System.out.println("Creating rotationGraph " + r.getId());
+			r.createRotationGraph();
+		}
+		for(int i = 0; i<20; i++){
+			graph.runMcf();
+			for(Rotation r : rotations){
+				r.removeWorstPort();
+			}
+		}
+		
+//		Rotation r0 = rotations.get(0);
+//		Rotation r1 = rotations.get(1);
+//		Rotation r2 = rotations.get(2);
+//		Rotation r3 = rotations.get(3);
+//		Rotation r5 = rotations.get(5);
+//		Rotation r8 = rotations.get(8);
+//		Rotation r9 = rotations.get(9);
+//		Rotation r12 = rotations.get(12);
+//		Rotation r14 = rotations.get(14);
+//		Rotation r15 = rotations.get(15);
+		
+		
+//		r0.createRotationGraph();
+//		r1.createRotationGraph();
+//		r2.createRotationGraph();
+//		r3.createRotationGraph();
+//		r5.createRotationGraph();
+//		r8.createRotationGraph();
+//		r9.createRotationGraph();
+//		r12.createRotationGraph();
+//		r14.createRotationGraph();
+//		r15.createRotationGraph();
+		
+//		r0.removeWorstPort();
+//		r1.removeWorstPort();
+//		r2.removeWorstPort();
+//		r3.removeWorstPort();
+//		r5.removeWorstPort();
+//		r8.removeWorstPort();
+//		r9.removeWorstPort();
+//		r12.removeWorstPort();
+//		r14.removeWorstPort();
+//		r15.removeWorstPort();
+		
+		graph.runMcf();
+		
 //		graph.runMcf();
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
@@ -891,13 +937,17 @@ public class RunModel {
 //		MulticommodityFlow.run();
 		
 		System.out.println("Multicommodity run.");
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+//		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 //		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 //		graph.getMcf().saveTransferSol("TransferSol.csv");
-//		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
+		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
+		System.out.println();
+		System.out.println("Org objective " + orgObj);
+		System.out.println("Org flow profit " + orgFlow);
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
+		
 		
 		graph.saveOPLData("OPLData.dat");
 		

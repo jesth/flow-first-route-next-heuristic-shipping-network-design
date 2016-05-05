@@ -583,6 +583,7 @@ public class Graph {
 		Edge newEdge = null;
 		for(Node i : rotationNodes){
 			if(i.isArrival()){
+				System.out.println(i.getPort().getToCentroidNode() + " for " + i.getPort().getUNLocode());
 				newEdge = createLoadUnloadEdge(i, i.getPort().getToCentroidNode());
 				newEdges.add(newEdge);
 			} else if(i.isDeparture()){
@@ -856,7 +857,7 @@ public class Graph {
 			handledEdges.add(nextSail);
 			nextNode = nextSail.getToNode();
 		}
-		Edge newEdge = createRotationEdge(r, prevNode, nextNode, 0, dwellEdge.getCapacity(), -1, Data.getBestDistanceElement(prevNode.getPortId(), nextNode.getPortId(), r.getVesselClass()));
+		Edge newEdge = createRotationEdge(r, prevNode, nextNode, 0, dwellEdge.getCapacity(), dwellEdge.getPrevEdge().getNoInRotation(), Data.getBestDistanceElement(prevNode.getPortId(), nextNode.getPortId(), r.getVesselClass()));
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}

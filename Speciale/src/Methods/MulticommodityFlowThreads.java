@@ -86,7 +86,7 @@ public class MulticommodityFlowThreads {
 		long startTime = System.currentTimeMillis();
 
 		while (improvementCounter < 20 && iteration < 100){
-			System.out.println("Now running BellmanFord in iteration " + iteration);
+			//			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
 			for(Edge e : graph.getEdges()){
 				e.clearRoutes();
@@ -100,8 +100,8 @@ public class MulticommodityFlowThreads {
 			double overflow = getOverflow();
 			if(overflow < 0.3){
 				improvementCounter++;
-				System.out.println("Finding repair flow.");
-				validFlow = findRepairFlow(improvementCounter);
+				//				System.out.println("Finding repair flow.");
+				validFlow = findRepairFlow(improvementCounter, iteration);
 				repairCounter++;
 
 			}
@@ -130,7 +130,7 @@ public class MulticommodityFlowThreads {
 			//				}
 			//			}
 			if(repairCounter >= 5){
-				System.out.println("Halving Lagranges.");
+				//				System.out.println("Halving Lagranges.");
 				repairCounter = 0;
 			}
 			iteration++;
@@ -139,11 +139,19 @@ public class MulticommodityFlowThreads {
 		long endTime = System.currentTimeMillis();
 		saveLagranges("lagranges.csv", iteration);
 		saveLoads("loads.csv", iteration);
-		saveODSol("ODSolRotation.csv", graph.getDemands());
-		saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
-		saveAllEdgesSol("AllEdgesSol.csv");
-		System.out.println("RunningTime " + (endTime-startTime));
-		System.out.println("Exiting while loop after iteration " + iteration);
+		if(graph.isSubGraph()){
+			saveODSol("ODSolRotation.csv", graph.getDemands());
+			saveRotationSol("RotationSolRotation.csv", graph.getResult().getRotations());
+			//			saveAllEdgesSol("AllEdgesSolRotation.csv");
+		} else {
+			saveODSol("ODSol.csv", graph.getDemands());
+			saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+			//			saveAllEdgesSol("AllEdgesSol.csv");
+		}
+		if(!graph.isSubGraph()){
+			System.out.println("RunningTime " + (endTime-startTime));
+			System.out.println("Exiting while loop after iteration " + iteration);
+		}
 	}
 
 	private void runBF(boolean threads, boolean rep){
@@ -186,7 +194,10 @@ public class MulticommodityFlowThreads {
 		return overflow;
 	}
 
-	private boolean findRepairFlow(int improvementCounter) throws InterruptedException{
+	private boolean findRepairFlow(int improvementCounter, int iteration) throws InterruptedException{
+		while(iteration >= 100){
+			iteration -= 100;
+		}
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
@@ -195,8 +206,19 @@ public class MulticommodityFlowThreads {
 		} else {
 			runBF(false, true);
 		}
-		for(int i = graph.getEdges().size()-1; i>= 0; i--){
-			Edge e = graph.getEdges().get(i);
+		int length = graph.getEdges().size();
+		int counter = 0;
+		ArrayList<Edge> edges = new ArrayList<Edge>(graph.getEdges());
+		while(length > 0){
+			if(counter >= 1000){
+				counter -= 1000;
+			}
+			int i = (int) (length * Data.getRandomNumber(iteration, counter));
+			//		for(int i = graph.getEdges().size()-1; i>= 0; i--){
+			//			Edge e = graph.getEdges().get(i);
+			Edge e = edges.remove(i);
+			length--;
+			counter++;
 			if(e.isSail()){
 				int overflow = e.getRepAndRemoveLoad() - e.getCapacity();
 				if(overflow > 0){
@@ -215,12 +237,14 @@ public class MulticommodityFlowThreads {
 			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
-			findRepairFlow(improvementCounter);
+			findRepairFlow(improvementCounter, iteration+1);
 		}
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
 			improvementCounter = 0;
-			System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
+			if(!graph.isSubGraph()){
+				System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
+			}
 			updateBestFlow(flowProfit);
 			for(Edge e : graph.getEdges()){
 				if(e.isSail()){

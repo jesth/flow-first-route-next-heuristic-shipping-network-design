@@ -200,4 +200,20 @@ public class ReadData {
 		return vesselClasses;
 	}
 
+	public static double[][] readRandomNumbers(String fileName) throws FileNotFoundException {
+		double [][] randomNumbers = new double[1000][100];
+		File input = new File("LinerLib_Data\\"+fileName);
+		Scanner scanner = new Scanner(input);
+		scanner.useDelimiter(";");
+		for(int i = 0; i < 1000; i++){
+			for(int j = 0; j < 100; j++){
+				double nextNo = scanner.nextDouble();
+				randomNumbers[i][j] = nextNo;
+			}
+			scanner.nextLine();
+		}
+		scanner.close();
+		return randomNumbers;
+	}
+
 }
