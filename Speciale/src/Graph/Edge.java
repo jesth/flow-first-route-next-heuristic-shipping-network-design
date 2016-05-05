@@ -73,7 +73,9 @@ public class Edge {
 			this.sail = true;
 			this.lagrange = 1;
 			this.travelTime = this.distance.getDistance()/rotation.getVesselClass().getDesignSpeed();
-		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
+		} else if(fromNode.isArrival() && 
+				toNode.isDeparture() && 
+				rotationEdge){
 			this.dwell = true;
 			this.travelTime = Data.getPortStay();
 		} else if(feederIn){
@@ -135,14 +137,14 @@ public class Edge {
 	}
 	
 	public void setActive(){
-		if(rotation != null && !active){
+		if(sail && !active){
 			rotation.addDistance(distance.getDistance());
 		}
 		active = true;
 	}
 	
 	public void setInactive(){
-		if(rotation != null && active){
+		if(sail && active){
 			rotation.subtractDistance(distance.getDistance());
 		}
 		active = false;
@@ -579,9 +581,6 @@ public class Edge {
 		toNode.removeIngoingEdge(this);
 		if(this.isDwell() || this.isSail()){
 			rotation.getRotationEdges().remove(this);
-			if(this.isSail()){
-				rotation.subtractDistance(this.distance.getDistance());
-			}
 			if(this.isDwell()){
 				fromNode.getPort().removeDwellEdge(this);
 			}

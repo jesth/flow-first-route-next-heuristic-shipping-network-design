@@ -294,12 +294,20 @@ public class Node {
 			}
 			return prevEdge;
 		}
-		
-		
 //		if(ingoingEdges.size() != 1){
-//			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
-//			System.out.println("Rotation id " + rotation.getId());
-//			throw new RuntimeException("More than one or no ingoing edge.");
+////			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
+////			System.out.println("Rotation id " + rotation.getId());
+////			throw new RuntimeException("More than one or no ingoing edge.");
+//			System.out.println("Zero or multiple ingoing edges in " + port.getUNLocode());
+//			for(int i = 0; i < ingoingEdges.size(); i++){
+//				System.out.print(i + " " + ingoingEdges.get(i).simplePrint());
+//				if(ingoingEdges.get(i).isActive()){
+//					System.out.println(" active");
+//				} else {
+//					System.out.println(" inactive");
+//				}
+//				
+//			}
 //		}
 		return ingoingEdges.get(0);
 	}
@@ -341,6 +349,22 @@ public class Node {
 //			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
 //			System.out.println("Rotation id " + rotation.getId());
 //			throw new RuntimeException("More than one or no outgoing edge.");
+//		}
+		
+//		if(outgoingEdges.size() != 1){
+//			System.out.println("Removing in port " + port.getUNLocode() + " with outgoing edges size " + ingoingEdges.size());
+//			System.out.println("Rotation id " + rotation.getId());
+//			throw new RuntimeException("More than one or no outgoing edge.");
+//			System.out.println("Zero or multiple outgoing edges in " + port.getUNLocode());
+//			for(int i = 0; i < outgoingEdges.size(); i++){
+//				System.out.print(i + " " + outgoingEdges.get(i).simplePrint());
+//				if(outgoingEdges.get(i).isActive()){
+//					System.out.println(" active");
+//				} else {
+//					System.out.println(" inactive");
+//				}
+//				
+//			}
 //		}
 		return outgoingEdges.get(0);
 	}

@@ -8,14 +8,16 @@ public class Data {
 	private static PortData[] ports;
 	private static Distance[][] distances;
 	private static ArrayList<VesselClass> vesselClasses;
+	private static double[][] randomNumbers;
 	private static int portStay = 24;
 	private static int fuelPrice = 600;
 
-	public static void initialize(String vesselNoFileName) throws FileNotFoundException{
+	public static void initialize(String vesselNoFileName, String randomNumbersFileName) throws FileNotFoundException{
 		portsMap = ReadData.readPorts();
 		convertPortsMap();
 		distances = ReadData.readDistances(portsMap);
 		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
+		randomNumbers = ReadData.readRandomNumbers(randomNumbersFileName);
 	}
 
 	private static void convertPortsMap(){
@@ -99,5 +101,8 @@ public class Data {
 	public static int getFuelPrice(){
 		return fuelPrice;
 	}
-
+	
+	public static double getRandomNumber(int row, int column){
+		return randomNumbers[column][row];
+	}
 }
