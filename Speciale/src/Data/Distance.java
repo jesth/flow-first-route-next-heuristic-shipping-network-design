@@ -1,8 +1,8 @@
 package Data;
 
 public class Distance {
-	private Port origin;
-	private Port destination;
+	private PortData origin;
+	private PortData destination;
 	private DistanceElement[] distances;
 	
 	public Distance(){
@@ -16,14 +16,14 @@ public class Distance {
 	/**
 	 * @return the origin
 	 */
-	public Port getOrigin() {
+	public PortData getOrigin() {
 		return origin;
 	}
 
 	/**
 	 * @return the destination
 	 */
-	public Port getDestination() {
+	public PortData getDestination() {
 		return destination;
 	}
 	
@@ -31,7 +31,7 @@ public class Distance {
 	 * @param origin
 	 * @param destination
 	 */
-	public void setPorts(Port origin, Port destination){
+	public void setPorts(PortData origin, PortData destination){
 		this.origin = origin;
 		this.destination = destination;
 	}

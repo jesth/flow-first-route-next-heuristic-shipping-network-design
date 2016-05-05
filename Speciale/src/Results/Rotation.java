@@ -27,9 +27,13 @@ public class Rotation {
 	public Rotation(){
 	}
 
-	public Rotation(VesselClass vesselClass, Graph mainGraph) {
+	public Rotation(VesselClass vesselClass, Graph mainGraph, int id) {
 		super();
-		this.id = idCounter.getAndIncrement();
+		if(id == -1){
+			this.id = idCounter.getAndIncrement();
+		} else {
+			this.id = id;
+		}
 		this.vesselClass = vesselClass;
 		this.rotationNodes = new ArrayList<Node>();
 		this.rotationEdges = new ArrayList<Edge>();
@@ -40,17 +44,18 @@ public class Rotation {
 		this.mainGraph = mainGraph;
 		this.rotationGraph = null;
 		this.subRotation = null;
+		mainGraph.getResult().addRotation(this);
 		//		calculateSpeed();
 	}
-	
+
 	public void createRotationGraph(){
 		this.rotationGraph = new Graph(this);
 	}
-	
+
 	public void setSubRotation(Rotation r){
 		this.subRotation = r;
 	}
-	
+
 	public void findRotationFlow() throws InterruptedException{
 		System.out.println("Checking rotation no. " + id);
 		rotationGraph.runMcf();
@@ -137,7 +142,6 @@ public class Rotation {
 //			mainGraph.deleteEdge(worstNextSail);
 			
 		}
-		
 		return madeChange;
 	}
 	
@@ -257,9 +261,9 @@ public class Rotation {
 	}
 
 	private void setNoOfVessels(int newNoOfVessels){
-		vesselClass.removeNoUsed(noOfVessels);
+		mainGraph.removeNoUsed(vesselClass, noOfVessels);
 		noOfVessels = newNoOfVessels;
-		vesselClass.addNoUsed(newNoOfVessels);
+		mainGraph.addNoUsed(vesselClass, newNoOfVessels);
 	}
 
 	private void setSailTimes() {
@@ -522,7 +526,7 @@ public class Rotation {
 	public void addDistance(int addDistance) {
 		distance += addDistance;
 	}
-	
+
 	public void removePort(int noInRotationIn, int noInRotationOut){
 		if(noInRotationIn != noInRotationOut - 1 && noInRotationOut != 0){
 			throw new RuntimeException("Input mismatch");
@@ -531,7 +535,7 @@ public class Rotation {
 		Edge dwell = ingoingEdge.getNextEdge();
 		mainGraph.removePort(dwell);
 	}
-	
+
 	public void insertPort(int noInRotation, Port p){
 		Edge edge = rotationEdges.get(noInRotation);
 		if(!edge.isSail()){

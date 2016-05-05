@@ -66,13 +66,13 @@ public class RunModel {
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
 		*/
-		ComputeRotations.addPorts();
+//		ComputeRotations.addPorts();
 		graph.getMcf().run();
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
-		ComputeRotations.removePorts();
+//		ComputeRotations.removePorts();
 		graph.getMcf().run();	
-		ComputeRotations.addPorts();
+//		ComputeRotations.addPorts();
 		
 //		rotationPorts = new ArrayList<String>(r.getPorts().size());
 //		for(Port p : r.getPorts()){
@@ -891,10 +891,10 @@ public class RunModel {
 //		MulticommodityFlow.run();
 		
 		System.out.println("Multicommodity run.");
-//		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 //		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
-		graph.getMcf().saveTransferSol("TransferSol.csv");
-		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
+//		graph.getMcf().saveTransferSol("TransferSol.csv");
+//		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));

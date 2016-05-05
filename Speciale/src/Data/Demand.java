@@ -49,15 +49,19 @@ public class Demand {
 		this.orgDemand = null;
 	}
 	
-	public Demand(Demand orgDemand, int demand) {
+	public Demand(Demand orgDemand, Port origin, Port destination, int demand) {
 		super();
 		this.id = orgDemand.getId();
-		this.origin = orgDemand.getOrigin();
-		this.destination = orgDemand.getDestination();
+		this.origin = origin;
+		this.destination = destination;
 		this.demand = demand;
 		this.rate = orgDemand.getRate();
 		this.routes = new ArrayList<Route>();
 		this.maxTransitTime = orgDemand.getMaxTransitTime();
+		origin.setActive();
+		destination.setActive();
+		origin.addDemand(demand, rate);
+		destination.addDemand(demand, rate);
 		this.orgDemand = orgDemand;
 	}
 
@@ -230,14 +234,14 @@ public class Demand {
 		return profit;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Demand [origin=" + origin.getName() + ", destination=" + destination.getName() + ", demand=" + demand + ", rate=" + rate
-				+ ", maxTransitTime=" + maxTransitTime + "]";
-	}
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#toString()
+//	 */
+//	@Override
+//	public String toString() {
+//		return "Demand [origin=" + origin.getName() + ", destination=" + destination.getName() + ", demand=" + demand + ", rate=" + rate
+//				+ ", maxTransitTime=" + maxTransitTime + "]";
+//	}
 
 
 

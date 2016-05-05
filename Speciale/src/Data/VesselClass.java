@@ -1,6 +1,9 @@
 package Data;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class VesselClass {
+	private int id;
 	private String name;
 	private int capacity;
 	private int TCRate;
@@ -14,6 +17,7 @@ public class VesselClass {
 	private int suezFee;
 	private int noAvailable;
 	private int noUsed;
+	private static AtomicInteger idCounter = new AtomicInteger();
 	
 	public VesselClass(){
 	}
@@ -34,6 +38,7 @@ public class VesselClass {
 	public VesselClass(String name, int capacity, int TCRate, double draft, double minSpeed, double maxSpeed,
 			double designSpeed, double fuelConsumptionDesign, double fuelConsumptionIdle, int panamaFee, int suezFee) {
 		super();
+		this.id = idCounter.getAndIncrement();
 		this.name = name;
 		this.capacity = capacity;
 		this.TCRate = TCRate;
@@ -102,32 +107,32 @@ public class VesselClass {
 	public int getNoAvailable() {
 		return noAvailable;
 	}
-	
-	public int getNetNoAvailable(){
-		return (this.noAvailable - this.noUsed);
-	}
-
+//	
+//	public int getNetNoAvailable(){
+//		return (this.noAvailable - this.noUsed);
+//	}
+//
 	public void setNoAvailable(int noAvailable) {
 		this.noAvailable = noAvailable;
 	}
 
-	public int getNoUsed() {
-		return noUsed;
-	}
+//	public int getNoUsed() {
+//		return noUsed;
+//	}
 	
-	public void addNoUsed(int noOfVessels){
-		noUsed += noOfVessels;
-		if(noUsed > noAvailable){
-			throw new RuntimeException("Using more vessels " + noUsed + ">" + noAvailable + " than are available for vessel class " + this);
-		}
-	}
-
-	public void removeNoUsed(int noOfVessels) {
-		noUsed -= noOfVessels;
-		if(noUsed < 0){
-			throw new RuntimeException("Negative number of vessels used for vessel class " + this);
-		}
-	}
+//	public void addNoUsed(int noOfVessels){
+//		noUsed += noOfVessels;
+//		if(noUsed > noAvailable){
+//			throw new RuntimeException("Using more vessels " + noUsed + ">" + noAvailable + " than are available for vessel class " + this);
+//		}
+//	}
+//
+//	public void removeNoUsed(int noOfVessels) {
+//		noUsed -= noOfVessels;
+//		if(noUsed < 0){
+//			throw new RuntimeException("Negative number of vessels used for vessel class " + this);
+//		}
+//	}
 
 	@Override
 	public String toString() {
@@ -135,6 +140,10 @@ public class VesselClass {
 				+ TCRate + ", draft=" + draft + ", minSpeed=" + minSpeed + ", maxSpeed=" + maxSpeed + ", designSpeed="
 				+ designSpeed + ", fuelConsumptionDesign=" + fuelConsumptionDesign + ", fuelConsumptionIdle="
 				+ fuelConsumptionIdle + ", panamaFee=" + panamaFee + ", suezFee=" + suezFee + "]";
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	

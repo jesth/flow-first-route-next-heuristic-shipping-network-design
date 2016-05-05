@@ -48,7 +48,7 @@ public class Edge {
 	 * @param noInRotation - the number in the rotation for sail edges only. -1 if dwell, transshipment or load/unload.
 	 * @param distance - the DistanceElement associated with the edge. Null if dwell, transshipment or load/unload.
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, boolean feeder, Rotation rotation, int noInRotation, DistanceElement distance){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, boolean feederIn, Rotation rotation, int noInRotation, DistanceElement distance){
 		super();
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
@@ -76,16 +76,16 @@ public class Edge {
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
 			this.travelTime = Data.getPortStay();
+		} else if(feederIn){
+			feeder = true;
 		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge && !feeder) {
 			this.transshipment = true;
 			this.travelTime = Data.getPortStay();
-		} else if(fromNode.isArrival() && toNode.isToCentroid() || fromNode.isFromCentroid() && toNode.isDeparture()){
+		} else if((fromNode.isArrival() && toNode.isToCentroid() || fromNode.isFromCentroid() && toNode.isDeparture()) && !feeder){
 			this.loadUnload = true;
 			// TODO hard-code
 			this.travelTime = 0;
-		} else if(feeder){
-			feeder = true;
-		} else {
+		}  else {
 			throw new RuntimeException("Tried to construct an edge that does not fit "
 					+ "with either sail, dwell, transshipment or load/unload definitions.");
 		}
