@@ -422,7 +422,6 @@ public class Rotation {
 
 		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
 		int TCCost = rotationDays * v.getTCRate();
-
 		//		System.out.println("Rotation number "+ this.id);
 		//		System.out.println("Voyage duration in nautical miles " + distance);
 		//		System.out.println(this.noOfVessels + " ships needed sailing with speed " + speed);
