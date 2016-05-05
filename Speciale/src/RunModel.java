@@ -866,10 +866,9 @@ public class RunModel {
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
 		for(Rotation r : rotations){
-			System.out.println("Creating rotationGraph " + r.getId());
 			r.createRotationGraph();
 		}
-		for(int i = 0; i<20; i++){
+		for(int i = 0; i<1; i++){
 			graph.runMcf();
 			for(Rotation r : rotations){
 				r.removeWorstPort();

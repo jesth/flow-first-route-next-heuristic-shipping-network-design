@@ -148,13 +148,14 @@ public class MulticommodityFlowThreads {
 			saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 			//			saveAllEdgesSol("AllEdgesSol.csv");
 		}
-		if(!graph.isSubGraph()){
 			System.out.println("RunningTime " + (endTime-startTime));
+		if(!graph.isSubGraph()){
 			System.out.println("Exiting while loop after iteration " + iteration);
 		}
 	}
 
 	private void runBF(boolean threads, boolean rep){
+		threads = true;
 		if(threads){
 			ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			for(BellmanFord b : bellmanFords){
@@ -214,9 +215,9 @@ public class MulticommodityFlowThreads {
 				counter -= 1000;
 			}
 			int i = (int) (length * Data.getRandomNumber(iteration, counter));
-			//		for(int i = graph.getEdges().size()-1; i>= 0; i--){
-			//			Edge e = graph.getEdges().get(i);
 			Edge e = edges.remove(i);
+//					for(int i = graph.getEdges().size()-1; i>= 0; i--){
+//						Edge e = graph.getEdges().get(i);
 			length--;
 			counter++;
 			if(e.isSail()){
