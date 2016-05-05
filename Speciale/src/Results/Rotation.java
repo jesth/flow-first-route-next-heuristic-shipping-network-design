@@ -84,7 +84,6 @@ public class Rotation {
 		Edge worstFromFeeder = null;
 		Edge worstToFeeder = null;
 		Edge worstNextSail = null;
-		System.out.println(rotationEdges.size());
 		for(int i=rotationGraph.getEdges().size()-1; i >= 0; i--){
 			Edge e = rotationGraph.getEdges().get(i);
 			Edge toFeeder = null;
@@ -99,6 +98,10 @@ public class Rotation {
 				Port orgPort = e.getToNode().getPort();
 //				System.out.println("Feeder from port: " + e.getFromPortUNLo() + " to rotationPort: " + e.getToPortUNLo());
 				Port feederPort = e.getFromNode().getPort();
+				if(feederPort.getDraft() < vesselClass.getDraft()){
+					System.out.println("Draft at feederPort is too low");
+					continue;
+				}
 				Node orgDepNode = e.getToNode();
 				for(Edge outEdge : orgDepNode.getPrevEdge().getFromNode().getOutgoingEdges()){
 					if(outEdge.isFeeder() && outEdge.getToNode().getPort().getUNLocode().equals(feederPort.getUNLocode())){
@@ -118,6 +121,12 @@ public class Rotation {
 				e.setInactive();
 				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(this, orgPort, feederPort);
 				ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdges(this, insertNodes, orgDepNode, orgNextPortArrNode);
+				if(enoughVessels()){
+					calcOptimalSpeed();
+				} else {
+					System.out.println("Not enough ships!!!");
+					continue;
+				}
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
 				System.out.println("Try insert obj: " + obj);
@@ -136,7 +145,7 @@ public class Rotation {
 //					throw new RuntimeException("IMPROVEMENT");
 				}
 				rotationGraph.undoTryInsertMakeNodes(insertNodes);
-				rotationGraph.undoTryInsertMakeEdges(insertEdges);
+//				rotationGraph.undoTryInsertMakeEdges(insertEdges);
 				nextSail.setActive();
 				if(toFeeder != null){
 					toFeeder.setActive();
@@ -179,29 +188,29 @@ public class Rotation {
 		DistanceElement newToFeederPortDist = Data.getBestDistanceElement(bestOrgDepNode.getPort(), newFeederArrNode.getPort(), this.getVesselClass());
 		DistanceElement newFromFeederPortDist = Data.getBestDistanceElement(newFeederDepNode.getPort(), newOrgArrNode.getPort(), this.getVesselClass());
 		DistanceElement newOrgSailDist = Data.getBestDistanceElement(newOrgDepNode.getPort(), bestOrgNextPortArrNode.getPort(), this.getVesselClass());
-		Edge newRotToFeederPort = graph.createRotationEdge(this, bestOrgDepNode, newFeederArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+1, newToFeederPortDist);
+		Edge newToFeederPort = graph.createRotationEdge(this, bestOrgDepNode, newFeederArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+1, newToFeederPortDist);
 		//		Edge newMainToFeederPort = mainGraph.createRotationEdge(this, bestOrgDepNode, newFeederArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+1, newToFeederPortDist);
-		Edge newRotFromFeederPort = graph.createRotationEdge(this, newFeederDepNode, newOrgArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+2, newFromFeederPortDist);
+		Edge newFromFeederPort = graph.createRotationEdge(this, newFeederDepNode, newOrgArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+2, newFromFeederPortDist);
 		//		Edge newMainFromFeederPort = mainGraph.createRotationEdge(this, newFeederDepNode, newOrgArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+2, newFromFeederPortDist);
-		Edge newRotOrgSail = graph.createRotationEdge(this, newOrgDepNode, bestOrgNextPortArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+3, newOrgSailDist);
+		Edge newOrgSail = graph.createRotationEdge(this, newOrgDepNode, bestOrgNextPortArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+3, newOrgSailDist);
 		//		Edge newMainOrgSail = mainGraph.createRotationEdge(this, newOrgDepNode, bestOrgNextPortArrNode, 0, this.getVesselClass().getCapacity(), prevNoInRot+3, newOrgSailDist);
 
 		Edge newRotFeederDwell = graph.createRotationEdge(this, newFeederArrNode, newFeederDepNode, 0, this.getVesselClass().getCapacity(), -1, null);
 		//		Edge newMainFeederDwell = mainGraph.createRotationEdge(this, newFeederArrNode, newFeederDepNode, 0, this.getVesselClass().getCapacity(), -1, null);
-		ArrayList<Edge> rotTranshipmentFeederPort = graph.createTransshipmentEdges(newRotFeederDwell);
+		ArrayList<Edge> transhipmentFeederPort = graph.createTransshipmentEdges(newRotFeederDwell);
 		//		ArrayList<Edge> mainTranshipmentFeederPort = mainGraph.createTransshipmentEdges(newMainFeederDwell);
 		//		insertEdges.addAll(transhipmentFeederPort);
-		ArrayList<Edge> rotLoadUnloadFeederPort = graph.createLoadUnloadEdges(newRotFeederDwell);
+		ArrayList<Edge> loadUnloadFeederPort = graph.createLoadUnloadEdges(newRotFeederDwell);
 		//		ArrayList<Edge> mainLoadUnloadFeederPort = mainGraph.createLoadUnloadEdges(newMainFeederDwell);
 
 		//		insertEdges.addAll(loadUnloadFeederPort);
 
 		Edge newRotOrgDwell = graph.createRotationEdge(this, newOrgArrNode, newOrgDepNode, 0, this.getVesselClass().getCapacity(), -1, null);
 		//		Edge newMainOrgDwell = mainGraph.createRotationEdge(this, newOrgArrNode, newOrgDepNode, 0, this.getVesselClass().getCapacity(), -1, null);
-		ArrayList<Edge> rotTranshipmentNewOrgPort = graph.createTransshipmentEdges(newRotOrgDwell);
+		ArrayList<Edge> transhipmentNewOrgPort = graph.createTransshipmentEdges(newRotOrgDwell);
 		//		ArrayList<Edge> mainTranshipmentNewOrgPort = mainGraph.createTransshipmentEdges(newMainOrgDwell);
 		//		insertEdges.addAll(transhipmentNewOrgPort);
-		ArrayList<Edge> rotLoadUnloadNewOrgPort = graph.createLoadUnloadEdges(newRotOrgDwell);
+		ArrayList<Edge> loadUnloadNewOrgPort = graph.createLoadUnloadEdges(newRotOrgDwell);
 		//		ArrayList<Edge> mainLoadUnloadNewOrgPort = mainGraph.createLoadUnloadEdges(newMainOrgDwell);
 		//		insertEdges.addAll(loadUnloadNewOrgPort);
 
@@ -259,11 +268,20 @@ public class Rotation {
 		mainGraph.removePort(bestRealDwell);
 	}
 
+	private boolean enoughVessels() {
+		int lbNoVessels = calculateMinNoVessels();
+		System.out.println("lb: " + lbNoVessels + " available: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()));
+		if(lbNoVessels < mainGraph.getNoVesselsAvailable(vesselClass.getId())){
+			return true;
+		}
+		return false;
+	}
+	
 	public void calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
 		int ubNoVessels = calculateMaxNoVessels();
-//		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
+		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
 		if(lbNoVessels > ubNoVessels){
 			this.speed = vesselClass.getMinSpeed();
 			setNoOfVessels(lbNoVessels);
