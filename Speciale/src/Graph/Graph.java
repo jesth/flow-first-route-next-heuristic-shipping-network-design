@@ -36,6 +36,7 @@ public class Graph {
 	private int[] noVesselsAvailable;
 	private int[] noVesselsUsed;
 	private Port[] ports;
+	private boolean subGraph;
 
 	public Graph(String demandFileName) throws FileNotFoundException {
 		result = new Result(this);
@@ -43,6 +44,7 @@ public class Graph {
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		this.fromCentroids = new ArrayList<Node>();
+		this.subGraph = false;
 		//		this.toCentroids = new ArrayList<Node>();
 		Node.setNoOfCentroids(Data.getPortsMap().size());
 		createPorts();
@@ -58,6 +60,7 @@ public class Graph {
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		this.fromCentroids = new ArrayList<Node>();
+		this.subGraph = true;
 		//		this.toCentroids = new ArrayList<Node>();
 		Node.setNoOfCentroids(Data.getPortsMap().size());
 		createPorts();
@@ -725,6 +728,10 @@ public class Graph {
 	 */
 	public MulticommodityFlowThreads getMcf() {
 		return mcf;
+	}
+	
+	public boolean isSubGraph(){
+		return subGraph;
 	}
 
 	public void removeNoUsed(VesselClass vesselClass, int noUsed){

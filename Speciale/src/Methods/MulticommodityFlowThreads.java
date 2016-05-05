@@ -91,13 +91,10 @@ public class MulticommodityFlowThreads {
 			for(Edge e : graph.getEdges()){
 				e.clearRoutes();
 			}
-			ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-			for(BellmanFord b : bellmanFords){
-				b.setMain();
-				executor.execute(b);
-			}
-			executor.shutdown();
-			while(!executor.isTerminated()){
+			if(!graph.isSubGraph()){
+				runBF(true, false);
+			} else {
+				runBF(false, false);
 			}
 			boolean validFlow = false;
 			double overflow = getOverflow();
@@ -127,6 +124,11 @@ public class MulticommodityFlowThreads {
 				}
 				//				}
 			}
+			//			for(Demand d : graph.getDemands()){
+			//				for(Route r : d.getRoutes()){
+			//					r.updateLagrangeProfit();
+			//				}
+			//			}
 			if(repairCounter >= 5){
 				System.out.println("Halving Lagranges.");
 				repairCounter = 0;
@@ -142,6 +144,32 @@ public class MulticommodityFlowThreads {
 		saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println("RunningTime " + (endTime-startTime));
 		System.out.println("Exiting while loop after iteration " + iteration);
+	}
+
+	private void runBF(boolean threads, boolean rep){
+		if(threads){
+			ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			for(BellmanFord b : bellmanFords){
+				if(rep){
+					b.setRep();
+				} else {
+					b.setMain();
+				}
+				executor.execute(b);
+			}
+			executor.shutdown();
+			while(!executor.isTerminated()){
+			}
+		} else {
+			for(BellmanFord b : bellmanFords){
+				if(rep){
+					b.setRep();
+				} else {
+					b.setMain();
+				}
+				b.run();
+			}
+		}
 	}
 
 	private double getOverflow() {
@@ -162,13 +190,10 @@ public class MulticommodityFlowThreads {
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
 		//		for(Edge e : graph.getEdges()){
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		for(BellmanFord b : bellmanFords){
-			b.setRep();
-			executor.execute(b);
-		}
-		executor.shutdown();
-		while(!executor.isTerminated()){
+		if(!graph.isSubGraph()){
+			runBF(true, true);
+		} else {
+			runBF(false, true);
 		}
 		for(int i = graph.getEdges().size()-1; i>= 0; i--){
 			Edge e = graph.getEdges().get(i);
@@ -206,9 +231,13 @@ public class MulticommodityFlowThreads {
 		return validFlow;
 	}
 
-
 	private void findOverflowRoutes(Edge e, int overflow, ArrayList<Route> overflowRoutes){
-		Route r = e.findLeastProfitableRoute();
+		Route r = null;
+		if(graph.isSubGraph()){
+			r = e.findLeastProfitableRoute2();
+		} else {
+			r = e.findLeastProfitableRoute();
+		}
 		int FFEforRemoval = Math.min(overflow, (r.getFFErep()-r.getFFEforRemoval()));
 		r.addFFEforRemoval(FFEforRemoval);
 		//		System.err.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());

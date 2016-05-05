@@ -151,7 +151,7 @@ public class Route {
 		return omission;
 	}
 
-
+//	TODO: Lagrange profit is not updated with changing Lagrange values?
 	/**
 	 * @return The profit including Lagrange values, i.e. a value which is lower than the real profit.
 	 */
@@ -164,6 +164,13 @@ public class Route {
 	 */
 	public void setLagrangeProfit(int lagrangeProfit) {
 		this.lagrangeProfit = lagrangeProfit;
+	}
+
+	public void updateLagrangeProfit() {
+		this.lagrangeProfit = realProfit;
+		for(Edge e : route){
+			realProfit -= e.getLagrange();
+		}
 	}
 
 	/**
@@ -217,4 +224,5 @@ public class Route {
 		str += "\n";
 		return str;
 	}
+
 }

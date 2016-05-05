@@ -541,19 +541,24 @@ public class Edge {
 		return lowestProfitRoute;
 	}
 	
-	//Defunct method.
 	public Route findLeastProfitableRoute2(){
-		int lowestProfitDiff = Integer.MAX_VALUE;
-		Route lowestProfitRoute = null;
+		int lowestCostDiff = Integer.MIN_VALUE;
+		Route lowestCostRoute = null;
 		for(Route r : routes){
 			if(r.getFFEforRemoval() != r.getFFErep()){
-				int currProfit = r.getDemand().calcLagrangeProfit(r.getRoute());
+				int currCost = 0;
+				for(Edge e : r.getRoute()){
+					currCost += e.getCost();
+				}
 				ArrayList<Edge> altRoute = BellmanFord.getRouteRep(r.getDemand());
-				int altProfit = r.getDemand().calcLagrangeProfit(altRoute);
-				int profitDiff = currProfit - altProfit;
-				if(profitDiff < lowestProfitDiff){
-					lowestProfitDiff = profitDiff;
-					lowestProfitRoute = r;
+				int altCost = 0;
+				for(Edge e : altRoute){
+					altCost += e.getCost();
+				}
+				int costDiff = currCost - altCost;
+				if(costDiff > lowestCostDiff){
+					lowestCostDiff = costDiff;
+					lowestCostRoute = r;
 //					if(r.getDemand().getOrigin().getUNLocode().equals("CNSHA") && r.getDemand().getDestination().getUNLocode().equals("NLRTM")){
 //						System.out.println("Moving route CNSHA->NLRTM with profitDiff " + profitDiff);
 //					}
@@ -567,7 +572,7 @@ public class Edge {
 		//			}
 		//			
 		//		}
-		return lowestProfitRoute;
+		return lowestCostRoute;
 	}
 	
 	public void delete(){
