@@ -862,8 +862,12 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
+		
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
+		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).findRotationFlow();
 		
 		for(Rotation r : rotations){
 			System.out.println("Creating rotationGraph " + r.getId());
