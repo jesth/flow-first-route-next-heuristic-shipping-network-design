@@ -63,8 +63,7 @@ public class DistanceElement {
 	public int getDesignSpeedCost(VesselClass vesselClass){
 		double travelTimeDays = (distance / vesselClass.getDesignSpeed()) / 24.0;
 		double TCCost = travelTimeDays * vesselClass.getTCRate();
-		//TODO: Fuel cost hardcoded.
-		double fuelConsumptionCost = vesselClass.getFuelConsumptionDesign() * travelTimeDays * 600;
+		double fuelConsumptionCost = vesselClass.getFuelConsumptionDesign() * travelTimeDays * Data.getFuelPrice();
 		double canalCost = 0;
 		if(suez){
 			canalCost += vesselClass.getSuezFee();

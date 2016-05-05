@@ -2,6 +2,7 @@ package Graph;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import Data.Data;
 import Data.DistanceElement;
 import Methods.BellmanFord;
 import Results.Rotation;
@@ -74,12 +75,10 @@ public class Edge {
 			this.travelTime = this.distance.getDistance()/rotation.getVesselClass().getDesignSpeed();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
-			//TODO hard-code
-			this.travelTime = 24;
+			this.travelTime = Data.getPortStay();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && !rotationEdge && !feeder) {
 			this.transshipment = true;
-			// TODO hard-code
-			this.travelTime = 24;
+			this.travelTime = Data.getPortStay();
 		} else if(fromNode.isArrival() && toNode.isToCentroid() || fromNode.isFromCentroid() && toNode.isDeparture()){
 			this.loadUnload = true;
 			// TODO hard-code

@@ -2,6 +2,7 @@ package AuxFlow;
 
 import java.io.Serializable;
 
+import Data.Data;
 import Data.DistanceElement;
 import Data.VesselClass;
 
@@ -80,7 +81,7 @@ public class AuxEdge implements Serializable{
 		double sailTimeDays = (distance.getDistance() / vessel.getDesignSpeed()) / 24.0;
 		double fuelConsumptionSail = sailTimeDays * vessel.getFuelConsumptionDesign();
 		double fuelConsumptionPort = vessel.getFuelConsumptionIdle();
-		int fuelCost = (int) (600 * (fuelConsumptionSail + fuelConsumptionPort));
+		int fuelCost = (int) (Data.getFuelPrice() * (fuelConsumptionSail + fuelConsumptionPort));
 		int portCostFrom = (int) 0.5 * (fromNode.getPort().getFixedCallCost() + fromNode.getPort().getVarCallCost() * vessel.getCapacity());
 		int portCostTo = (int) 0.5 * (toNode.getPort().getFixedCallCost() + toNode.getPort().getVarCallCost() * vessel.getCapacity());
 		//sailTimeDays + 1 to pay for ½ * 2 port stays.

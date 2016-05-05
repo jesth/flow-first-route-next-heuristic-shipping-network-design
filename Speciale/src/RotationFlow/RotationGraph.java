@@ -256,11 +256,9 @@ public class RotationGraph {
 			}
 		}
 
-		//TODO USD per metric tons fuel = 600
-
 		int idleTime = ports * 24;
 		int sailingBunkerCost = calcSailingBunkerCost(distance, bestSpeed, noVessels);
-		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * 600;
+		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * Data.getFuelPrice();
 
 		int rotationDays = (int) Math.ceil(((distance/bestSpeed)+idleTime)/24.0);
 		int TCCost = rotationDays * v.getTCRate();
@@ -291,8 +289,7 @@ public class RotationGraph {
 		double fuelConsumption = rotation.getVesselClass().getFuelConsumption(speed);
 		double sailTimeDays = (distance / speed) / 24.0;
 		double bunkerConsumption = sailTimeDays * fuelConsumption;
-		//TODO Fuel cost!!!
-		return (int) (bunkerConsumption * 600.0);
+		return (int) (bunkerConsumption * Data.getFuelPrice());
 	}
 
 	public void createGraph(){
@@ -427,7 +424,7 @@ public class RotationGraph {
 		double sailTimeDays = (distance.getDistance() / v.getDesignSpeed()) / 24.0;
 		double fuelConsumptionSail = sailTimeDays * v.getFuelConsumptionDesign();
 		double fuelConsumptionPort = v.getFuelConsumptionIdle();
-		int fuelCost = (int) (600 * (fuelConsumptionSail + fuelConsumptionPort));
+		int fuelCost = (int) (Data.getFuelPrice() * (fuelConsumptionSail + fuelConsumptionPort));
 		int portCostFrom = fromNode.getPort().getFixedCallCost() + fromNode.getPort().getVarCallCost() * v.getCapacity();
 		int portCostTo = toNode.getPort().getFixedCallCost() + toNode.getPort().getVarCallCost() * v.getCapacity();
 		int TCCost = (int) (v.getTCRate() * sailTimeDays);

@@ -9,6 +9,7 @@ public class Data {
 	private static Distance[][] distances;
 	private static ArrayList<VesselClass> vesselClasses;
 	private static int portStay = 24;
+	private static int fuelPrice = 600;
 
 	public static void initialize(String vesselNoFileName) throws FileNotFoundException{
 		portsMap = ReadData.readPorts();
@@ -79,6 +80,10 @@ public class Data {
 
 	public static int getPortStay(){
 		return portStay;
+	}
+	
+	public static int getFuelPrice(){
+		return fuelPrice;
 	}
 
 }

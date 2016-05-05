@@ -731,7 +731,7 @@ public class ComputeRotations {
 				double fuelConsumption = vesselClass.getFuelConsumption(speed);
 				double sailTimeDays = (distance / speed) / 24;
 				double bunkerConsumption = sailTimeDays * fuelConsumption;
-				int bunkerCost = (int) (bunkerConsumption * 600);
+				int bunkerCost = (int) (bunkerConsumption * Data.getFuelPrice());
 				int TCRate = i * vesselClass.getTCRate();
 				int cost = bunkerCost + TCRate;
 				if(cost < lowestCost){
