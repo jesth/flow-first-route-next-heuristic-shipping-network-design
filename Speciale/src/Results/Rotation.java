@@ -131,8 +131,8 @@ public class Rotation {
 //					toFeeder.setInactive();
 //				}
 //				e.setInactive();
-				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(this, orgPort, feederPort);
-				ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdges(this, insertNodes, orgDepNode, orgNextPortArrNode);
+				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(subRotation, orgPort, feederPort);
+				ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdges(subRotation, insertNodes, orgDepNode, orgNextPortArrNode);
 				if(subRotation.enoughVessels(orgNoVessels)){
 					subRotation.calcOptimalSpeed();
 				} else {
@@ -173,7 +173,6 @@ public class Rotation {
 			for(Edge e : rotationEdges){
 				if(e.getNoInRotation() == noInRot){
 					mainGraphNextSail = e;
-					System.out.println("Found edge");
 				}
 			}			
 			incrementNoInRotation(noInRot);
@@ -306,7 +305,7 @@ public class Rotation {
 
 	private boolean enoughVessels(int noVessels) {
 		int lbNoVessels = calculateMinNoVessels();
-//		System.out.println("lb: " + lbNoVessels + " available: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()));
+		System.out.println("lb: " + lbNoVessels + " available: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()));
 		if(lbNoVessels <= noVessels){
 			return true;
 		}

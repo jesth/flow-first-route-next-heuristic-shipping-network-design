@@ -291,7 +291,6 @@ public class Graph {
 					}
 				}
 			}
-			System.out.println();
 			feeder = fromNode.getFeeder(toNode);
 			if(feeder == null){
 				int cost = computeFeederCost(fromNode, toNode, rotation);
@@ -902,6 +901,14 @@ public class Graph {
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}
+		System.out.println();
+		for(Edge e : r.getRotationEdges()){
+		}
+//		for(Edge e : edges){
+//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
+//				System.out.println(e.simplePrint());
+//			}
+//		}
 		handledEdges.add(0, newEdge);
 		r.calcOptimalSpeed();
 		return handledEdges;
