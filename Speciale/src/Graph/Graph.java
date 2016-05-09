@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
@@ -188,10 +190,18 @@ public class Graph {
 
 	public Rotation createRotation(Rotation rotation){
 		ArrayList<Integer> ports = new ArrayList<Integer>();
-		for(Node i : rotation.getRotationNodes()){
-			if(i.isDeparture()){
-				ports.add(i.getPortId());
+		Edge firstEdge = null;
+		for(Edge e : rotation.getRotationEdges()){
+			if(e.getNoInRotation() == 0){
+				firstEdge = e;
+				break;
 			}
+		}
+		ports.add(firstEdge.getFromNode().getPortId());
+		Edge e = firstEdge.getNextEdge().getNextEdge();
+		while(e.getNoInRotation() != 0){
+			ports.add(e.getFromNode().getPortId());
+			e = e.getNextEdge().getNextEdge();
 		}
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass(), rotation.getId());
 		//		System.out.println("Creating feeder edges for " + newRotation.getId());
@@ -277,10 +287,11 @@ public class Graph {
 					for(Node i : toPort.getDepartureNodes()){
 						if(i.isEqualTo(oldToNode)){
 							toNode = i;
-						}
+						} 
 					}
 				}
 			}
+			System.out.println();
 			feeder = fromNode.getFeeder(toNode);
 			if(feeder == null){
 				int cost = computeFeederCost(fromNode, toNode, rotation);

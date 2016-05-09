@@ -872,9 +872,9 @@ public class RunModel {
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).findRotationFlow();
 		
-//		for(Rotation r : rotations){
-//			r.createRotationGraph();
-//		}
+		for(Rotation r : rotations){
+			r.createRotationGraph();
+		}
 		long startTime = System.currentTimeMillis();
 //		for(int i = 0; i < 1; i++){
 //			for(int j = 0; j < 10; j++){
@@ -960,7 +960,7 @@ public class RunModel {
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
 		
-		graph.saveOPLData("OPLData.dat");
+//		graph.saveOPLData("OPLData.dat");
 		
 	}
 	
