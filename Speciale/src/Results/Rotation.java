@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.omg.CORBA.SystemException;
 
 import Data.Data;
+import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
 import Data.VesselClass;
@@ -224,19 +225,20 @@ public class Rotation {
 	}
 
 	public boolean removeWorstPort() throws InterruptedException{
+		System.out.println("Now looking at rotation no. " + id);
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
-		System.out.println("Org obj: " + bestObj);
+//		System.out.println("Org obj: " + bestObj);
 
 		Edge worstDwellEdge = null;
 		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
 			Edge e = rotationGraph.getEdges().get(i);
-			if(e.isDwell()){
+			if(e.isDwell() && isRelevantToRemove(e)){
 				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, this);
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
-				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
+//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
 				if(obj > bestObj){
 					bestObj = obj;
 					worstDwellEdge = e;
@@ -250,6 +252,32 @@ public class Rotation {
 			rotationGraph.runMcf();
 		}
 		return madeChange;
+	}
+	
+	private boolean isRelevantToRemove(Edge e){
+		Port p = e.getFromNode().getPort();
+		if(!e.isDwell()){
+			return false;
+		}
+		int portCalls = 0;
+		for(Node n : rotationNodes){
+			if(n.isDeparture()){
+				if(n.getPort().equals(p)){
+					portCalls++;
+				}
+			}
+		}
+		if(portCalls > 1){
+			return true;
+		}
+		int unload = e.getLoad() - e.getPrevEdge().getLoad();
+		int load = e.getNextEdge().getLoad() - e.getLoad();
+		int activity = unload + load;
+		//TODO: Parameter - port can be relevant to remove if the sum of unloaded and loaded containers is less than 25 % of the ships capacity.
+		if(activity < 0.25 * vesselClass.getCapacity()){
+			return true;
+		}
+		return false;
 	}
 	
 	public void implementRemoveWorstPort(Edge bestDwellEdge){
@@ -270,7 +298,7 @@ public class Rotation {
 
 	private boolean enoughVessels() {
 		int lbNoVessels = calculateMinNoVessels();
-		System.out.println("lb: " + lbNoVessels + " available: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()));
+//		System.out.println("lb: " + lbNoVessels + " available: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()));
 		if(lbNoVessels < mainGraph.getNoVesselsAvailable(vesselClass.getId())){
 			return true;
 		}
@@ -281,7 +309,7 @@ public class Rotation {
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
 		int ubNoVessels = calculateMaxNoVessels();
-		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
+//		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
 		if(lbNoVessels > ubNoVessels){
 			this.speed = vesselClass.getMinSpeed();
 			setNoOfVessels(lbNoVessels);
@@ -598,4 +626,10 @@ public class Rotation {
 		distance = 0;
 		setInactive();
 	}
+
+	public void serviceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, 
+			int bestNoInRotation, int bestObj) {
+		rotationGraph.serviceOmissionDemand(bestDemands, bestRotation, bestNoInRotation, bestObj);
+	}
+	
 }

@@ -46,6 +46,7 @@ public class MulticommodityFlowThreads {
 			bellmanFord = new BellmanFord(inputGraph, n);
 			bellmanFords.add(bellmanFord);
 		}
+		setBFsActive();
 	}
 
 	public void reset(){
@@ -148,12 +149,13 @@ public class MulticommodityFlowThreads {
 			saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 			//			saveAllEdgesSol("AllEdgesSol.csv");
 		}
-			System.out.println("RunningTime " + (endTime-startTime));
 		if(!graph.isSubGraph()){
+			System.out.println("RunningTime " + (endTime-startTime));
 			System.out.println("Exiting while loop after iteration " + iteration);
 		}
 	}
 
+	//TODO: ALWAYS runs threaded BF!
 	private void runBF(boolean threads, boolean rep){
 		threads = true;
 		if(threads){
@@ -525,6 +527,30 @@ public class MulticommodityFlowThreads {
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void setBFActive(int fromPortId) {
+		for(BellmanFord bf : bellmanFords){
+			if(bf.getCentroidNode().getPortId() == fromPortId){
+				bf.setActive();
+			}
+		}
+	}
+	
+	public void setBFsActive(){
+		boolean[] activeCentroids = new boolean[Data.getPortsMap().size()];
+		for(Demand d : graph.getDemands()){
+			int portId = d.getOrigin().getPortId();
+			activeCentroids[portId] = true;
+		}
+		for(BellmanFord bf : bellmanFords){
+			int portId = bf.getCentroidNode().getPortId();
+			if(activeCentroids[portId]){
+				bf.setActive();
+			} else {
+				bf.setInactive();
+			}
 		}
 	}
 }

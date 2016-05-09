@@ -866,15 +866,17 @@ public class RunModel {
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).findRotationFlow();
+//		rotations.get(0).createRotationGraph();
+//		rotations.get(0).findRotationFlow();
 		
 		for(Rotation r : rotations){
 			r.createRotationGraph();
 		}
-		for(int i = 0; i<1; i++){
-			graph.runMcf();
-			for(Rotation r : rotations){
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i < 1; i++){
+			for(int j = 0; j < 10; j++){
+//			for(Rotation r : rotations){
+				Rotation r = rotations.get(j);
 				r.removeWorstPort();
 			}
 		}
@@ -939,7 +941,10 @@ public class RunModel {
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		
+		long endTime = System.currentTimeMillis();
+		
 		System.out.println("Multicommodity run.");
+		System.out.println("RunningTime " + (endTime-startTime));
 //		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 //		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 //		graph.getMcf().saveTransferSol("TransferSol.csv");

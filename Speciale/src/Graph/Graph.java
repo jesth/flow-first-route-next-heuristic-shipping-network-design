@@ -138,6 +138,14 @@ public class Graph {
 		}
 		return demands;
 	}
+	
+	public void addDemand(Demand d){
+		int fromPortId = d.getOrigin().getPortId();
+		int toPortId = d.getDestination().getPortId();
+		demandsMatrix[fromPortId][toPortId] = d;
+		demandsList.add(d);
+		mcf.setBFActive(fromPortId);
+	}
 
 	private void createCentroids(){
 		for(Port p : ports){
@@ -186,7 +194,7 @@ public class Graph {
 			}
 		}
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass(), rotation.getId());
-		System.out.println("Creating feeder edges for " + newRotation.getId());
+		//		System.out.println("Creating feeder edges for " + newRotation.getId());
 		createFeederEdges(rotation, newRotation);
 		return newRotation;
 	}
@@ -931,15 +939,71 @@ public class Graph {
 		}
 	}
 
+	/*
+	private void addUnderservicedPort(){
+		int[] unservicedDemand = new int[Data.getPortsMap().size()];
+		for(Demand d : demandsList){
+			int portId1 = d.getOrigin().getPortId();
+			int portId2 = d.getDestination().getPortId();
+			int omission = d.getOmissionFFEs();
+			unservicedDemand[portId1] += omission;
+			unservicedDemand[portId2] += omission;
+		}
+		int bestPortId = -1;
+		int bestFFE = -1;
+		for(int i = 0; i < Data.getPortsMap().size(); i++){
+			int FFE = unservicedDemand[i];
+			if(FFE > bestFFE){
+				bestFFE = FFE;
+				bestPortId = i;
+			}
+		}
+		if(bestPortId == -1){
+			return;
+		}
+		ArrayList<Demand> bestDemands = new ArrayList<Demand>();
+		for(Demand d : demandsList){
+			if(d.getOrigin().getPortId() == bestPortId || d.getDestination().getPortId() == bestPortId){
+				bestDemands.add(d);
+			}
+		}
+		int bestNoInRotation = -1;
+		int bestObj = -1;
+		Rotation bestRotation;
+		for(Rotation r : result.getRotations()){
+			serviceOmissionDemand(bestDemands, bestRotation, bestNoInRotation, bestObj);
+		}
+		implementServiceOmissionDemand(bestDemands, bestRotation, bestNoInRotation);
+	}
+	*/
+
 	public Port[] getPorts() {
 		return ports;
 	}
-	
+
 	/**
 	 * @return the noVesselsAvailable
 	 */
 	public int getNoVesselsAvailable(int vesselId) {
 		return noVesselsAvailable[vesselId];
+	}
+	
+
+	public void serviceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, 
+			int bestNoInRotation, int bestObj) {
+		ArrayList<Demand> newDemands = new ArrayList<Demand>();
+		for(Demand d : bestDemands){
+			Port org = getPort(d.getOrigin().getPortId());
+			Port dest = getPort(d.getDestination().getPortId());
+			int omission = d.getOmissionFFEs();
+			Demand newD = new Demand(d, org, dest, omission);
+			newDemands.add(newD);
+			addDemand(newD);
+		}
+	}
+	
+	public void implementServiceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, int bestNoInRotation){
+		
 	}
 
 }

@@ -17,12 +17,14 @@ public class BellmanFord implements Runnable {
 	private ArrayList<Node> changedRepNodes = new ArrayList<Node>();
 	private Node centroidNode;
 	private boolean rep;
+	private boolean active;
 	private Graph graph;
 
 	/** Initializes all nodes to distance Integer.MAX_VALUE and predecessor to null. Exception: Centroids.
 	 * @param graph
 	 */
 	public BellmanFord(Graph inputGraph, Node centroidNode){
+		active = false;
 		graph = inputGraph;
 		this.centroidNode = centroidNode;
 		reset();
@@ -46,8 +48,23 @@ public class BellmanFord implements Runnable {
 		centroidNode.setLabelsRep(centroidNode.getPortId(), 0, null);
 		centroidNode.setUnprocessedRep(this, centroidNode.getPortId());
 	}
+	
+	public void setActive(){
+		active = true;
+	}
+	
+	public void setInactive() {
+		active = false;
+	}
+	
+	public Node getCentroidNode(){
+		return centroidNode;
+	}
 
 	public void run(){
+		if(!active){
+			return;
+		}
 		if(!rep){
 			runMain();
 		} else {
@@ -373,4 +390,6 @@ public class BellmanFord implements Runnable {
 			}
 		}
 	}
+
+
 }
