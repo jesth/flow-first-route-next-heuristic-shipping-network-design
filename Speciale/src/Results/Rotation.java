@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.omg.CORBA.SystemException;
 
 import Data.Data;
+import Data.Demand;
 import Data.DistanceElement;
 import Data.Port;
 import Data.VesselClass;

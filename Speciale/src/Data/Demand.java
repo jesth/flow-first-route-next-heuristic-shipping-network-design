@@ -85,6 +85,16 @@ public class Demand {
 	public int getDemand() {
 		return demand;
 	}
+	
+	public int getOmissionFFEs(){
+		int omission = 0;
+		for(Route r : routes){
+			if(r.isOmission()){
+				omission += r.getFFE();
+			}
+		}
+		return omission;
+	}
 
 	/**
 	 * @return the rate
