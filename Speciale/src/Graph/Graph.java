@@ -930,12 +930,11 @@ public class Graph {
 		Edge newFromFeederPort = createRotationEdge(r, newFeederDepNode, newOrgArrNode, 0, r.getVesselClass().getCapacity(), 0, newFromFeederPortDist);
 		Edge newOrgSail = createRotationEdge(r, newOrgDepNode, orgNextArrPortNode, 0, r.getVesselClass().getCapacity(), 0, newOrgSailDist);
 		Edge newFeederDwell = createRotationEdge(r, newFeederArrNode, newFeederDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
+		Edge newOrgDwell = createRotationEdge(r, newOrgArrNode, newOrgDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
 		ArrayList<Edge> transhipmentFeederPort = createTransshipmentEdges(newFeederDwell);
 		insertEdges.addAll(transhipmentFeederPort);
 		ArrayList<Edge> loadUnloadFeederPort = createLoadUnloadEdges(newFeederDwell);
 		insertEdges.addAll(loadUnloadFeederPort);
-
-		Edge newOrgDwell = createRotationEdge(r, newOrgArrNode, newOrgDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
 		ArrayList<Edge> transhipmentNewOrgPort = createTransshipmentEdges(newOrgDwell);
 		insertEdges.addAll(transhipmentNewOrgPort);
 		ArrayList<Edge> loadUnloadNewOrgPort = createLoadUnloadEdges(newOrgDwell);
