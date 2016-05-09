@@ -62,13 +62,13 @@ public class Rotation {
 	public void findRotationFlow() throws InterruptedException{
 		System.out.println("Checking rotation no. " + id);
 		rotationGraph.runMcf();
-//		removeWorstPort();
-//		rotationGraph.testAddPort();
-//		rotationGraph.removeWorstPort();
+		//		removeWorstPort();
+		//		rotationGraph.testAddPort();
+		//		rotationGraph.removeWorstPort();
 		insertBestPort();
-//		rotationGraph.findFlow();
-//		mainGraph.runMcf();
-//		mainGraph.getMcf().saveODSol("ODSol.csv", mainGraph.getDemands());
+		//		rotationGraph.findFlow();
+		//		mainGraph.runMcf();
+		//		mainGraph.getMcf().saveODSol("ODSol.csv", mainGraph.getDemands());
 	}
 
 	public boolean insertBestPort() throws InterruptedException{
@@ -77,21 +77,21 @@ public class Rotation {
 		rotationGraph.runMcf();
 		rotationGraph.getMcf().saveODSol("ODSol_before.csv", rotationGraph.getDemands());
 		rotationGraph.getMcf().saveRotationSol("RotationSol_before.csv", rotationGraph.getResult().getRotations());
-//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
+		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
 		int bestObj = rotationGraph.getResult().getObjective();
-//		int bestObj = -Integer.MAX_VALUE;
+		//		int bestObj = -Integer.MAX_VALUE;
 		System.out.println("Obj before insrting port: " + rotationGraph.getResult().getObjective());
 		System.out.println("\n\nOrg obj: " + bestObj);
-//		Node node = rotationGraph.getNodes().get(0);
-//		for(int i = 0; i<15; i++){
-//			node = rotationGraph.getNodes().get(i);
-//			if(node.isArrival()){
-//				System.out.println(node.getPort().getUNLocode());
-//			}else{
-//				node = node.getNextNode();
-//			}
-//			
-//		}
+		//		Node node = rotationGraph.getNodes().get(0);
+		//		for(int i = 0; i<15; i++){
+		//			node = rotationGraph.getNodes().get(i);
+		//			if(node.isArrival()){
+		//				System.out.println(node.getPort().getUNLocode());
+		//			}else{
+		//				node = node.getNextNode();
+		//			}
+		//			
+		//		}
 		Port bestOrgPort = null;
 		Port bestFeederPort = null;
 		Node bestOrgDepNode = null;
@@ -103,48 +103,42 @@ public class Rotation {
 			Edge e = rotationGraph.getEdges().get(i);
 			Edge toFeeder = null;
 			Edge nextSail = null;
-//			if(e.isFeeder()){
-//				if(e.getToPortUNLo().equals("NLRTM") && e.getFromPortUNLo().equals("EGPSD")){
-//					int edgeCost = e.getCost();
-//					throw new RuntimeException("EGPSD -> NLRTM : " + edgeCost);
-//				}
-//			}
+			//			if(e.isFeeder()){
+			//				if(e.getToPortUNLo().equals("NLRTM") && e.getFromPortUNLo().equals("EGPSD")){
+			//					int edgeCost = e.getCost();
+			//					throw new RuntimeException("EGPSD -> NLRTM : " + edgeCost);
+			//				}
+			//			}
 			if(e.isFeeder() && e.getFromNode().isFromCentroid()){
 				Port orgPort = e.getToNode().getPort();
 				System.out.println("Feeder from port: " + e.getFromPortUNLo() + " to rotationPort: " + e.getToPortUNLo());
 				Port feederPort = e.getFromNode().getPort();
-//				System.out.println("Trying to insert port: " + feederPort.getUNLocode());
+				//				System.out.println("Trying to insert port: " + feederPort.getUNLocode());
 				if(feederPort.getDraft() < vesselClass.getDraft()){
-//					System.out.println("Draft at feederPort is too low");
+					//					System.out.println("Draft at feederPort is too low");
 					continue;
 				}
 				Node orgDepNode = e.getToNode();
 				toFeeder = getToFeeder(orgDepNode, feederPort);
-				
+
 				nextSail = orgDepNode.getNextEdge();
-//				if(nextSail == null){
-//					continue;
-//				}
+				//				if(nextSail == null){
+				//					continue;
+				//				}
 				Node orgNextPortArrNode = nextSail.getToNode();
-				nextSail.setInactive();
-//				if(toFeeder != null){
-//					toFeeder.setInactive();
-//				}
-//				e.setInactive();
-				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(subRotation, orgPort, feederPort);
+				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(subRotation, orgPort, feederPort, nextSail);
 				ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdges(subRotation, insertNodes, orgDepNode, orgNextPortArrNode);
 				if(subRotation.enoughVessels(orgNoVessels)){
 					subRotation.calcOptimalSpeed();
 				} else {
-//					System.out.println("Not enough ships!!!");
-					rotationGraph.undoTryInsertMakeNodes(insertNodes);
-					nextSail.setActive();
+					//					System.out.println("Not enough ships!!!");
+					rotationGraph.undoTryInsertMakeNodes(insertNodes, nextSail);
 					continue;
 				}
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
 				System.out.println("Try insert obj: " + obj);
-//				throw new RuntimeException("fail");
+				//				throw new RuntimeException("fail");
 				if(obj > bestObj){
 					bestObj = obj;
 					System.out.println("IMPROVEMENT");
@@ -157,16 +151,15 @@ public class Rotation {
 					worstToFeeder = toFeeder;
 					worstNextSail = nextSail;
 				}
-				rotationGraph.undoTryInsertMakeNodes(insertNodes);
+				rotationGraph.undoTryInsertMakeNodes(insertNodes, nextSail);
 				subRotation.calcOptimalSpeed();
-				nextSail.setActive();
-//				if(toFeeder != null){
-//					toFeeder.setActive();
-//				}
-//				e.setActive();
+				//				if(toFeeder != null){
+				//					toFeeder.setActive();
+				//				}
+				//				e.setActive();
 			}
 		}
-		
+
 		if(madeChange){
 			int noInRot = worstNextSail.getNoInRotation();
 			Edge mainGraphNextSail = null;
@@ -177,36 +170,35 @@ public class Rotation {
 			}			
 			incrementNoInRotation(noInRot);
 			incrementNoInRotation(noInRot);
-//			System.out.println("bestROTATIONOrgPort: " + bestOrgPort.getUNLocode() + " bestROTATIONFeederPort: " + bestFeederPort.getUNLocode());
-//			ArrayList<Node> newRotNodes = implementInsertPortNodes(rotationGraph, bestOrgPort, bestFeederPort);
-//			implementInsertPortEdges(rotationGraph, newRotNodes, bestOrgDepNode, bestOrgNextPortArrNode, prevNoInRot);
+			//			System.out.println("bestROTATIONOrgPort: " + bestOrgPort.getUNLocode() + " bestROTATIONFeederPort: " + bestFeederPort.getUNLocode());
+			//			ArrayList<Node> newRotNodes = implementInsertPortNodes(rotationGraph, bestOrgPort, bestFeederPort);
+			//			implementInsertPortEdges(rotationGraph, newRotNodes, bestOrgDepNode, bestOrgNextPortArrNode, prevNoInRot);
 
-//			for(Node n : rotationNodes){
-//				if(n.isArrival()){
-//					System.out.println(n.getPort().getUNLocode());
-//				}
-//			}
-//			
+			//			for(Node n : rotationNodes){
+			//				if(n.isArrival()){
+			//					System.out.println(n.getPort().getUNLocode());
+			//				}
+			//			}
+			//			
 			bestOrgPort = mainGraph.getPort(bestOrgPort.getPortId());
 			bestFeederPort = mainGraph.getPort(bestFeederPort.getPortId());
 			System.out.println("bestMAINOrgPort: " + bestOrgPort.getUNLocode() + " bestMAINFeederPort: " + bestFeederPort.getUNLocode());
 			bestOrgDepNode = mainGraphNextSail.getFromNode();
 			bestOrgNextPortArrNode = mainGraphNextSail.getToNode();
-			ArrayList<Node> newRotNodes = implementInsertPortNodes(mainGraph, bestOrgPort, bestFeederPort);
+			ArrayList<Node> newRotNodes = implementInsertPortNodes(mainGraph, bestOrgPort, bestFeederPort, worstNextSail);
 			implementInsertPortEdges(mainGraph, newRotNodes, bestOrgDepNode, bestOrgNextPortArrNode, noInRot);
-			
-//			rotationGraph.deleteEdge(worstFromFeeder);
-//			if(worstToFeeder != null){
-//				rotationGraph.deleteEdge(worstToFeeder);	
-//			}
-//			rotationGraph.deleteEdge(worstNextSail);
 
-			mainGraph.deleteEdge(mainGraphNextSail);
-//			for(Node n : rotationNodes){
-//				if(n.isArrival()){
-//					System.out.println(n.getPort().getUNLocode());
-//				}
-//			}
+			//			rotationGraph.deleteEdge(worstFromFeeder);
+			//			if(worstToFeeder != null){
+			//				rotationGraph.deleteEdge(worstToFeeder);	
+			//			}
+			//			rotationGraph.deleteEdge(worstNextSail);
+
+			//			for(Node n : rotationNodes){
+			//				if(n.isArrival()){
+			//					System.out.println(n.getPort().getUNLocode());
+			//				}
+			//			}
 			System.out.println("MADE CHANGE");
 			this.calcOptimalSpeed();
 		}
@@ -223,9 +215,9 @@ public class Rotation {
 				toFeeder = outEdge;
 				break;
 			}
-//			if(outEdge.isFeeder()){
-//				System.out.println("feeder edge outEdge going from: " + outEdge.getFromPortUNLo() + " to feeder port: " + outEdge.getToPortUNLo() );
-//			}	
+			//			if(outEdge.isFeeder()){
+			//				System.out.println("feeder edge outEdge going from: " + outEdge.getFromPortUNLo() + " to feeder port: " + outEdge.getToPortUNLo() );
+			//			}	
 		}
 
 		return toFeeder;
@@ -253,8 +245,9 @@ public class Rotation {
 
 	}
 
-	private ArrayList<Node> implementInsertPortNodes(Graph graph, Port bestOrgPort, Port bestFeederPort) {
-		ArrayList<Node> newNodes = graph.tryInsertMakeNodes(this, bestOrgPort, bestFeederPort);
+	private ArrayList<Node> implementInsertPortNodes(Graph graph, Port bestOrgPort, Port bestFeederPort, Edge nextSail) {
+		ArrayList<Node> newNodes = graph.tryInsertMakeNodes(this, bestOrgPort, bestFeederPort, nextSail);
+		graph.deleteEdge(nextSail);
 		return newNodes;
 	}
 
@@ -286,7 +279,7 @@ public class Rotation {
 		}
 		return madeChange;
 	}
-	
+
 	public void implementRemoveWorstPort(Edge bestDwellEdge){
 		int prevNoInRot = bestDwellEdge.getPrevEdge().getNoInRotation();
 		Edge bestRealDwell = null;
@@ -311,12 +304,12 @@ public class Rotation {
 		}
 		return false;
 	}
-	
+
 	public void calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
 		int ubNoVessels = calculateMaxNoVessels();
-//		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
+		//		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
 		if(lbNoVessels > ubNoVessels){
 			this.speed = vesselClass.getMinSpeed();
 			setNoOfVessels(lbNoVessels);
