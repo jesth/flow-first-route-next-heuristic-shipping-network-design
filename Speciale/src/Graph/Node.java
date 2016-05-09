@@ -342,7 +342,7 @@ public class Node {
 				}
 			}
 			if(counter > 1 || counter < 1){
-				System.out.println("Outgoing active sailedge counter for departure node = " + counter );
+				System.out.println("Outgoing active sailedge counter for " + port.getUNLocode() + " departure node = " + counter );
 			}
 			if(counter > 0){
 				return nextEdge;

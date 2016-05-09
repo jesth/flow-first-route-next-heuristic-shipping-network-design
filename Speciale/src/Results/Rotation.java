@@ -66,22 +66,31 @@ public class Rotation {
 //		rotationGraph.removeWorstPort();
 		insertBestPort();
 //		rotationGraph.findFlow();
-		rotationGraph.getMcf().saveODSol("ODSol.csv", rotationGraph.getDemands());
+//		mainGraph.runMcf();
+//		mainGraph.getMcf().saveODSol("ODSol.csv", mainGraph.getDemands());
 	}
 
 	public boolean insertBestPort() throws InterruptedException{
 		boolean madeChange = false;
 		int orgNoVessels = noOfVessels;
 		rotationGraph.runMcf();
+		rotationGraph.getMcf().saveODSol("ODSol_before.csv", rotationGraph.getDemands());
+		rotationGraph.getMcf().saveRotationSol("RotationSol_before.csv", rotationGraph.getResult().getRotations());
+//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
 //		int bestObj = rotationGraph.getResult().getObjective();
 		int bestObj = -Integer.MAX_VALUE;
 		System.out.println("Obj before insrting port: " + rotationGraph.getResult().getObjective());
 		System.out.println("\n\nOrg obj: " + bestObj);
-		for(Node n : rotationGraph.getNodes()){
-			if(n.isArrival()){
-				System.out.println(n.getPort().getUNLocode());
-			}
-		}
+//		Node node = rotationGraph.getNodes().get(0);
+//		for(int i = 0; i<15; i++){
+//			node = rotationGraph.getNodes().get(i);
+//			if(node.isArrival()){
+//				System.out.println(node.getPort().getUNLocode());
+//			}else{
+//				node = node.getNextNode();
+//			}
+//			
+//		}
 		Port bestOrgPort = null;
 		Port bestFeederPort = null;
 		Node bestOrgDepNode = null;
@@ -111,7 +120,7 @@ public class Rotation {
 				Node orgDepNode = e.getToNode();
 				toFeeder = getToFeeder(orgDepNode, feederPort);
 				
-				nextSail = e.getToNode().getNextEdge();
+				nextSail = orgDepNode.getNextEdge();
 //				if(nextSail == null){
 //					continue;
 //				}
@@ -122,11 +131,6 @@ public class Rotation {
 				}
 				e.setInactive();
 				ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodes(this, orgPort, feederPort);
-				for(Node n : rotationGraph.getNodes()){
-					if(n.isArrival()){
-						System.out.println(n.getPort().getUNLocode());
-					}
-				}
 				ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdges(this, insertNodes, orgDepNode, orgNextPortArrNode);
 				if(enoughVessels(orgNoVessels)){
 					calcOptimalSpeed();
@@ -137,7 +141,10 @@ public class Rotation {
 				}
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
+				rotationGraph.getMcf().saveODSol("ODSol_after.csv", rotationGraph.getDemands());
+				rotationGraph.getMcf().saveRotationSol("RotationSol_after.csv", rotationGraph.getResult().getRotations());
 				System.out.println("Try insert obj: " + obj);
+//				throw new RuntimeException("fail");
 				if(obj > bestObj){
 					bestObj = obj;
 					System.out.println("IMPROVEMENT");
