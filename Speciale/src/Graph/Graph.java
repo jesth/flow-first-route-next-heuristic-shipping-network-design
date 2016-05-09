@@ -904,7 +904,7 @@ public class Graph {
 		r.calcOptimalSpeed();
 	}
 
-	public ArrayList<Node> tryInsertMakeNodes(Rotation r, Port orgPort, Port feederPort) {
+	public ArrayList<Node> tryInsertMakeNodes(Rotation r, Port orgPort, Port feederPort, Edge nextSailEdge) {
 		ArrayList<Node> insertNodes = new ArrayList<Node>(4);
 		Node newFeederArrNode = createRotationNode(feederPort, r, false);
 		Node newFeederDepNode = createRotationNode(feederPort, r, true);
@@ -914,6 +914,7 @@ public class Graph {
 		insertNodes.add(newFeederDepNode);
 		insertNodes.add(newOrgArrNode);
 		insertNodes.add(newOrgDepNode);
+		nextSailEdge.setInactive();
 		return insertNodes;
 	}
 
@@ -943,15 +944,14 @@ public class Graph {
 		ArrayList<Edge> loadUnloadNewOrgPort = createLoadUnloadEdges(newOrgDwell);
 		insertEdges.addAll(loadUnloadNewOrgPort);
 
-//		r.calcOptimalSpeed();
-
 		return insertEdges;
 	}
 
-	public void undoTryInsertMakeNodes(ArrayList<Node> insertNodes) {
+	public void undoTryInsertMakeNodes(ArrayList<Node> insertNodes, Edge nextSailEdge) {
 		for(int i = insertNodes.size()-1; i >= 0; i--){
 			this.deleteNode(insertNodes.get(i));
 		}
+		nextSailEdge.setActive();
 	}
 
 	public void undoTryInsertMakeEdges(ArrayList<Edge> insertEdges) {
