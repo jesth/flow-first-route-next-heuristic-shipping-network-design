@@ -288,11 +288,13 @@ public class Node {
 					counter++;
 				}
 			}
-//			System.out.println("Ingoing sailedge counter for arrival node = " + counter );
-			if(counter > 1){
-				System.out.println("TOO MANY ACTIVE INGOING EDGES");
+			if(counter > 1 || counter < 1){
+				System.out.println("Ingoing active sailedge counter for arrival node = " + counter );
 			}
-			return prevEdge;
+			if(counter > 0){
+				return prevEdge;	
+			}
+			
 		}
 //		if(ingoingEdges.size() != 1){
 ////			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());
@@ -339,11 +341,12 @@ public class Node {
 					counter++;
 				}
 			}
-//			System.out.println("Outgoing sailedge counter for departure node = " + counter );
-			if(counter > 1){
-				System.out.println("TOO MANY ACTIVE OUTGOING EDGES");
+			if(counter > 1 || counter < 1){
+				System.out.println("Outgoing active sailedge counter for departure node = " + counter );
 			}
-			return nextEdge;
+			if(counter > 0){
+				return nextEdge;
+			}
 		}
 //		if(outgoingEdges.size() != 1){
 //			System.out.println("Removing in port " + port.getUNLocode() + " with ingoing edges size " + ingoingEdges.size());

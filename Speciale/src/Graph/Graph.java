@@ -524,6 +524,25 @@ public class Graph {
 		}
 		i.getRotation().getRotationNodes().remove(i);
 		decrementNodeIds(i.getId());
+		Port nodePort = i.getPort();
+		nodePort.getArrivalNodes().remove(i);
+		nodePort.getDepartureNodes().remove(i);
+		nodes.remove(i);
+	}
+	
+	public void deleteRotNode(Node i){
+//		ArrayList<Edge> ingoingEdges = i.getIngoingEdges();
+//		for(int j = ingoingEdges.size()-1; j >= 0; j--){
+//			Edge e = ingoingEdges.remove(j);
+//			deleteEdge(e);
+//		}
+//		ArrayList<Edge> outgoingEdges = i.getOutgoingEdges();
+//		for(int j = outgoingEdges.size()-1; j >= 0; j--){
+//			Edge e = outgoingEdges.remove(j);
+//			deleteEdge(e);
+//		}
+		i.getRotation().getRotationNodes().remove(i);
+		decrementNodeIds(i.getId());
 		nodes.remove(i);
 	}
 
@@ -914,7 +933,7 @@ public class Graph {
 		ArrayList<Edge> loadUnloadNewOrgPort = createLoadUnloadEdges(newOrgDwell);
 		insertEdges.addAll(loadUnloadNewOrgPort);
 
-		r.calcOptimalSpeed();
+//		r.calcOptimalSpeed();
 
 		return insertEdges;
 	}
