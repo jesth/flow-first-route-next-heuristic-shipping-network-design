@@ -866,8 +866,8 @@ public class RunModel {
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
-//		rotations.get(0).createRotationGraph();
-//		rotations.get(0).findRotationFlow();
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).findRotationFlow();
 		
 		for(Rotation r : rotations){
 			r.createRotationGraph();
