@@ -869,17 +869,20 @@ public class RunModel {
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).findRotationFlow();
 		
-		for(Rotation r : rotations){
-			r.createRotationGraph();
-		}
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).findRotationFlow();
+		
+//		for(Rotation r : rotations){
+//			r.createRotationGraph();
+//		}
 		long startTime = System.currentTimeMillis();
-		for(int i = 0; i < 1; i++){
-			for(int j = 0; j < 10; j++){
+//		for(int i = 0; i < 1; i++){
+//			for(int j = 0; j < 10; j++){
 //			for(Rotation r : rotations){
-				Rotation r = rotations.get(j);
-				r.removeWorstPort();
-			}
-		}
+//				Rotation r = rotations.get(j);
+//				r.removeWorstPort();
+//			}
+//		}
 		
 //		Rotation r0 = rotations.get(0);
 //		Rotation r1 = rotations.get(1);
