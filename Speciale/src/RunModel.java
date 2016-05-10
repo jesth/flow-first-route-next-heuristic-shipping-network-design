@@ -36,14 +36,14 @@ public class RunModel {
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Data.initialize("fleet_WorldSmall.csv");
+		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_WorldSmall.csv");
 		AuxRun.initialize(testGraph, 10);
 		System.out.println("SaveAux is done");
 	}
 	
 	public static void testAux() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_Mediterranean.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -129,7 +129,7 @@ public class RunModel {
 	}
 	
 	public static void testBalticManual() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Baltic.csv");
+		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -187,7 +187,7 @@ public class RunModel {
 	}
 	
 	public static void testBaltic() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Baltic.csv");
+		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -241,7 +241,7 @@ public class RunModel {
 	}
 	
 	public static void testMedManual() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -358,7 +358,7 @@ public class RunModel {
 	}
 	
 	public static void testMedManual2() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -504,7 +504,7 @@ public class RunModel {
 
 	
 	public static void testMed() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -658,7 +658,7 @@ public class RunModel {
 	}
 	
 	public static void testWorldSmall1Auto()throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_WorldSmall.csv");
+		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -731,7 +731,7 @@ public class RunModel {
 
 	
 	public static void testWorldSmall2Auto()throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_WorldSmall.csv");
+		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
@@ -869,11 +869,11 @@ public class RunModel {
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).findRotationFlow();
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).removeWorstPort();
-		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).findRotationFlow();
+//		rotations.get(0).createRotationGraph();
+//		rotations.get(0).removeWorstPort();
+//		
+//		rotations.get(0).createRotationGraph();
+//		rotations.get(0).findRotationFlow();
 		
 		
 //		for(Rotation r : rotations){
@@ -969,7 +969,7 @@ public class RunModel {
 	}
 	
 	public static void testWorldLargeAuto()throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_WorldLarge.csv");
+		Data.initialize("fleet_WorldLarge.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldLarge.csv");
 		initialize(graph);
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
