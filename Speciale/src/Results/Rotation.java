@@ -101,10 +101,11 @@ public class Rotation {
 				if(e.getFromNode().isFromCentroid()){
 					nextSail = e.getToNode().getNextEdge();
 					feederPort = e.getFromNode().getPort();	
-				}
-				if(e.getToNode().isToCentroid()){
+				} else if(e.getToNode().isToCentroid()){
 					nextSail = e.getFromNode().getNextEdge().getNextEdge();
 					feederPort = e.getToNode().getPort();
+				} else {
+					continue;
 				}
 				if(feederPort.getDraft() < vesselClass.getDraft()){
 					continue;
@@ -128,7 +129,7 @@ public class Rotation {
 		}
 
 		if(madeChange){
-			implementInsertPort(rotationGraph, subRotation, bestFeederPort, worstNextSail);
+			subRotation.implementInsertPort(rotationGraph, bestFeederPort, worstNextSail);
 			
 			int noInRot = worstNextSail.getNoInRotation();
 			Edge mainGraphWorstNextSail = null;
@@ -138,7 +139,7 @@ public class Rotation {
 				}
 			}
 			Port mainGraphBestFeederPort = mainGraph.getPort(bestFeederPort.getPortId());
-			implementInsertPort(mainGraph, this, mainGraphBestFeederPort, mainGraphWorstNextSail);
+			this.implementInsertPort(mainGraph, mainGraphBestFeederPort, mainGraphWorstNextSail);
 			
 			System.out.println("MADE CHANGE");
 		}
@@ -204,16 +205,16 @@ public class Rotation {
 //		return toFeeder;
 //	}
 
-	public void implementInsertPort(Graph graph, Rotation rotation, Port port, Edge nextSailEdge){
+	public void implementInsertPort(Graph graph, Port port, Edge nextSailEdge){
 		int noInRot = nextSailEdge.getNoInRotation();
 		
-		rotation.incrementNoInRotation(noInRot);
-		rotation.incrementNoInRotation(noInRot);
+		incrementNoInRotation(noInRot);
+		incrementNoInRotation(noInRot);
 		
 		//			System.out.println("bestROTATIONOrgPort: " + bestOrgPort.getUNLocode() + " bestROTATIONFeederPort: " + bestFeederPort.getUNLocode());
 		ArrayList<Node> newRotNodes = implementInsertPortNodes(graph, port, nextSailEdge);
 		implementInsertPortEdges(graph, newRotNodes, nextSailEdge, noInRot);
-		rotation.calcOptimalSpeed();
+		calcOptimalSpeed();
 	}
 	
 	private void implementInsertPortEdges(Graph graph, ArrayList<Node> newNodes, Edge worstNextSail, int noInRot) {

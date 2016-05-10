@@ -878,6 +878,17 @@ public class RunModel {
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).insertBestPort(1.1);
 		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).removeWorstPort();
+		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).removeWorstPort();
+		
+		graph.runMcf();
+		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).insertBestPort(1.1);
+		
 		
 //		for(Rotation r : rotations){
 //			r.createRotationGraph();
