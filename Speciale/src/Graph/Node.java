@@ -8,6 +8,7 @@ import Results.Rotation;
 
 public class Node {
 	private int id;
+	private boolean active;
 	private Port port;
 	private Rotation rotation;
 	private boolean fromCentroid;
@@ -33,6 +34,7 @@ public class Node {
 	public Node(Port port, Rotation rotation, boolean departure){
 		super();
 		this.id = idCounter.getAndIncrement();
+		this.active = true;
 		this.port = port;
 		if(departure){
 			port.addDepartureNode(this);
@@ -61,6 +63,7 @@ public class Node {
 	public Node(Port port, boolean fromCentroid){
 		super();
 		this.id = idCounter.getAndIncrement();
+		this.active = true;
 		this.port = port;
 		this.rotation = null;
 		this.fromCentroid = fromCentroid;
@@ -84,6 +87,14 @@ public class Node {
 	
 	public static void setNoOfCentroids(int newNoOfCentroids){
 		noOfCentroids = newNoOfCentroids;
+	}
+	
+	public void setInactive(){
+		active = false;
+	}
+	
+	public boolean isActive(){
+		return active;
 	}
 	
 	public boolean isEqualTo(Node i){
@@ -289,7 +300,7 @@ public class Node {
 				}
 			}
 			if(counter > 1 || counter < 1){
-				System.out.println("Ingoing active sailedge counter for arrival node = " + counter );
+				System.out.println("Ingoing active sail edge counter for arrival node = " + counter );
 			}
 			if(counter > 0){
 				return prevEdge;	

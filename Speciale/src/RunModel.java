@@ -11,6 +11,7 @@ import Data.Port;
 import Data.VesselClass;
 import Graph.Edge;
 import Graph.Graph;
+import Graph.Node;
 import Methods.ComputeRotations;
 //import Methods.MulticommodityFlow;
 import Methods.MulticommodityFlowThreads;
@@ -862,18 +863,20 @@ public class RunModel {
 //		ComputeRotations.addPorts();
 		graph.runMcf();
 		
-		
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).findRotationFlow();
 		
-//		rotations.get(0).createRotationGraph();
-//		rotations.get(0).removeWorstPort();
-//		
-//		rotations.get(0).createRotationGraph();
-//		rotations.get(0).findRotationFlow();
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).removeWorstPort();
+		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).removeWorstPort();
+		
+		rotations.get(0).createRotationGraph();
+		rotations.get(0).findRotationFlow();
 		
 		
 //		for(Rotation r : rotations){
