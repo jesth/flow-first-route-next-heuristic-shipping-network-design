@@ -626,4 +626,13 @@ public class Rotation {
 		distance = 0;
 		setInactive();
 	}
+
+	public boolean calls(int portId) {
+		for(Node n : rotationNodes){
+			if(n.getPortId() == portId){
+				return true;
+			}
+		}
+		return false;
+	}
 }

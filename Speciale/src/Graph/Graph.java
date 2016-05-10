@@ -255,6 +255,9 @@ public class Graph {
 			int toPortId = oldToNode.getPortId();
 			Port fromPort =  ports[fromPortId];
 			Port toPort = ports[toPortId];
+			if(!rotation.calls(fromPortId) && !rotation.calls(toPortId)){
+				return null;
+			}
 			Node fromNode = null;
 			Node toNode = null;
 			if(oldFromNode.isFromCentroid()){
