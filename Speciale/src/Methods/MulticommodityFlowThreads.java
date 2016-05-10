@@ -439,13 +439,13 @@ public class MulticommodityFlowThreads {
 		try {
 			File fileOut = new File(fileName);
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
-			out.write("Id;FromNodeId;ToNodeId;PortFrom;PortTo;Cost;Capacity;Load;Omission;Load;Unload;Transshipment;Sail/Dwell;Feeder;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
+			out.write("Id;FromNodeId;ToNodeId;PortFrom;PortTo;Cost;Capacity;Load;TravelTimeRounded;Omission;Load;Unload;Transshipment;Sail/Dwell;Feeder;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
 			out.newLine();
 			for(Edge e : graph.getEdges()){
 				if(e.isActive()){
 					out.write(e.getId() + ";" + e.getFromNode().getId() + ";" + e.getToNode().getId() + ";");
 					out.write(e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";");
-					out.write(e.getCost() + ";" + e.getCapacity() + ";" + e.getLoad() + ";");
+					out.write(e.getCost() + ";" + e.getCapacity() + ";" + e.getLoad() + ";" + (int) e.getTravelTime() + ";");
 					if(e.isOmission()){
 						out.write("1;0;0;0;0;0;;;;");
 					} else if(e.isLoadUnload()){

@@ -140,7 +140,7 @@ public class Graph {
 		}
 		return demands;
 	}
-	
+
 	public void addDemand(Demand d){
 		int fromPortId = d.getOrigin().getPortId();
 		int toPortId = d.getDestination().getPortId();
@@ -248,15 +248,15 @@ public class Graph {
 		}
 	}
 
-	private Edge createFeederEdge(Node oldFromNode, Node oldToNode, Rotation rotation){
+	private void createFeederEdge(Node oldFromNode, Node oldToNode, Rotation rotation){
 		Edge feeder = null;
 		if(!oldFromNode.getPort().equals(oldToNode.getPort())){
 			int fromPortId = oldFromNode.getPortId();
 			int toPortId = oldToNode.getPortId();
 			Port fromPort =  ports[fromPortId];
 			Port toPort = ports[toPortId];
-			if(!rotation.calls(fromPortId) && !rotation.calls(toPortId)){
-				return null;
+			if(!oldFromNode.isActive() || !oldToNode.isActive()){
+				return;
 			}
 			Node fromNode = null;
 			Node toNode = null;
@@ -299,9 +299,29 @@ public class Graph {
 				int cost = computeFeederCost(fromNode, toNode, rotation);
 				feeder = new Edge(fromNode, toNode, cost, Integer.MAX_VALUE, false, true, null, -1, null);
 				edges.add(feeder);
+				if(fromNode.isFromCentroid()){
+					for(Node n : rotation.getRotationNodes()){
+						if(!n.equals(toNode) && n.getPortId() == toNode.getPortId() && n.isDeparture()){
+							feeder = fromNode.getFeeder(n);
+							if(feeder == null){
+								feeder = new Edge(fromNode, n, cost, Integer.MAX_VALUE, false, true, null, -1, null);
+								edges.add(feeder);
+							}
+						}
+					}
+				} else if(toNode.isToCentroid()){
+					for(Node n : rotation.getRotationNodes()){
+						if(!n.equals(fromNode) && n.getPortId() == fromNode.getPortId() && n.isArrival()){
+							feeder = n.getFeeder(toNode);
+							if(feeder == null){
+								feeder = new Edge(n, toNode, cost, Integer.MAX_VALUE, false, true, null, -1, null);
+								edges.add(feeder);
+							}
+						}
+					}
+				}
 			}
 		}
-		return feeder;
 	}
 
 	private int computeFeederCost(Node fromNode, Node toNode, Rotation rotation){
@@ -549,19 +569,20 @@ public class Graph {
 		nodePort.getArrivalNodes().remove(i);
 		nodePort.getDepartureNodes().remove(i);
 		nodes.remove(i);
+		i.setInactive();
 	}
-	
+
 	public void deleteRotNode(Node i){
-//		ArrayList<Edge> ingoingEdges = i.getIngoingEdges();
-//		for(int j = ingoingEdges.size()-1; j >= 0; j--){
-//			Edge e = ingoingEdges.remove(j);
-//			deleteEdge(e);
-//		}
-//		ArrayList<Edge> outgoingEdges = i.getOutgoingEdges();
-//		for(int j = outgoingEdges.size()-1; j >= 0; j--){
-//			Edge e = outgoingEdges.remove(j);
-//			deleteEdge(e);
-//		}
+		//		ArrayList<Edge> ingoingEdges = i.getIngoingEdges();
+		//		for(int j = ingoingEdges.size()-1; j >= 0; j--){
+		//			Edge e = ingoingEdges.remove(j);
+		//			deleteEdge(e);
+		//		}
+		//		ArrayList<Edge> outgoingEdges = i.getOutgoingEdges();
+		//		for(int j = outgoingEdges.size()-1; j >= 0; j--){
+		//			Edge e = outgoingEdges.remove(j);
+		//			deleteEdge(e);
+		//		}
 		i.getRotation().getRotationNodes().remove(i);
 		decrementNodeIds(i.getId());
 		nodes.remove(i);
@@ -875,13 +896,13 @@ public class Graph {
 	//			newSailEdges.get(i).delete();
 	//		}
 	//	}
-//
-//	public void undoTryInsertPort(Edge feederEdge, ArrayList<Edge> newSailEdges){
-//		feederEdge.setActive();
-//		for(int i = newSailEdges.size()-1; i >= 0; i--){
-//			newSailEdges.get(i).delete();
-//		}
-//	}
+	//
+	//	public void undoTryInsertPort(Edge feederEdge, ArrayList<Edge> newSailEdges){
+	//		feederEdge.setActive();
+	//		for(int i = newSailEdges.size()-1; i >= 0; i--){
+	//			newSailEdges.get(i).delete();
+	//		}
+	//	}
 
 	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Rotation r){
 		if(!dwellEdge.isDwell()){
@@ -907,11 +928,11 @@ public class Graph {
 		System.out.println();
 		for(Edge e : r.getRotationEdges()){
 		}
-//		for(Edge e : edges){
-//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
-//				System.out.println(e.simplePrint());
-//			}
-//		}
+		//		for(Edge e : edges){
+		//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
+		//				System.out.println(e.simplePrint());
+		//			}
+		//		}
 		handledEdges.add(0, newEdge);
 		r.calcOptimalSpeed();
 		return handledEdges;
@@ -1017,7 +1038,7 @@ public class Graph {
 		}
 		implementServiceOmissionDemand(bestDemands, bestRotation, bestNoInRotation);
 	}
-	*/
+	 */
 
 	public Port[] getPorts() {
 		return ports;
@@ -1026,14 +1047,14 @@ public class Graph {
 	public int getNoVesselsUsed(int vesselId){
 		return noVesselsUsed[vesselId];
 	}
-	
+
 	/**
 	 * @return the noVesselsAvailable
 	 */
 	public int getNoVesselsAvailable(int vesselId) {
 		return noVesselsAvailable[vesselId];
 	}
-	
+
 
 	public void serviceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, 
 			int bestNoInRotation, int bestObj) {
@@ -1047,9 +1068,9 @@ public class Graph {
 			addDemand(newD);
 		}
 	}
-	
+
 	public void implementServiceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, int bestNoInRotation){
-		
+
 	}
 
 }

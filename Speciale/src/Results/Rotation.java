@@ -118,7 +118,7 @@ public class Rotation {
 					continue;
 				}
 				
-				int obj = insertPortDetour(nextSail, feederPort, noVesselsAvailable);
+				int obj = insertPortObjective(nextSail, feederPort, noVesselsAvailable);
 				System.out.println("Feeder from port: " + e.getFromPortUNLo() + " to rotationPort: " + e.getToPortUNLo() +" yielding Try insert obj: " + obj);
 				if(obj > bestObj){
 					bestObj = obj;
@@ -200,7 +200,7 @@ public class Rotation {
 		return portArray;
 	}
 
-	public int insertPortDetour(Edge sailEdge, Port insertPort, int orgNoVessels) throws InterruptedException{
+	public int insertPortObjective(Edge sailEdge, Port insertPort, int orgNoVessels) throws InterruptedException{
 		Port orgPort = sailEdge.getFromNode().getPort();
 		if(insertPort.getDraft() < vesselClass.getDraft()){
 			throw new RuntimeException("Draft at port trying to insert is too low!");
@@ -316,7 +316,7 @@ public class Rotation {
 	}
 
 	private boolean enoughVessels(int noVessels) {
-		int lbNoVessels = calculateMinNoVessels();
+		int lbNoVessels = calcOptimalSpeed();
 		System.out.println("lb: " + lbNoVessels + " available: " + noVessels);
 		if(lbNoVessels <= noVessels){
 			return true;
@@ -324,17 +324,18 @@ public class Rotation {
 		return false;
 	}
 
-	public void calcOptimalSpeed(){
+	public int calcOptimalSpeed(){
 		int lowestCost = Integer.MAX_VALUE;
 		int lbNoVessels = calculateMinNoVessels();
 		int ubNoVessels = calculateMaxNoVessels();
+		int bestNoVessels = -1;
 		//		System.out.println("noAvailable: " + mainGraph.getNoVesselsAvailable(vesselClass.getId()) + " lb: " + lbNoVessels + " ub: " + ubNoVessels);
 		if(lbNoVessels > ubNoVessels){
 			this.speed = vesselClass.getMinSpeed();
 			setNoOfVessels(lbNoVessels);
 			setSailTimes();
 			setDwellTimes();
-
+			return lbNoVessels;
 		} else {
 			for(int i = lbNoVessels; i <= ubNoVessels; i++){
 				double speed = calculateSpeed(i);
@@ -345,11 +346,13 @@ public class Rotation {
 					lowestCost = cost;
 					this.speed = speed;
 					setNoOfVessels(i);
+					bestNoVessels = i;
 				}
 			}
 			setSailTimes();
 			setDwellTimes();
 		}
+		return bestNoVessels;
 	}
 
 	private void setNoOfVessels(int newNoOfVessels){
@@ -437,6 +440,10 @@ public class Rotation {
 
 	public ArrayList<Edge> getRotationEdges() {
 		return rotationEdges;
+	}
+
+	public Graph getRotationGraph() {
+		return rotationGraph;
 	}
 
 	public int calcCost(){
