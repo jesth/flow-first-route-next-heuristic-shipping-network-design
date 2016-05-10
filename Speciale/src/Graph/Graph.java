@@ -291,7 +291,7 @@ public class Graph {
 					}
 				}
 			}
-			System.out.println();
+//			System.out.println();
 			feeder = fromNode.getFeeder(toNode);
 			if(feeder == null){
 				int cost = computeFeederCost(fromNode, toNode, rotation);
@@ -873,13 +873,13 @@ public class Graph {
 	//			newSailEdges.get(i).delete();
 	//		}
 	//	}
-
-	public void undoTryInsertPort(Edge feederEdge, ArrayList<Edge> newSailEdges){
-		feederEdge.setActive();
-		for(int i = newSailEdges.size()-1; i >= 0; i--){
-			newSailEdges.get(i).delete();
-		}
-	}
+//
+//	public void undoTryInsertPort(Edge feederEdge, ArrayList<Edge> newSailEdges){
+//		feederEdge.setActive();
+//		for(int i = newSailEdges.size()-1; i >= 0; i--){
+//			newSailEdges.get(i).delete();
+//		}
+//	}
 
 	public ArrayList<Edge> tryRemovePort(Edge dwellEdge, Rotation r){
 		if(!dwellEdge.isDwell()){
@@ -1013,6 +1013,10 @@ public class Graph {
 		return ports;
 	}
 
+	public int getNoVesselsUsed(int vesselId){
+		return noVesselsUsed[vesselId];
+	}
+	
 	/**
 	 * @return the noVesselsAvailable
 	 */
