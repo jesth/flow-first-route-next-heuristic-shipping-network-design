@@ -63,10 +63,10 @@ public class Rotation {
 	public void findRotationFlow() throws InterruptedException{
 		System.out.println("Checking rotation no. " + id);
 		rotationGraph.runMcf();
+//		insertBestPort(1.1);
 		//		removeWorstPort();
 		//		rotationGraph.testAddPort();
 		//		rotationGraph.removeWorstPort();
-		insertBestPort(1.1);
 		//		rotationGraph.findFlow();
 		//		mainGraph.runMcf();
 		//		mainGraph.getMcf().saveODSol("ODSol.csv", mainGraph.getDemands());
@@ -150,26 +150,15 @@ public class Rotation {
 	
 	private ArrayList<Port> getInsertionPortArray(Edge nextSail, Port feederPort) {
 		ArrayList<Port> portArray = new ArrayList<Port>();
-		Edge firstEdge = null;
-		for(Edge anySail : rotationGraph.getEdges()){
-			if(anySail.isSail()){
-				firstEdge = anySail;
-				break;
+		for(Node n : rotationNodes){
+			if(n.isDeparture() && n.isActive()){
+				portArray.add(n.getPort());
+				if(n.equals(nextSail.getFromNode())){
+					portArray.add(feederPort);
+					portArray.add(n.getPort());
+				}
 			}
 		}
-		portArray.add(firstEdge.getToNode().getPort());
-		Edge currentEdge = firstEdge.getNextEdge();
-		while(currentEdge != firstEdge){
-			if(currentEdge.isSail()){
-				portArray.add(currentEdge.getToNode().getPort());
-			}
-			if(currentEdge.getToNode().isEqualTo(nextSail.getFromNode())){
-				portArray.add(feederPort);
-				portArray.add(nextSail.getFromNode().getPort());
-			}
-			currentEdge = currentEdge.getNextEdge();
-		}
-		
 		return portArray;
 	}
 

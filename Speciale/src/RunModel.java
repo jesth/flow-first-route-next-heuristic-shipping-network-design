@@ -867,7 +867,7 @@ public class RunModel {
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
 		rotations.get(0).createRotationGraph();
-		rotations.get(0).findRotationFlow();
+		rotations.get(0).insertBestPort(1.1);
 		
 		rotations.get(0).createRotationGraph();
 		rotations.get(0).removeWorstPort();
@@ -876,7 +876,7 @@ public class RunModel {
 		rotations.get(0).removeWorstPort();
 		
 		rotations.get(0).createRotationGraph();
-		rotations.get(0).findRotationFlow();
+		rotations.get(0).insertBestPort(1.1);
 		
 		
 //		for(Rotation r : rotations){
