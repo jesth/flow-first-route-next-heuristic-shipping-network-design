@@ -870,11 +870,15 @@ public class RunModel {
 		rotations.get(0).findRotationFlow();
 		
 		rotations.get(0).createRotationGraph();
+		rotations.get(0).removeWorstPort();
+		
+		rotations.get(0).createRotationGraph();
 		rotations.get(0).findRotationFlow();
 		
-		for(Rotation r : rotations){
-			r.createRotationGraph();
-		}
+		
+//		for(Rotation r : rotations){
+//			r.createRotationGraph();
+//		}
 		long startTime = System.currentTimeMillis();
 //		for(int i = 0; i < 1; i++){
 //			for(int j = 0; j < 10; j++){
@@ -948,8 +952,8 @@ public class RunModel {
 		
 		System.out.println("Multicommodity run.");
 		System.out.println("RunningTime " + (endTime-startTime));
-//		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-//		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 //		graph.getMcf().saveTransferSol("TransferSol.csv");
 		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println();

@@ -255,6 +255,9 @@ public class Graph {
 			int toPortId = oldToNode.getPortId();
 			Port fromPort =  ports[fromPortId];
 			Port toPort = ports[toPortId];
+			if(!rotation.calls(fromPortId) && !rotation.calls(toPortId)){
+				return null;
+			}
 			Node fromNode = null;
 			Node toNode = null;
 			if(oldFromNode.isFromCentroid()){
@@ -291,7 +294,6 @@ public class Graph {
 					}
 				}
 			}
-//			System.out.println();
 			feeder = fromNode.getFeeder(toNode);
 			if(feeder == null){
 				int cost = computeFeederCost(fromNode, toNode, rotation);
@@ -902,6 +904,14 @@ public class Graph {
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}
+		System.out.println();
+		for(Edge e : r.getRotationEdges()){
+		}
+//		for(Edge e : edges){
+//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
+//				System.out.println(e.simplePrint());
+//			}
+//		}
 		handledEdges.add(0, newEdge);
 		r.calcOptimalSpeed();
 		return handledEdges;
