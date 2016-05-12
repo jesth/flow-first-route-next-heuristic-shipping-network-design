@@ -143,15 +143,15 @@ public class Rotation {
 			
 			System.out.println("MADE CHANGE");
 		}
-//		mainGraph.runMcf();
-		mainGraph.getMcf().saveODSol("ODSol_after.csv", mainGraph.getDemands());
-		mainGraph.getMcf().saveRotationSol("RotationSol_after.csv", mainGraph.getResult().getRotations());
+		rotationGraph.runMcf();
+		rotationGraph.getMcf().saveODSol("ODSol_after.csv", rotationGraph.getDemands());
+		rotationGraph.getMcf().saveRotationSol("RotationSol_after.csv", rotationGraph.getResult().getRotations());
 		return madeChange;
 	}
 	
 	private ArrayList<Port> getInsertionPortArray(Edge nextSail, Port feederPort) {
 		ArrayList<Port> portArray = new ArrayList<Port>();
-		for(Node n : rotationNodes){
+		for(Node n : rotationGraph.getNodes()){
 			if(n.isDeparture() && n.isActive()){
 				portArray.add(n.getPort());
 				if(n.equals(nextSail.getFromNode())){
@@ -259,7 +259,7 @@ public class Rotation {
 		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
 			Edge e = rotationGraph.getEdges().get(i);
 			if(e.isDwell()){
-				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, this);
+				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
 				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
@@ -268,7 +268,7 @@ public class Rotation {
 					worstDwellEdge = e;
 					madeChange = true;
 				}
-				rotationGraph.undoTryRemovePort(handledEdges, this);
+				rotationGraph.undoTryRemovePort(handledEdges, subRotation);
 			}
 		}
 		if(madeChange){
@@ -321,7 +321,7 @@ public class Rotation {
 				int bunkerCost = calcSailingBunkerCost(speed, i);
 				int TCRate = i * vesselClass.getTCRate();
 				int cost = bunkerCost + TCRate;
-				if(cost < lowestCost && i <= mainGraph.getNoVesselsAvailable(vesselClass.getId())){
+				if(cost < lowestCost){
 					lowestCost = cost;
 					this.speed = speed;
 					setNoOfVessels(i);

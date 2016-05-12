@@ -866,28 +866,62 @@ public class RunModel {
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).insertBestPort(1.1);
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).removeWorstPort();
-		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).removeWorstPort();
-		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).insertBestPort(1.1);
-		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).removeWorstPort();
-		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).removeWorstPort();
+		rotations.get(2).createRotationGraph();
+		rotations.get(2).insertBestPort(1.1);
 		
 		graph.runMcf();
 		
-		rotations.get(0).createRotationGraph();
-		rotations.get(0).insertBestPort(1.1);
+		rotations.get(2).createRotationGraph();
+		rotations.get(2).removeWorstPort();
+		
+		graph.runMcf();
+		
+		rotations.get(2).createRotationGraph();
+		rotations.get(2).removeWorstPort();
+		
+		graph.runMcf();
+		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).insertBestPort(1.1);
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).insertBestPort(1.1);
+//		
+//
+//		
+//		graph.runMcf();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).removeWorstPort();
+//		
+//		graph.runMcf();
+//		
+//		rotations.get(2).createRotationGraph();
+//		rotations.get(2).insertBestPort(1.1);
+//		
+//		rotations.get(0).createRotationGraph();
+//		rotations.get(0).insertBestPort(1);
+//		
+//		rotations.get(0).createRotationGraph();
+//		rotations.get(0).removeWorstPort();
 		
 		
 //		for(Rotation r : rotations){
