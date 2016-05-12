@@ -147,6 +147,21 @@ public class Graph {
 		demandsMatrix[fromPortId][toPortId] = d;
 		demandsList.add(d);
 		mcf.setBFActive(fromPortId);
+		createOmissionEdge(d);
+	}
+
+	public void removeDemand(Demand d){
+		int fromPortId = d.getOrigin().getPortId();
+		int toPortId = d.getDestination().getPortId();
+		demandsMatrix[fromPortId][toPortId] = null;
+		demandsList.remove(d);
+		Node fromCentroid = getPort(fromPortId).getFromCentroidNode();
+		for(Edge e : fromCentroid.getOutgoingEdges()){
+			if(e.getToNode().getPortId() == toPortId){
+				deleteEdge(e);
+				break;
+			}
+		}
 	}
 
 	private void createCentroids(){
@@ -162,12 +177,26 @@ public class Graph {
 	}
 
 	private void createOmissionEdges(){
-		for(Demand i : getDemands()){
-			Node fromCentroid = i.getOrigin().getFromCentroidNode();
-			Node toCentroid = i.getDestination().getToCentroidNode();
-			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, i.getRate());
+		for(Demand d : getDemands()){
+			Node fromCentroid = d.getOrigin().getFromCentroidNode();
+			Node toCentroid = d.getDestination().getToCentroidNode();
+			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate());
 			edges.add(newOmissionEdge);
 		}
+	}
+
+	private void createOmissionEdge(Demand d){
+		Node fromCentroid = d.getOrigin().getFromCentroidNode();
+		Node toCentroid = d.getDestination().getToCentroidNode();
+		for(Edge e : fromCentroid.getOutgoingEdges()){
+			if(e.isOmission()){
+				if(e.getToNode().equals(toCentroid)){
+					return;
+				}
+			}
+		}
+		Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate());
+		edges.add(newOmissionEdge);
 	}
 
 	public Rotation createRotation(ArrayList<DistanceElement> distances, VesselClass vesselClass){
@@ -785,6 +814,15 @@ public class Graph {
 		return ports[portId];
 	}
 
+	public Port getPort(String UNLocode){
+		for(Port p : ports){
+			if(p.getUNLocode().equals(UNLocode)){
+				return p;
+			}
+		}
+		return null;
+	}
+
 	public Result getResult(){
 		return result;
 	}
@@ -1056,21 +1094,30 @@ public class Graph {
 	}
 
 
-	public void serviceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, 
-			int bestNoInRotation, int bestObj) {
-		ArrayList<Demand> newDemands = new ArrayList<Demand>();
-		for(Demand d : bestDemands){
-			Port org = getPort(d.getOrigin().getPortId());
-			Port dest = getPort(d.getDestination().getPortId());
-			int omission = d.getOmissionFFEs();
-			Demand newD = new Demand(d, org, dest, omission);
-			newDemands.add(newD);
-			addDemand(newD);
+	public void serviceOmissionDemand(Port port) throws InterruptedException {
+		ArrayList<Demand> oldDemands = new ArrayList<Demand>();
+		for(Demand d : demandsList){
+			if(d.getOrigin().equals(port) || d.getDestination().equals(port)){
+				int omission = d.getOmissionFFEs();
+				if(omission > 0){
+					oldDemands.add(d);
+				}
+			}
 		}
-	}
-
-	public void implementServiceOmissionDemand(ArrayList<Demand> bestDemands, Rotation bestRotation, int bestNoInRotation){
-
+		int bestObj = -Integer.MAX_VALUE;
+		Rotation bestRot = null;
+		int bestNoInRot = -1;
+		for(Rotation rot : result.getRotations()){
+			int obj = rot.serviceOmissionDemand(oldDemands, port.getPortId());
+			if(obj > bestObj){
+				bestObj = obj;
+				bestRot = rot;
+			}
+		}
+		if(bestRot != null){
+			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
+			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
+		}
 	}
 
 }

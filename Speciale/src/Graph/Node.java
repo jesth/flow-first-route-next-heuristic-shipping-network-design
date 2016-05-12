@@ -300,7 +300,7 @@ public class Node {
 				}
 			}
 			if(counter > 1 || counter < 1){
-				System.out.println("Ingoing active sail edge counter for arrival node = " + counter );
+//				System.out.println("Ingoing active sail edge counter for arrival node = " + counter );
 			}
 			if(counter > 0){
 				return prevEdge;	
@@ -353,7 +353,7 @@ public class Node {
 				}
 			}
 			if(counter > 1 || counter < 1){
-				System.out.println("Outgoing active sailedge counter for " + port.getUNLocode() + " departure node = " + counter );
+//				System.out.println("Outgoing active sail edge counter for " + port.getUNLocode() + " departure node = " + counter );
 			}
 			if(counter > 0){
 				return nextEdge;

@@ -218,8 +218,8 @@ public class MulticommodityFlowThreads {
 			}
 			int i = (int) (length * Data.getRandomNumber(iteration, counter));
 			Edge e = edges.remove(i);
-//					for(int i = graph.getEdges().size()-1; i>= 0; i--){
-//						Edge e = graph.getEdges().get(i);
+			//					for(int i = graph.getEdges().size()-1; i>= 0; i--){
+			//						Edge e = graph.getEdges().get(i);
 			length--;
 			counter++;
 			if(e.isSail()){
@@ -326,10 +326,34 @@ public class MulticommodityFlowThreads {
 				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}
 		}
+		saveAllEdgesSol("AllEdgesSolTest.csv");
+		saveODSol("ODSolRotation.csv", graph.getDemands());
+		saveDemands("DemandsTest.csv");
 		for(Demand d : graph.getDemands()){
 			d.checkDemand();
 		}
 
+	}
+
+	public void saveDemands(String fileName){
+		ArrayList<Demand> demands = graph.getDemands();
+		File fileOut = new File(fileName);
+		BufferedWriter out;
+		try {
+			out = new BufferedWriter(new FileWriter(fileOut));
+
+			out.write("ODId;ODFrom;ODTo;#FFE"); 
+			out.newLine();
+			for(Demand d : demands){
+				out.write(d.getId() + ";" + d.getOrigin().getUNLocode() + ";" + 
+						d.getDestination().getUNLocode() + ";" + d.getDemand());
+				out.newLine();
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/** Saves the routes of all demand pairs in csv-format for easy handling in Excel.
@@ -538,7 +562,7 @@ public class MulticommodityFlowThreads {
 			}
 		}
 	}
-	
+
 	public void setBFsActive(){
 		boolean[] activeCentroids = new boolean[Data.getPortsMap().size()];
 		for(Demand d : graph.getDemands()){

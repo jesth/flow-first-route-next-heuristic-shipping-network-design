@@ -21,28 +21,28 @@ import RotationFlow.RotationGraph;
 
 public class RunModel {
 	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-//		Thread.sleep(15000);
-//		testBaltic();
-//		testBaltic();
-//		testAutomatic();
-//		testBalticManual();
-//		testMedManual();
-//		testMed();
-//		saveAux();
-//		testAux();
+		//		Thread.sleep(15000);
+		//		testBaltic();
+		//		testBaltic();
+		//		testAutomatic();
+		//		testBalticManual();
+		//		testMedManual();
+		//		testMed();
+		//		saveAux();
+		//		testAux();
 		testWorldSmall3Auto();
-//		testMedManual2();
-//		testWorldLargeAuto();
-		
+		//		testMedManual2();
+		//		testWorldLargeAuto();
+
 	}
-	
+
 	public static void saveAux() throws FileNotFoundException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_WorldSmall.csv");
 		AuxRun.initialize(testGraph, 10);
 		System.out.println("SaveAux is done");
 	}
-	
+
 	public static void testAux() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_Mediterranean.csv");
@@ -56,42 +56,42 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(3, sortedEdges, feeder450);
-		
-//		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
-//		for(Port p : r.getPorts()){
-//			rotationPorts.add(p.getName());
-//		}
-//		RuneVisualization.makeVisualization(rotationPorts, "beforeOptimization");
+
+		//		ArrayList<String> rotationPorts = new ArrayList<String>(r.getPorts().size());
+		//		for(Port p : r.getPorts()){
+		//			rotationPorts.add(p.getName());
+		//		}
+		//		RuneVisualization.makeVisualization(rotationPorts, "beforeOptimization");
 		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
-		*/
-//		ComputeRotations.addPorts();
+		 */
+		//		ComputeRotations.addPorts();
 		graph.getMcf().run();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
-//		ComputeRotations.removePorts();
+		//		ComputeRotations.removePorts();
+		//		MulticommodityFlow.run();
+		//		ComputeRotations.removePorts();
 		graph.getMcf().run();	
-//		ComputeRotations.addPorts();
-		
-//		rotationPorts = new ArrayList<String>(r.getPorts().size());
-//		for(Port p : r.getPorts()){
-//			rotationPorts.add(p.getName());
-//		}
-//		RuneVisualization.makeVisualization(rotationPorts, "afterOptimization");
-		
+		//		ComputeRotations.addPorts();
+
+		//		rotationPorts = new ArrayList<String>(r.getPorts().size());
+		//		for(Port p : r.getPorts()){
+		//			rotationPorts.add(p.getName());
+		//		}
+		//		RuneVisualization.makeVisualization(rotationPorts, "afterOptimization");
+
 		graph.getMcf().run();
-		
+
 		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
+
 		graph.saveOPLData("OPLData.dat");
 	}
-	
+
 	/*
 	public static void testAutomatic() throws FileNotFoundException{
 		Graph testGraph = new Graph("Demand_Mediterranean.csv", "fleet_Mediterranean.csv");
@@ -120,15 +120,15 @@ public class RunModel {
 		System.out.println(r1);
 		System.out.println(r2);
 	}
-	*/
-	
+	 */
+
 	public static void initialize(Graph graph) throws FileNotFoundException{
 		ComputeRotations.intialize(graph);
-//		MulticommodityFlow.initialize(graph);
-//		MulticommodityFlowThreads.initialize(graph);
+		//		MulticommodityFlow.initialize(graph);
+		//		MulticommodityFlowThreads.initialize(graph);
 		RotationGraph.initialize(graph);
 	}
-	
+
 	public static void testBalticManual() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Baltic.csv");
@@ -145,7 +145,7 @@ public class RunModel {
 		distances.add(leg4);
 		distances.add(leg5);
 		Rotation r = testGraph.createRotation(distances, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
 		DistanceElement leg10 = Data.getBestDistanceElement("DEBRV", "DKAAR", vesselClass);
@@ -165,16 +165,16 @@ public class RunModel {
 		distances2.add(leg16);
 		distances2.add(leg17);
 		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		
-//		vesselClass = Data.getVesselClasses().get(0);
-//		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
-//		DistanceElement leg20 = Data.getDistanceElement("DEBRV", "DKAAR", vesselClass);
-//		DistanceElement leg21 = Data.getDistanceElement("DKAAR", "DEBRV", vesselClass);
-//		distances3.add(leg20);
-//		distances3.add(leg21);
-//		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
-		
-//		Result.addRotation(r3);
+
+		//		vesselClass = Data.getVesselClasses().get(0);
+		//		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
+		//		DistanceElement leg20 = Data.getDistanceElement("DEBRV", "DKAAR", vesselClass);
+		//		DistanceElement leg21 = Data.getDistanceElement("DKAAR", "DEBRV", vesselClass);
+		//		distances3.add(leg20);
+		//		distances3.add(leg21);
+		//		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
+
+		//		Result.addRotation(r3);
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -183,10 +183,10 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
-		
+
 		testGraph.saveOPLData("OPLData.dat");
 	}
-	
+
 	public static void testBaltic() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Baltic.csv");
@@ -198,7 +198,7 @@ public class RunModel {
 		DistanceElement leg4 = Data.getBestDistanceElement("RUKGD", "PLGDY", vesselClass);
 		DistanceElement leg5 = Data.getBestDistanceElement("PLGDY", "DEBRV", vesselClass);
 		DistanceElement leg6 = Data.getBestDistanceElement("DEBRV", "RULED", vesselClass);
-		
+
 		distances.add(leg1);
 		distances.add(leg2);
 		distances.add(leg3);
@@ -206,7 +206,7 @@ public class RunModel {
 		distances.add(leg5);
 		distances.add(leg6);
 		Rotation r = testGraph.createRotation(distances, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
 		DistanceElement leg10 = Data.getBestDistanceElement("RULED", "DEBRV", vesselClass);
@@ -220,7 +220,7 @@ public class RunModel {
 		distances2.add(leg13);
 		distances2.add(leg14);
 		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
 		DistanceElement leg20 = Data.getBestDistanceElement("DEBRV", "DKAAR", vesselClass);
@@ -228,7 +228,7 @@ public class RunModel {
 		distances3.add(leg20);
 		distances3.add(leg21);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
-		
+
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -237,10 +237,10 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
-		
+
 		testGraph.saveOPLData("OPLData.dat");
 	}
-	
+
 	public static void testMedManual() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
@@ -259,7 +259,7 @@ public class RunModel {
 		distances.add(leg6);
 		distances.add(leg7);
 		Rotation r = testGraph.createRotation(distances, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
 		DistanceElement leg10 = Data.getBestDistanceElement("EGPSD", "ILASH", vesselClass);
@@ -274,7 +274,7 @@ public class RunModel {
 		DistanceElement leg58 = Data.getBestDistanceElement("GRSKG", "TRAMB", vesselClass);
 		DistanceElement leg59 = Data.getBestDistanceElement("TRAMB", "TRMER", vesselClass);
 		DistanceElement leg13 = Data.getBestDistanceElement("TRMER", "ILHFA", vesselClass);
-//		DistanceElement leg14 = Data.getDistanceElement("SYLTK", "ILHFA", vesselClass);
+		//		DistanceElement leg14 = Data.getDistanceElement("SYLTK", "ILHFA", vesselClass);
 		DistanceElement leg15 = Data.getBestDistanceElement("ILHFA", "EGPSD", vesselClass);
 		distances2.add(leg10);
 		distances2.add(leg11);
@@ -288,10 +288,10 @@ public class RunModel {
 		distances2.add(leg58);
 		distances2.add(leg59);
 		distances2.add(leg13);
-//		distances2.add(leg14);
+		//		distances2.add(leg14);
 		distances2.add(leg15);
 		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
 		DistanceElement leg20 = Data.getBestDistanceElement("TRAMB", "GEPTI", vesselClass);
@@ -307,7 +307,7 @@ public class RunModel {
 		distances3.add(leg24);
 		distances3.add(leg25);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
 		DistanceElement leg30 = Data.getBestDistanceElement("ESALG", "MACAS", vesselClass);
@@ -323,9 +323,9 @@ public class RunModel {
 		distances4.add(leg35);
 		distances4.add(leg36);
 		Rotation r4 = testGraph.createRotation(distances4, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
-				ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
+		ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
 		DistanceElement leg40 = Data.getBestDistanceElement("MAPTM", "MAAGA", vesselClass);
 		DistanceElement leg41 = Data.getBestDistanceElement("MAAGA", "PTLEI", vesselClass);
 		DistanceElement leg42 = Data.getBestDistanceElement("PTLEI", "ESALG", vesselClass);
@@ -344,7 +344,7 @@ public class RunModel {
 		distances5.add(leg47);
 		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
 
-		
+
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -354,10 +354,10 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
-		
+
 		testGraph.saveOPLData("OPLData.dat");
 	}
-	
+
 	public static void testMedManual2() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
@@ -380,7 +380,7 @@ public class RunModel {
 		distances.add(leg5);
 		distances.add(leg6);
 		Rotation r = testGraph.createRotation(distances, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
 		DistanceElement leg10 = Data.getBestDistanceElement("ESALG", "MAPTM", vesselClass);
@@ -391,7 +391,7 @@ public class RunModel {
 		DistanceElement leg14 = Data.getBestDistanceElement("EGPSD", "EGALY", vesselClass);
 		DistanceElement leg15 = Data.getBestDistanceElement("EGALY", "GRPIR", vesselClass);
 		DistanceElement leg16 = Data.getBestDistanceElement("GRPIR", "ITGIT", vesselClass);
-//		DistanceElement leg17 = Data.getDistanceElement("ITGIT", "ITGOA", vesselClass);
+		//		DistanceElement leg17 = Data.getDistanceElement("ITGIT", "ITGOA", vesselClass);
 		DistanceElement leg18 = Data.getBestDistanceElement("ITGIT", "ESBCN", vesselClass);
 		DistanceElement leg20 = Data.getBestDistanceElement("ESBCN", "ESALG", vesselClass);
 		distances2.add(leg10);
@@ -402,12 +402,12 @@ public class RunModel {
 		distances2.add(leg14);
 		distances2.add(leg15);
 		distances2.add(leg16);
-//		distances2.add(leg17);
+		//		distances2.add(leg17);
 		distances2.add(leg18);
 		distances2.add(leg20);
 		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		
-		
+
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
 		DistanceElement leg30 = Data.getBestDistanceElement("TRAMB", "EGPSD", vesselClass);
@@ -421,7 +421,7 @@ public class RunModel {
 		distances3.add(leg34);
 		distances3.add(leg35);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
 		DistanceElement leg40 = Data.getBestDistanceElement("ESALG", "TNTUN", vesselClass);
@@ -437,9 +437,9 @@ public class RunModel {
 		distances4.add(leg43);
 		distances4.add(leg44);
 		Rotation r4 = testGraph.createRotation(distances4, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
-				ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
+		ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
 		DistanceElement leg50 = Data.getBestDistanceElement("ESALG", "ESAGP", vesselClass);
 		DistanceElement leg51 = Data.getBestDistanceElement("ESAGP", "DZORN", vesselClass);
 		DistanceElement leg53 = Data.getBestDistanceElement("DZORN", "ITGIT", vesselClass);
@@ -457,8 +457,8 @@ public class RunModel {
 		distances5.add(leg57);
 		distances5.add(leg59);
 		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
-		
-		
+
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances6 = new ArrayList<DistanceElement>();
 		DistanceElement leg60 = Data.getBestDistanceElement("TRAMB", "GEPTI", vesselClass);
@@ -474,8 +474,8 @@ public class RunModel {
 		distances6.add(leg64);
 		distances6.add(leg65);
 		Rotation r6 = testGraph.createRotation(distances6, vesselClass);
-		
-		
+
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances7 = new ArrayList<DistanceElement>();
 		DistanceElement leg70 = Data.getBestDistanceElement("ESALG", "ESTAR", vesselClass);
@@ -489,7 +489,7 @@ public class RunModel {
 		distances7.add(leg73);
 		distances7.add(leg74);
 		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
-		
+
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -499,11 +499,11 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
-		
+
 		testGraph.saveOPLData("OPLData.dat");
 	}
 
-	
+
 	public static void testMed() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
@@ -534,7 +534,7 @@ public class RunModel {
 		distances.add(leg11);
 		distances.add(leg12);
 		Rotation r = testGraph.createRotation(distances, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances2 = new ArrayList<DistanceElement>();
 		DistanceElement leg20 = Data.getBestDistanceElement("SYLTK", "ILHFA", vesselClass);
@@ -554,8 +554,8 @@ public class RunModel {
 		distances2.add(leg26);
 		distances2.add(leg27);
 		Rotation r2 = testGraph.createRotation(distances2, vesselClass);
-		
-		
+
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances3 = new ArrayList<DistanceElement>();
 		DistanceElement leg30 = Data.getBestDistanceElement("ESAGP", "DZALG", vesselClass);
@@ -573,7 +573,7 @@ public class RunModel {
 		distances3.add(leg35);
 		distances3.add(leg36);
 		Rotation r3 = testGraph.createRotation(distances3, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances4 = new ArrayList<DistanceElement>();
 		DistanceElement leg40 = Data.getBestDistanceElement("TNTUN", "ITGIT", vesselClass);
@@ -591,7 +591,7 @@ public class RunModel {
 		distances4.add(leg45);
 		distances4.add(leg46);
 		Rotation r4 = testGraph.createRotation(distances4, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances5 = new ArrayList<DistanceElement>();
 		DistanceElement leg50 = Data.getBestDistanceElement("LBBEY", "EGPSD", vesselClass);
@@ -615,7 +615,7 @@ public class RunModel {
 		distances5.add(leg58);
 		distances5.add(leg59);
 		Rotation r5 = testGraph.createRotation(distances5, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances6 = new ArrayList<DistanceElement>();
 		DistanceElement leg60 = Data.getBestDistanceElement("MACAS", "ESALG", vesselClass);
@@ -625,7 +625,7 @@ public class RunModel {
 		distances6.add(leg61);
 		distances6.add(leg62);
 		Rotation r6 = testGraph.createRotation(distances6, vesselClass);
-		
+
 		vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances7 = new ArrayList<DistanceElement>();
 		DistanceElement leg70 = Data.getBestDistanceElement("EGPSD", "ILASH", vesselClass);
@@ -643,8 +643,8 @@ public class RunModel {
 		distances7.add(leg75);
 		distances7.add(leg76);
 		Rotation r7 = testGraph.createRotation(distances7, vesselClass);
-		
-		
+
+
 		long time = System.currentTimeMillis();
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
@@ -654,10 +654,10 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
-		
+
 		testGraph.saveOPLData("OPLData.dat");
 	}
-	
+
 	public static void testWorldSmall1Auto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -669,9 +669,9 @@ public class RunModel {
 		VesselClass panamax2400 = Data.getVesselClasses().get(3);
 		VesselClass postPanamax = Data.getVesselClasses().get(4);
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
-		
+
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
-		
+
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
@@ -679,7 +679,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(6, sortedEdges, postPanamax);
-		
+
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
@@ -698,39 +698,39 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
-		
+
 		System.out.println("Rotations generated.");
-		
-//		ComputeRotations.addPorts();
+
+		//		ComputeRotations.addPorts();
 		graph.runMcf();
-//		ComputeRotations.addPorts();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
+		//		ComputeRotations.addPorts();
+		//		ComputeRotations.removePorts();
+		//		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
 		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
+
 		graph.saveOPLData("OPLData.dat");
-		
+
 	}
 
-	
+
 	public static void testWorldSmall2Auto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -742,16 +742,16 @@ public class RunModel {
 		VesselClass panamax2400 = Data.getVesselClasses().get(3);
 		VesselClass postPanamax = Data.getVesselClasses().get(4);
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
-		
+
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
-		
+
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax);
-		
+
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
@@ -759,7 +759,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400);
-		
+
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200);
@@ -769,39 +769,39 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
-		
+
 		System.out.println("Rotations generated.");
-		
-//		ComputeRotations.addPorts();
+
+		//		ComputeRotations.addPorts();
 		graph.runMcf();
-//		ComputeRotations.addPorts();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
+		//		ComputeRotations.addPorts();
+		//		ComputeRotations.removePorts();
+		//		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
 		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
+
 		graph.saveOPLData("OPLData.dat");
-		
+
 	}
-	
-	
+
+
 	public static void testWorldSmall3Auto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -813,18 +813,18 @@ public class RunModel {
 		VesselClass panamax2400 = Data.getVesselClasses().get(3);
 		VesselClass postPanamax = Data.getVesselClasses().get(4);
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
-		
+
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>();
-		
+
 		rotations.add(ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax));
-		
+
 		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
 		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
 		rotations.add(ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax));
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax));
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, postPanamax));
 		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, postPanamax));
-		
+
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
 		rotations.add(ComputeRotations.createAuxFlowRotation(9, sortedEdges, panamax2400));
@@ -834,7 +834,7 @@ public class RunModel {
 		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax2400));
 		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax2400));
 		rotations.add(ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax2400));
-		
+
 		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
 		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
 		rotations.add(ComputeRotations.createAuxFlowRotation(8, sortedEdges, panamax1200));
@@ -844,165 +844,188 @@ public class RunModel {
 		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200));
 		rotations.add(ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200));
 		rotations.add(ComputeRotations.createAuxFlowRotation(6, sortedEdges, panamax1200));
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder800);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
-		
+
 		System.out.println("Rotations generated.");
-		
-//		ComputeRotations.addPorts();
+
+		//		ComputeRotations.addPorts();
 		graph.runMcf();
-		
+
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
+
+		for(Rotation r : graph.getResult().getRotations()){
+			r.createRotationGraph();
+		}
+
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).insertBestPort(1.1);
+		//
+		//		graph.runMcf();
+		//
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//
+		//		graph.runMcf();
+		//
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+
+		graph.serviceOmissionDemand(graph.getPort("HKHKG"));
+
+		graph.runMcf();
+
+		for(Rotation r : graph.getResult().getRotations()){
+			r.createRotationGraph();
+		}
+
+		graph.serviceOmissionDemand(graph.getPort("AEJEA"));
+
+		graph.runMcf();
 		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-		
-		rotations.get(2).createRotationGraph();
-		rotations.get(2).insertBestPort(1.1);
+		for(Rotation r : graph.getResult().getRotations()){
+			r.createRotationGraph();
+		}
+
+		rotations.get(0).removeWorstPort();
 		
 		graph.runMcf();
 		
-		rotations.get(2).createRotationGraph();
-		rotations.get(2).removeWorstPort();
-		
-		graph.runMcf();
-		
-		rotations.get(2).createRotationGraph();
-		rotations.get(2).removeWorstPort();
-		
-		graph.runMcf();
-		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).insertBestPort(1.1);
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).insertBestPort(1.1);
-//		
-//
-//		
-//		graph.runMcf();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).removeWorstPort();
-//		
-//		graph.runMcf();
-//		
-//		rotations.get(2).createRotationGraph();
-//		rotations.get(2).insertBestPort(1.1);
-//		
-//		rotations.get(0).createRotationGraph();
-//		rotations.get(0).insertBestPort(1);
-//		
-//		rotations.get(0).createRotationGraph();
-//		rotations.get(0).removeWorstPort();
-		
-		
-//		for(Rotation r : rotations){
-//			r.createRotationGraph();
-//		}
+
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).insertBestPort(1.1);
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).insertBestPort(1.1);
+		//		
+		//
+		//		
+		//		graph.runMcf();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).removeWorstPort();
+		//		
+		//		graph.runMcf();
+		//		
+		//		rotations.get(2).createRotationGraph();
+		//		rotations.get(2).insertBestPort(1.1);
+		//		
+		//		rotations.get(0).createRotationGraph();
+		//		rotations.get(0).insertBestPort(1);
+		//		
+		//		rotations.get(0).createRotationGraph();
+		//		rotations.get(0).removeWorstPort();
+
+
+		//		for(Rotation r : rotations){
+		//			r.createRotationGraph();
+		//		}
 		long startTime = System.currentTimeMillis();
-//		for(int i = 0; i < 1; i++){
-//			for(int j = 0; j < 10; j++){
-//			for(Rotation r : rotations){
-//				Rotation r = rotations.get(j);
-//				r.removeWorstPort();
-//			}
-//		}
-		
-//		Rotation r0 = rotations.get(0);
-//		Rotation r1 = rotations.get(1);
-//		Rotation r2 = rotations.get(2);
-//		Rotation r3 = rotations.get(3);
-//		Rotation r5 = rotations.get(5);
-//		Rotation r8 = rotations.get(8);
-//		Rotation r9 = rotations.get(9);
-//		Rotation r12 = rotations.get(12);
-//		Rotation r14 = rotations.get(14);
-//		Rotation r15 = rotations.get(15);
-		
-		
-//		r0.createRotationGraph();
-//		r1.createRotationGraph();
-//		r2.createRotationGraph();
-//		r3.createRotationGraph();
-//		r5.createRotationGraph();
-//		r8.createRotationGraph();
-//		r9.createRotationGraph();
-//		r12.createRotationGraph();
-//		r14.createRotationGraph();
-//		r15.createRotationGraph();
-		
-//		r0.removeWorstPort();
-//		r1.removeWorstPort();
-//		r2.removeWorstPort();
-//		r3.removeWorstPort();
-//		r5.removeWorstPort();
-//		r8.removeWorstPort();
-//		r9.removeWorstPort();
-//		r12.removeWorstPort();
-//		r14.removeWorstPort();
-//		r15.removeWorstPort();
-		
-		graph.runMcf();
-		
-//		graph.runMcf();
-//		for(Rotation r : rotations){
-//			r.createRotationGraph();
-//			r.findRotationFlow();
-//		}
-		
-		
-//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
-//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
-//		for(Port p : r1.getPorts()){
-//			rotationPorts.add(p.getName());
-//		}
-//		RuneVisualization.makeVisualization(rotationPorts, "r1");
-//		rotationPorts = new ArrayList<String>(r2.getPorts().size());
-//		for(Port p : r2.getPorts()){
-//			rotationPorts.add(p.getName());
-//		}
-//		RuneVisualization.makeVisualization(rotationPorts, "r2");
-		
-//		MulticommodityFlow.run();
-//		ComputeRotations.addPorts();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
-		
+		//		for(int i = 0; i < 1; i++){
+		//			for(int j = 0; j < 10; j++){
+		//			for(Rotation r : rotations){
+		//				Rotation r = rotations.get(j);
+		//				r.removeWorstPort();
+		//			}
+		//		}
+
+		//		Rotation r0 = rotations.get(0);
+		//		Rotation r1 = rotations.get(1);
+		//		Rotation r2 = rotations.get(2);
+		//		Rotation r3 = rotations.get(3);
+		//		Rotation r5 = rotations.get(5);
+		//		Rotation r8 = rotations.get(8);
+		//		Rotation r9 = rotations.get(9);
+		//		Rotation r12 = rotations.get(12);
+		//		Rotation r14 = rotations.get(14);
+		//		Rotation r15 = rotations.get(15);
+
+
+		//		r0.createRotationGraph();
+		//		r1.createRotationGraph();
+		//		r2.createRotationGraph();
+		//		r3.createRotationGraph();
+		//		r5.createRotationGraph();
+		//		r8.createRotationGraph();
+		//		r9.createRotationGraph();
+		//		r12.createRotationGraph();
+		//		r14.createRotationGraph();
+		//		r15.createRotationGraph();
+
+		//		r0.removeWorstPort();
+		//		r1.removeWorstPort();
+		//		r2.removeWorstPort();
+		//		r3.removeWorstPort();
+		//		r5.removeWorstPort();
+		//		r8.removeWorstPort();
+		//		r9.removeWorstPort();
+		//		r12.removeWorstPort();
+		//		r14.removeWorstPort();
+		//		r15.removeWorstPort();
+
+		//		graph.runMcf();
+
+		//		graph.runMcf();
+		//		for(Rotation r : rotations){
+		//			r.createRotationGraph();
+		//			r.findRotationFlow();
+		//		}
+
+
+		//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
+		//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
+		//		for(Port p : r1.getPorts()){
+		//			rotationPorts.add(p.getName());
+		//		}
+		//		RuneVisualization.makeVisualization(rotationPorts, "r1");
+		//		rotationPorts = new ArrayList<String>(r2.getPorts().size());
+		//		for(Port p : r2.getPorts()){
+		//			rotationPorts.add(p.getName());
+		//		}
+		//		RuneVisualization.makeVisualization(rotationPorts, "r2");
+
+		//		MulticommodityFlow.run();
+		//		ComputeRotations.addPorts();
+		//		ComputeRotations.removePorts();
+		//		MulticommodityFlow.run();
+
 		long endTime = System.currentTimeMillis();
-		
+
 		System.out.println("Multicommodity run.");
 		System.out.println("RunningTime " + (endTime-startTime));
 		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
-//		graph.getMcf().saveTransferSol("TransferSol.csv");
+		//		graph.getMcf().saveTransferSol("TransferSol.csv");
 		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println();
 		System.out.println("Org objective " + orgObj);
@@ -1010,12 +1033,12 @@ public class RunModel {
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
-		
-//		graph.saveOPLData("OPLData.dat");
-		
+
+
+		//		graph.saveOPLData("OPLData.dat");
+
 	}
-	
+
 	public static void testWorldLargeAuto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldLarge.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldLarge.csv");
@@ -1027,9 +1050,9 @@ public class RunModel {
 		VesselClass panamax2400 = Data.getVesselClasses().get(3);
 		VesselClass postPanamax = Data.getVesselClasses().get(4);
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
-		
+
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, superPanamax);
-		
+
 		ComputeRotations.createAuxFlowRotation(11, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
@@ -1039,7 +1062,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, postPanamax);
-		
+
 		Rotation r11 = ComputeRotations.createAuxFlowRotation(11, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
@@ -1056,7 +1079,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
 		Rotation r10 = ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax2400);
-		
+
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
@@ -1070,7 +1093,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(10, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, panamax1200);
-		
+
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
@@ -1082,7 +1105,7 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
 		ComputeRotations.createAuxFlowRotation(7, sortedEdges, feeder800);
-		
+
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
@@ -1091,32 +1114,32 @@ public class RunModel {
 		ComputeRotations.createAuxFlowRotation(5, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
 		ComputeRotations.createAuxFlowRotation(4, sortedEdges, feeder450);
-	
+
 		System.out.println("Rotations generated.");
-		
-//		ComputeRotations.addPorts();
+
+		//		ComputeRotations.addPorts();
 		graph.runMcf();
-		
-//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
-//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
-//		for(Port p : r1.getPorts()){
-//			rotationPorts.add(p.getName());
-//		}
-//		RuneVisualization.makeVisualization(rotationPorts, "r1");
-		
-		
-//		MulticommodityFlow.run();
-//		ComputeRotations.addPorts();
-//		ComputeRotations.removePorts();
-//		MulticommodityFlow.run();
+
+		//		Rotation newRotation = ComputeRotations.mergeRotations(r1, r2);
+		//		ArrayList<String> rotationPorts = new ArrayList<String>(r1.getPorts().size());
+		//		for(Port p : r1.getPorts()){
+		//			rotationPorts.add(p.getName());
+		//		}
+		//		RuneVisualization.makeVisualization(rotationPorts, "r1");
+
+
+		//		MulticommodityFlow.run();
+		//		ComputeRotations.addPorts();
+		//		ComputeRotations.removePorts();
+		//		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
 		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
 		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
-		
+
 		graph.saveOPLData("OPLData.dat");
-		
+
 	}
 }
