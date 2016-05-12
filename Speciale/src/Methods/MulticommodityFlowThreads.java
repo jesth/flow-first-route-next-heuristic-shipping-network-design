@@ -222,7 +222,7 @@ public class MulticommodityFlowThreads {
 			//						Edge e = graph.getEdges().get(i);
 			length--;
 			counter++;
-			if(e.isSail()){
+			if(e.isSail() || e.isFeeder()){
 				int overflow = e.getRepAndRemoveLoad() - e.getCapacity();
 				if(overflow > 0){
 					validFlow = false;
