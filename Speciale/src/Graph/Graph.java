@@ -926,8 +926,8 @@ public class Graph {
 			e.setInactive();
 		}
 		System.out.println();
-		for(Edge e : r.getRotationEdges()){
-		}
+//		for(Edge e : r.getRotationEdges()){
+//		}
 		//		for(Edge e : edges){
 		//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
 		//				System.out.println(e.simplePrint());
