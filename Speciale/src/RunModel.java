@@ -879,7 +879,7 @@ public class RunModel {
 			r.createRotationGraph();
 		}
 		
-		graph.serviceOmissionDemand(graph.getPort("HKHKG"));
+//		graph.serviceBiggestOmissionDemand();
 		
 		
 //		rotations.get(2).createRotationGraph();
