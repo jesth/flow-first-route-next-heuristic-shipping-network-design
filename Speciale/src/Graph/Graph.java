@@ -1148,6 +1148,29 @@ public class Graph {
 		return noVesselsAvailable[vesselId];
 	}
 
+	public void serviceBiggestOmissionDemand() throws InterruptedException{
+		int[] portOmission = new int[Data.getPorts().length];
+		for(Demand d : demandsList){
+			for(Route r : d.getRoutes()){
+				if(r.isOmission()){
+					int origin = d.getOrigin().getPortId();
+					int destination = d.getDestination().getPortId();
+					portOmission[origin] += r.getFFE();
+					portOmission[destination] += r.getFFE();
+				}
+			}
+		}
+		int biggestPort = -1;
+		int biggestOmission = -1;
+		for(int i = 0; i < portOmission.length; i++){
+			if(portOmission[i] > biggestOmission){
+				biggestOmission = portOmission[i];
+				biggestPort = i;
+			}
+		}
+		Port p = getPort(biggestPort);
+		serviceOmissionDemand(p);
+	}
 
 	public void serviceOmissionDemand(Port port) throws InterruptedException {
 		ArrayList<Demand> oldDemands = new ArrayList<Demand>();

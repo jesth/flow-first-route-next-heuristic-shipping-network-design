@@ -875,12 +875,9 @@ public class RunModel {
 //		graph.getResult().getRotations().get(2).findRotationFlow();
 //		graph.getResult().getRotations().get(2).removeWorstPort();
 		
-//		for(Rotation r : graph.getResult().getRotations()){
-//			r.createRotationGraph();
-//		}
-//		
-//		graph.serviceOmissionDemand(graph.getPort("HKHKG"));
-		
+		for(Rotation r : graph.getResult().getRotations()){
+			r.createRotationGraph();
+		}
 		
 //		rotations.get(2).createRotationGraph();
 //		rotations.get(2).findRotationFlow();

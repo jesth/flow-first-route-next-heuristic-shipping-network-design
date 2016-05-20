@@ -247,7 +247,7 @@ public class Rotation {
 		Edge worstDwellEdge = null;
 		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
 			Edge e = rotationGraph.getEdges().get(i);
-			if(e.isDwell()){
+			if(e.isDwell() && isRelevantToRemove(e)){
 				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
@@ -265,6 +265,28 @@ public class Rotation {
 			rotationGraph.runMcf();
 		}
 		return madeChange;
+	}
+
+	private boolean isRelevantToRemove(Edge eIn) {
+		if(!eIn.isDwell()){
+			throw new RuntimeException("Input mismatch");
+		}
+		Port pIn = eIn.getFromNode().getPort();
+		for(Edge e : rotationEdges){
+			if(e.isDwell()){
+				if(e.getFromNode().getPort().equals(pIn) && !e.equals(eIn)){
+					return true;
+				}
+			}
+		}
+		int unload = eIn.getFromNode().getUnloadedFFE() + eIn.getFromNode().getTransshippedFromFFE();
+		int load = eIn.getToNode().getLoadedFFE() + eIn.getToNode().getTransshippedToFFE();
+		int totalLoad = unload + load;
+		//TODO: Hardcoded parameter 30 %.
+		if(totalLoad < 0.3 * vesselClass.getCapacity()){
+			return true;
+		}
+		return false;
 	}
 
 	public void implementRemoveWorstPort(Edge bestDwellEdge){
@@ -740,10 +762,28 @@ public class Rotation {
 		distance = 0;
 		setInactive();
 	}
+	
+	public ArrayList<Integer> addCalls(ArrayList<Integer> portIds){
+		for(Node n : rotationNodes){
+			if(n.isActive() && n.isDeparture()){
+				portIds.add(n.getPortId());
+			}
+		}
+		return portIds;
+	}
+	
+	public boolean calls(ArrayList<Integer> portIds){
+		for(int i : portIds){
+			if(calls(i)){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public boolean calls(int portId) {
 		for(Node n : rotationNodes){
-			if(n.getPortId() == portId){
+			if(n.isActive() && n.isDeparture() && n.getPortId() == portId){
 				return true;
 			}
 		}
