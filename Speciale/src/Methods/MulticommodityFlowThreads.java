@@ -222,7 +222,7 @@ public class MulticommodityFlowThreads {
 //						Edge e = graph.getEdges().get(i);
 			length--;
 			counter++;
-			if(e.isSail()){
+			if(e.isSail() || e.isFeeder()){
 				int overflow = e.getRepAndRemoveLoad() - e.getCapacity();
 				if(overflow > 0){
 					validFlow = false;
@@ -308,20 +308,20 @@ public class MulticommodityFlowThreads {
 				}
 			}
 		}
-		for(Edge e : graph.getEdges()){
-			if(e.isSail()){
-				//				System.out.println(e.simplePrint() + " with load " + e.getLoad());
-			}
-		}
+//		for(Edge e : graph.getEdges()){
+//			if(e.isSail()){
+//				//				System.out.println(e.simplePrint() + " with load " + e.getLoad());
+//			}
+//		}
 
 
 		for(Edge e : graph.getEdges()){
 			//			System.out.println(e.simplePrint() + " with load " + e.getLoad());
-			if(e.isSail()){
-				for(Route r : e.getRoutes()){
-					//					System.out.println("origin: " +r.getDemand().getOrigin().getUNLocode()+" destination: "+r.getDemand().getDestination().getUNLocode()+ " load on route " + r.getFFE());
-				}
-			}
+//			if(e.isSail()){
+//				for(Route r : e.getRoutes()){
+//					//					System.out.println("origin: " +r.getDemand().getOrigin().getUNLocode()+" destination: "+r.getDemand().getDestination().getUNLocode()+ " load on route " + r.getFFE());
+//				}
+//			}
 			if(e.getCapacity() < e.getLoad()){
 				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}

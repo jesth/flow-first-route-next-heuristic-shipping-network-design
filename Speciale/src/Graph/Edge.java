@@ -574,6 +574,13 @@ public class Edge {
 		return lowestCostRoute;
 	}
 	
+	public void addCapacity(int freeCap) {
+		if(!feeder){
+			throw new RuntimeException("Trying to add capacity to an edge that is not feeder");
+		}
+		capacity += freeCap;
+	}
+	
 	public void delete(){
 		fromNode.removeOutgoingEdge(this);
 		toNode.removeIngoingEdge(this);
@@ -615,5 +622,4 @@ public class Edge {
 		return "Edge [fromNode=" + fromNode + ", toNode=" + toNode + ", cost=" + cost + ", capacity=" + capacity
 				+ ", omission=" + omission + "]";
 	}
-
 }

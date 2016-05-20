@@ -101,4 +101,8 @@ public class Result {
 		return OD;
 	}
 
+	public void copyRotations(Result result) {
+		this.rotations.addAll(result.rotations);
+	}
+
 }
