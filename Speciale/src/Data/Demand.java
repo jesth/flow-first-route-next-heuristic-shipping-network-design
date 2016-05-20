@@ -86,6 +86,14 @@ public class Demand {
 		return demand;
 	}
 	
+	public void addDemand(int extraDemand) {
+		demand += extraDemand;
+	}
+	
+	public void removeDemand(int removeDemand){
+		demand -= removeDemand;
+	}
+	
 	public int getOmissionFFEs(){
 		int omission = 0;
 		for(Route r : routes){
@@ -243,6 +251,7 @@ public class Demand {
 		}
 		return profit;
 	}
+
 
 //	/* (non-Javadoc)
 //	 * @see java.lang.Object#toString()

@@ -716,9 +716,9 @@ public class ComputeRotations {
 	public static int calcNumberOfVessels(ArrayList<Port> ports, VesselClass vesselClass){
 		double distance = getRotationLength(ports, vesselClass);
 
-		double minRotationTime = (24 * ports.size()+ (distance / vesselClass.getMaxSpeed())) / 168.0;
+		double minRotationTime = (Data.getPortStay() * ports.size()+ (distance / vesselClass.getMaxSpeed())) / 168.0;
 		int lbNoVessels = (int) Math.ceil(minRotationTime);
-		double maxRotationTime = (24 * ports.size()+ (distance / vesselClass.getMinSpeed())) / 168.0;
+		double maxRotationTime = (Data.getPortStay() * ports.size()+ (distance / vesselClass.getMinSpeed())) / 168.0;
 		int ubNoVessels = (int) Math.floor(maxRotationTime);
 
 		int lowestCost = Integer.MAX_VALUE;
@@ -727,7 +727,7 @@ public class ComputeRotations {
 			return lbNoVessels;
 		} else {
 			for(int i = lbNoVessels; i <= ubNoVessels; i++){
-				double availableTime = 168 * i - 24 * ports.size();
+				double availableTime = 168 * i - Data.getPortStay() * ports.size();
 				double speed = distance/availableTime;
 				double fuelConsumption = vesselClass.getFuelConsumption(speed);
 				double sailTimeDays = (distance / speed) / 24;
