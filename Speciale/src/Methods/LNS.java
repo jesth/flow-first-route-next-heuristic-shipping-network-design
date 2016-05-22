@@ -1,5 +1,6 @@
 package Methods;
 
+import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -21,6 +22,7 @@ public class LNS {
 	}
 	
 	public Graph run(int timeToRunSeconds) throws InterruptedException{
+		BufferedWriter progressWriter = graph.getResult().openProgressWriter("ProgressSol.csv");
 		
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long targetTime = System.currentTimeMillis() + timeToRun;
@@ -53,6 +55,14 @@ public class LNS {
 			}
 		}
 		return bestGraph;
+	}
+	
+	private void saveSol(BufferedWriter progressWriter, int objective){
+		graph.getResult().saveAllEdgesSol("AllEdgesSol.csv");
+		graph.getResult().saveODSol("ODSol.csv");
+		graph.getResult().saveRotationSol("RotationSol.csv");
+		graph.getResult().saveTransferSol("TransferSol.csv");
+		graph.getResult().saveProgress(progressWriter, objective);
 	}
 	
 }
