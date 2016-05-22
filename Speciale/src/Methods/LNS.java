@@ -87,7 +87,7 @@ public class LNS {
 	public ArrayList<Rotation> findRotationsToNS(double rand){
 		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>(graph.getResult().getRotations());
 		ArrayList<Integer> portIds = new ArrayList<Integer>();
-		int noOfRotations = 10;
+		int noOfRotations = 5;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
 		while(!rotationsList.isEmpty() && rotations.size()<noOfRotations){
 			int arraySize = rotationsList.size();
@@ -110,6 +110,8 @@ public class LNS {
 		graph.getResult().saveODSol("ODSol.csv");
 		graph.getResult().saveRotationSol("RotationSol.csv");
 		graph.getResult().saveTransferSol("TransferSol.csv");
+		graph.getResult().saveFlowCost("FlowCost.csv");
+		graph.getResult().saveRotationCost("RotationCost.csv");
 		graph.getResult().saveProgress(progressWriter, currentTime, objective);
 	}
 }

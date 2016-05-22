@@ -558,6 +558,46 @@ public class Rotation {
 	public Graph getRotationGraph() {
 		return rotationGraph;
 	}
+	
+	public int getCanalCost(){
+		int suezCost = 0;
+		int panamaCost = 0;
+		for (Edge e : rotationEdges){
+			if(e.isSail() && e.isActive()){
+				if(e.isSuez()){
+					suezCost += vesselClass.getSuezFee();
+				}
+				if(e.isPanama()){
+					panamaCost += vesselClass.getPanamaFee();
+				}
+			}
+		}
+		return suezCost + panamaCost;
+	}
+	
+	public int getTCCost(){
+		return noOfVessels * 7 * vesselClass.getTCRate();
+	}
+	
+	public int getSailingBunkerCost(){
+		return calcSailingBunkerCost(speed, noOfVessels);
+	}
+	
+	public int getIdleBunkerCost(){
+		double idleCost = vesselClass.getFuelConsumptionIdle() * Data.getFuelPrice() * getNoOfPortStays();
+		return (int) idleCost;
+	}
+	
+	public int getPortCallCost(){
+		int portCost = 0;
+		for (Edge e : rotationEdges){
+			if(e.isSail() && e.isActive()){
+				Port p = e.getToNode().getPort();
+				portCost += p.getFixedCallCost() + p.getVarCallCost() * vesselClass.getCapacity();
+			}
+		}
+		return portCost;
+	}
 
 	public int calcCost(){
 		int obj = 0;
