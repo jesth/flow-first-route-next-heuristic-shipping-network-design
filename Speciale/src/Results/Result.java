@@ -340,10 +340,9 @@ public class Result {
 		return null;
 	}
 	
-	public void saveProgress(BufferedWriter out, int objective){
+	public void saveProgress(BufferedWriter out, long currentTime, int objective){
 		try {
-		long time = System.currentTimeMillis() / 1000;
-		String str = time + ";" + objective;
+		String str = currentTime + ";" + objective;
 		out.write(str); 
 		out.newLine();
 		} catch (IOException e) {

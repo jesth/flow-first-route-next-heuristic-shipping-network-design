@@ -597,7 +597,7 @@ public class Graph {
 		Node toNode = dwell.getToNode();
 		Port prevPort = ingoingEdge.getFromNode().getPort();
 		Port nextPort = outgoingEdge.getToNode().getPort();
-		if(prevPort.equals(nextPort) && r.getNoOfPortStays() > 1){
+		if(prevPort.equals(nextPort) && r.getNoOfPortStays() > 2){
 			Edge newDwell = null;
 			for(Edge e : outgoingEdge.getToNode().getOutgoingEdges()){
 				if(e.isDwell()){

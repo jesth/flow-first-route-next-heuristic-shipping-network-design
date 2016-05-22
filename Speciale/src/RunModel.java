@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import AuxFlow.AuxDijkstra;
@@ -21,7 +22,7 @@ import Results.Rotation;
 import RotationFlow.RotationGraph;
 
 public class RunModel {
-	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 //		Thread.sleep(15000);
 //		testBaltic();
 //		testBaltic();
@@ -803,7 +804,7 @@ public class RunModel {
 	}
 	
 	
-	public static void testWorldSmall3Auto()throws FileNotFoundException, InterruptedException{
+	public static void testWorldSmall3Auto()throws InterruptedException, IOException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
 		initialize(graph);
