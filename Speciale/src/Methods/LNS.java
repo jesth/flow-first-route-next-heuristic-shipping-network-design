@@ -8,7 +8,8 @@ import Results.Rotation;
 
 public class LNS {
 	Graph graph;
-	Graph bestGraph;
+	int bestObj;
+//	Graph bestGraph;
 //	int timeToRun;
 	
 	public LNS(){	
@@ -16,11 +17,12 @@ public class LNS {
 	
 	public LNS(Graph inputGraph){
 		this.graph = inputGraph;
-		this.bestGraph = inputGraph;
+		bestObj = graph.getResult().getObjective();
+//		this.bestGraph = inputGraph;
 //		this.timeToRun = timeToRun;
 	}
 	
-	public Graph run(int timeToRunSeconds) throws InterruptedException{
+	public void run(int timeToRunSeconds) throws InterruptedException{
 		
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long targetTime = System.currentTimeMillis() + timeToRun;
@@ -28,31 +30,50 @@ public class LNS {
 		Random rand = new Random();
 		while(System.currentTimeMillis() < targetTime){
 			
-			ArrayList<Integer> rotationIdList = new ArrayList<Integer>(graph.getResult().getRotations().size());
-			for(Rotation r : graph.getResult().getRotations()){
-				rotationIdList.add(r.getId());
-			}
-			int noOfRotations = rand.nextInt(5)+1;
-			ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
-			for(int i=0; i<noOfRotations; i++){
-				int rotationId = rotationIdList.remove(rand.nextInt(rotationIdList.size()));
-				rotations.add(graph.getResult().getRotations().get(rotationId));
-			}
+			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 			
-			int rotationNumber = rand.nextInt(graph.getResult().getRotations().size());
-			Rotation currentRotation = graph.getResult().getRotations().get(rotationNumber);
 			if(rand.nextBoolean()){
-				currentRotation.insertBestPort(1.1, 0.1);
-				currentRotation.createRotationGraph();
-				currentRotation.removeWorstPort();
-				currentRotation.createRotationGraph();
+				for(Rotation r : rotations){
+					r.insertBestPort(1.1, 0.1);
+					r.createRotationGraph();
+				}
 				
 			} else {
-				currentRotation.removeWorstPort();
-				currentRotation.createRotationGraph();
+				for(Rotation r : rotations){
+					r.removeWorstPort();
+					r.createRotationGraph();
+				}
 			}
+			
+			graph.runMcf();
+			int obj = graph.getResult().getObjective();
+			if(bestObj < obj){
+				bestObj = obj;
+				saveSol();
+				
+			}
+			
 		}
-		return bestGraph;
 	}
 	
+	
+	public ArrayList<Rotation> findRotationsToNS(Random rand){
+		
+
+		ArrayList<Integer> rotationIdList = new ArrayList<Integer>(graph.getResult().getRotations().size());
+		for(Rotation r : graph.getResult().getRotations()){
+			rotationIdList.add(r.getId());
+		}
+		int noOfRotations = rand.nextInt(5)+1;
+		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
+		for(int i=0; i<noOfRotations; i++){
+			int rotationId = rotationIdList.remove(rand.nextInt(rotationIdList.size()));
+			rotations.add(graph.getResult().getRotations().get(rotationId));
+		}
+		for(Rotation r : rotations){
+			r.createRotationGraph();
+		}
+		
+		return rotations;
+	}
 }
