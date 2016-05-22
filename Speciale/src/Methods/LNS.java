@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Data.Data;
 import Graph.Graph;
 import Results.Rotation;
 
@@ -29,12 +30,12 @@ public class LNS {
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long targetTime = System.currentTimeMillis() + timeToRun;
 		
-		Random rand = new Random();
+		int iteration = 0;
 		while(System.currentTimeMillis() < targetTime){
-			
+			double rand = Data.getRandomNumber(iteration);
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 			
-			if(rand.nextBoolean()){
+			if(rand < 0.5){
 				for(Rotation r : rotations){
 					r.insertBestPort(1.1, 0.1);
 					r.createRotationGraph();
@@ -54,22 +55,23 @@ public class LNS {
 				saveSol(progressWriter, obj);
 				
 			}
-			
+			iteration++;
 		}
 	}
 	
-	public ArrayList<Rotation> findRotationsToNS(Random rand){
-		
-
-		ArrayList<Integer> rotationIdList = new ArrayList<Integer>(graph.getResult().getRotations().size());
-		for(Rotation r : graph.getResult().getRotations()){
-			rotationIdList.add(r.getId());
-		}
-		int noOfRotations = rand.nextInt(5)+1;
+	public ArrayList<Rotation> findRotationsToNS(double rand){
+		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>(graph.getResult().getRotations());
+		ArrayList<Integer> portIds = new ArrayList<Integer>();
+		int noOfRotations = 5;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
-		for(int i=0; i<noOfRotations; i++){
-			int rotationId = rotationIdList.remove(rand.nextInt(rotationIdList.size()));
-			rotations.add(graph.getResult().getRotations().get(rotationId));
+		while(!rotationsList.isEmpty() && rotations.size()<5){
+			int arraySize = rotationsList.size();
+			int pos = (int) (arraySize * rand);
+			Rotation rotation = rotationsList.remove(pos);
+			if(!rotation.calls(portIds)){
+				portIds = rotation.addCallsToList(portIds);
+				rotations.add(rotation);
+			}
 		}
 		for(Rotation r : rotations){
 			r.createRotationGraph();

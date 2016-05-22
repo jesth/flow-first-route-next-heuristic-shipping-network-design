@@ -13,6 +13,7 @@ import Graph.Edge;
 import Graph.Graph;
 import Graph.Node;
 import Methods.ComputeRotations;
+import Methods.LNS;
 //import Methods.MulticommodityFlow;
 import Methods.MulticommodityFlowThreads;
 import Results.Result;
@@ -866,18 +867,21 @@ public class RunModel {
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
 		
+		LNS lns = new LNS(graph);
+		
+		lns.run(60);
 
-		graph.getResult().getRotations().get(2).createRotationGraph();
-		graph.getResult().getRotations().get(2).findRotationFlow();
-		graph.getResult().getRotations().get(2).insertBestPort(1.1, 0.05);
+//		graph.getResult().getRotations().get(2).createRotationGraph();
+//		graph.getResult().getRotations().get(2).findRotationFlow();
+//		graph.getResult().getRotations().get(2).insertBestPort(1.1, 0.05);
 //		graph.runMcf();
 //		graph.getResult().getRotations().get(2).createRotationGraph();
 //		graph.getResult().getRotations().get(2).findRotationFlow();
 //		graph.getResult().getRotations().get(2).removeWorstPort();
 		
-		for(Rotation r : graph.getResult().getRotations()){
-			r.createRotationGraph();
-		}
+//		for(Rotation r : graph.getResult().getRotations()){
+//			r.createRotationGraph();
+//		}
 		
 //		rotations.get(2).createRotationGraph();
 //		rotations.get(2).findRotationFlow();
@@ -923,10 +927,10 @@ public class RunModel {
 		
 		System.out.println("Multicommodity run.");
 		System.out.println("RunningTime " + (endTime-startTime));
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+//		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
+//		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
 //		graph.getMcf().saveTransferSol("TransferSol.csv");
-		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
+//		graph.getMcf().saveAllEdgesSol("AllEdgesSol.csv");
 		System.out.println();
 		System.out.println("Org objective " + orgObj);
 		System.out.println("Org flow profit " + orgFlow);

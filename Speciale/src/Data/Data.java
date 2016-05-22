@@ -105,4 +105,15 @@ public class Data {
 	public static double getRandomNumber(int row, int column){
 		return randomNumbers[column][row];
 	}
+	
+	public static double getRandomNumber(int num){
+		int matrixSize = randomNumbers[0].length * randomNumbers.length;
+		while(num > matrixSize){
+			num = num-matrixSize;
+		}
+		int row = num / randomNumbers[0].length;
+		int col = num - row * randomNumbers.length;
+		
+		return randomNumbers[row][col];
+	}
 }
