@@ -108,7 +108,7 @@ public class MulticommodityFlowThreads {
 			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
 			if(validFlow && flowProfit > bestFlowProfit){
-				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
+//				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
 				updateBestFlow(flowProfit);
 				repairCounter = 0;
 				improvementCounter = 0;
@@ -237,7 +237,7 @@ public class MulticommodityFlowThreads {
 		if(flowProfit > bestFlowProfit){
 			improvementCounter = 0;
 			if(!graph.isSubGraph()){
-				System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
+//				System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			}
 			updateBestFlow(flowProfit);
 			for(Edge e : graph.getEdges()){

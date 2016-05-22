@@ -589,7 +589,7 @@ public class Graph {
 		if(!dwell.isDwell()){
 			throw new RuntimeException("Passed edge is not dwell.");
 		}
-		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
+//		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
 		Edge ingoingEdge = dwell.getPrevEdge();
 		Edge outgoingEdge = dwell.getNextEdge();
 		r.decrementNoInRotation(outgoingEdge.getNoInRotation());
@@ -1018,7 +1018,7 @@ public class Graph {
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}
-		System.out.println();
+//		System.out.println();
 //		for(Edge e : r.getRotationEdges()){
 //		}
 		//		for(Edge e : edges){

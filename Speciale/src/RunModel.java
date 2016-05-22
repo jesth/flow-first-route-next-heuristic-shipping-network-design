@@ -84,8 +84,8 @@ public class RunModel {
 		
 		graph.getMcf().run();
 		
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getResult().saveODSol("ODSol.csv");
+		graph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
@@ -180,7 +180,8 @@ public class RunModel {
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		testGraph.getMcf().saveODSol("test.csv", testGraph.getDemands());
+		testGraph.getResult().saveODSol("ODSol.csv");
+		testGraph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -234,7 +235,8 @@ public class RunModel {
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		testGraph.getMcf().saveODSol("test.csv", testGraph.getDemands());
+		testGraph.getResult().saveODSol("ODSol.csv");
+		testGraph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -350,8 +352,8 @@ public class RunModel {
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		testGraph.getMcf().saveODSol("ODSol.csv", testGraph.getDemands());
-		testGraph.getMcf().saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
+		testGraph.getResult().saveODSol("ODSol.csv");
+		testGraph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -495,8 +497,8 @@ public class RunModel {
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		testGraph.getMcf().saveODSol("ODSol.csv", testGraph.getDemands());
-		testGraph.getMcf().saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
+		testGraph.getResult().saveODSol("ODSol.csv");
+		testGraph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -650,8 +652,8 @@ public class RunModel {
 		testGraph.runMcf();
 		long timeUse = System.currentTimeMillis() - time;
 		System.out.println("Running for " + timeUse + " ms");
-		testGraph.getMcf().saveODSol("ODSol.csv", testGraph.getDemands());
-		testGraph.getMcf().saveRotationSol("RotationSol.csv", testGraph.getResult().getRotations());
+		testGraph.getResult().saveODSol("ODSol.csv");
+		testGraph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
@@ -721,8 +723,8 @@ public class RunModel {
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getResult().saveODSol("ODSol.csv");
+		graph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
@@ -792,8 +794,8 @@ public class RunModel {
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getResult().saveODSol("ODSol.csv");
+		graph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
@@ -1037,8 +1039,8 @@ public class RunModel {
 //		ComputeRotations.removePorts();
 //		MulticommodityFlow.run();
 		System.out.println("Multicommodity run.");
-		graph.getMcf().saveODSol("ODSol.csv", graph.getDemands());
-		graph.getMcf().saveRotationSol("RotationSol.csv", graph.getResult().getRotations());
+		graph.getResult().saveODSol("ODSol.csv");
+		graph.getResult().saveRotationSol("RotationSol.csv");
 		System.out.println();
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));

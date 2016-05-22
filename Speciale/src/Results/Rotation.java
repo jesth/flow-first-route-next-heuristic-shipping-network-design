@@ -125,6 +125,7 @@ public class Rotation {
 			}
 			Port mainGraphBestFeederPort = mainGraph.getPort(bestFeederPort.getPortId());
 			this.implementInsertPort(mainGraph, mainGraphBestFeederPort, mainGraphWorstNextSail);
+			System.out.println("Improvement by INSERTING. Rotation: " + mainGraphWorstNextSail.getRotation().getId() + " Port: " +mainGraphBestFeederPort.getUNLocode() + " noInRot: " + noInRot);
 		}
 		return madeChange;
 	}
@@ -244,7 +245,7 @@ public class Rotation {
 				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
 				rotationGraph.runMcf();
 				int obj = rotationGraph.getResult().getObjective();
-				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
+//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
 				if(obj > bestObj){
 					bestObj = obj;
 					worstDwellEdge = e;
@@ -255,6 +256,7 @@ public class Rotation {
 		}
 		if(madeChange){
 			implementRemoveWorstPort(worstDwellEdge);
+			System.out.println("Improvement by REMOVING. Rotation: " + worstDwellEdge.getRotation().getId() + " Port: " + worstDwellEdge.getFromPortUNLo() + " noInRot: " + worstDwellEdge.getNoInRotation());
 		}
 		return madeChange;
 	}
@@ -375,6 +377,7 @@ public class Rotation {
 		Port insertPortMain = mainGraph.getPort(portId);
 		Edge nextSailMain = this.getEdge(noInRot);
 		this.implementInsertPort(mainGraph, insertPortMain, nextSailMain);
+		System.out.println("Improvement by SERVICE OMISSION. Rotation: " + nextSailMain.getRotation().getId() + " Port: " + Data.getPort(portId).getUNLocode() + " noInRot: " + nextSailMain.getNoInRotation());
 	}
 
 	private boolean checkInsertPort(Edge e, Port insertPort) {
