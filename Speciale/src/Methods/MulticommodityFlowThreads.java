@@ -141,8 +141,8 @@ public class MulticommodityFlowThreads {
 //		saveLagranges("lagranges.csv", iteration);
 //		saveLoads("loads.csv", iteration);
 		if(!graph.isSubGraph()){
-			System.out.println("RunningTime " + (endTime-startTime));
-			System.out.println("Exiting while loop after iteration " + iteration);
+//			System.out.println("RunningTime " + (endTime-startTime));
+//			System.out.println("Exiting while loop after iteration " + iteration);
 		}
 	}
 

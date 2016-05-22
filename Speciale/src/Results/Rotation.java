@@ -77,6 +77,10 @@ public class Rotation {
 	*/
 
 	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept) throws InterruptedException{
+		if(this.rotationGraph == null){
+			this.createRotationGraph();
+		}
+		
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
@@ -233,6 +237,10 @@ public class Rotation {
 	}
 
 	public boolean removeWorstPort() throws InterruptedException{
+		if(this.rotationGraph == null){
+			this.createRotationGraph();
+		}
+		
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
@@ -256,7 +264,6 @@ public class Rotation {
 		}
 		if(madeChange){
 			implementRemoveWorstPort(worstDwellEdge);
-			System.out.println("Improvement by REMOVING. Rotation: " + worstDwellEdge.getRotation().getId() + " Port: " + worstDwellEdge.getFromPortUNLo() + " noInRot: " + worstDwellEdge.getNoInRotation());
 		}
 		return madeChange;
 	}
@@ -297,6 +304,7 @@ public class Rotation {
 		}
 		rotationGraph.removePort(bestDwellEdge);
 		mainGraph.removePort(bestRealDwell);
+		System.out.println("Improvement by REMOVING. Rotation: " + bestRealDwell.getRotation().getId() + " Port: " + bestRealDwell.getFromPortUNLo() + " noInRot: " + prevNoInRot);
 	}
 
 	public int serviceOmissionDemand(ArrayList<Demand> oldDemands, int portId) throws InterruptedException{
@@ -783,5 +791,9 @@ public class Rotation {
 			}
 		}
 		return false;
+	}
+	
+	public void removeRotationGraph(){
+		this.rotationGraph = null;
 	}
 }

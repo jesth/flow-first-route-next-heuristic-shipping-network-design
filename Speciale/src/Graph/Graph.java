@@ -1148,7 +1148,7 @@ public class Graph {
 		return noVesselsAvailable[vesselId];
 	}
 
-	public void serviceBiggestOmissionDemand() throws InterruptedException{
+	public boolean serviceBiggestOmissionDemand() throws InterruptedException{
 		int[] portOmission = new int[Data.getPorts().length];
 		for(Demand d : demandsList){
 			for(Route r : d.getRoutes()){
@@ -1169,10 +1169,11 @@ public class Graph {
 			}
 		}
 		Port p = getPort(biggestPort);
-		serviceOmissionDemand(p);
+		return serviceOmissionDemand(p);
 	}
 
-	public void serviceOmissionDemand(Port port) throws InterruptedException {
+	public boolean serviceOmissionDemand(Port port) throws InterruptedException {
+		boolean madeChange = false;
 		ArrayList<Demand> oldDemands = new ArrayList<Demand>();
 		for(Demand d : demandsList){
 			if(d.getOrigin().equals(port) || d.getDestination().equals(port)){
@@ -1182,7 +1183,7 @@ public class Graph {
 				}
 			}
 		}
-		int bestObj = -Integer.MAX_VALUE;
+		int bestObj = this.getResult().getObjective();
 		Rotation bestRot = null;
 		int bestNoInRot = -1;
 		for(Rotation rot : result.getRotations()){
@@ -1190,12 +1191,13 @@ public class Graph {
 			if(obj > bestObj){
 				bestObj = obj;
 				bestRot = rot;
+				madeChange = true;
 			}
 		}
-		if(bestRot != null){
+		if(madeChange){
 			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
 			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
 		}
+		return madeChange;
 	}
-
 }

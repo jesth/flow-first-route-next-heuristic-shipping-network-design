@@ -34,40 +34,50 @@ public class LNS {
 		
 		int iteration = 3;
 		while(System.currentTimeMillis() < startTime + timeToRun){
+			boolean madeChange = false;
+			
 			double rand = Data.getRandomNumber(iteration);
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
-			for(Rotation r : remove){
-				r.createRotationGraph();
-				r.removeWorstPort();
+			for(int i=remove.size()-1; i>=0; i--){
+				Rotation r = remove.get(i);
+				if(r.removeWorstPort()){
+					remove.add(r);
+				}
 			}
-			remove.clear();
 			if(rand < 0.33333){
 				for(Rotation r : rotations){
 					if(r.insertBestPort(1.1, 0.1)){
 						remove.add(r);
+						madeChange = true;
 					}
-//					r.createRotationGraph();
 				}
-				
 			} else if (rand < 0.66666){
 				for(Rotation r : rotations){
-					r.removeWorstPort();
-//					r.createRotationGraph();
+					if(r.removeWorstPort()){
+						remove.add(r);
+						madeChange = true;
+					}
 				}
 			} else {
 				for(Rotation r : graph.getResult().getRotations()){
 					r.createRotationGraph();
 				}
-				graph.serviceBiggestOmissionDemand();
+				if(graph.serviceBiggestOmissionDemand()){
+					madeChange = true;
+				}
 			}
-			
-			graph.runMcf();
-			int obj = graph.getResult().getObjective();
-			if(bestObj < obj){
-				long currentTime = System.currentTimeMillis() - startTime;
-				bestObj = obj;
-				saveSol(progressWriter, currentTime, obj);
-				
+			if(madeChange){
+				graph.runMcf();	
+				int obj = graph.getResult().getObjective();
+				if(bestObj < obj){
+					long currentTime = System.currentTimeMillis() - startTime;
+					bestObj = obj;
+					saveSol(progressWriter, currentTime, obj);
+				}
+				System.out.println("Iteration objective: " + obj);
+				for(Rotation r : graph.getResult().getRotations()){
+					r.removeRotationGraph();
+				}
 			}
 			iteration++;
 		}
@@ -77,9 +87,9 @@ public class LNS {
 	public ArrayList<Rotation> findRotationsToNS(double rand){
 		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>(graph.getResult().getRotations());
 		ArrayList<Integer> portIds = new ArrayList<Integer>();
-		int noOfRotations = 5;
+		int noOfRotations = 10;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
-		while(!rotationsList.isEmpty() && rotations.size()<5){
+		while(!rotationsList.isEmpty() && rotations.size()<noOfRotations){
 			int arraySize = rotationsList.size();
 			int pos = (int) (arraySize * rand);
 			Rotation rotation = rotationsList.remove(pos);
@@ -88,10 +98,10 @@ public class LNS {
 				rotations.add(rotation);
 			}
 		}
-		for(Rotation r : rotations){
-			r.createRotationGraph();
-		}
-		
+//		for(Rotation r : rotations){
+//			r.createRotationGraph();
+//		}
+//		System.out.println("rotations.size() = " + rotations.size());
 		return rotations;
 	}
 	
