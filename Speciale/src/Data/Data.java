@@ -109,10 +109,10 @@ public class Data {
 	public static double getRandomNumber(int num){
 		int matrixSize = randomNumbers[0].length * randomNumbers.length;
 		while(num > matrixSize){
-			num = num-matrixSize;
+			num -= matrixSize;
 		}
 		int row = num / randomNumbers[0].length;
-		int col = num - row * randomNumbers.length;
+		int col = num % randomNumbers[0].length;
 		
 		return randomNumbers[row][col];
 	}

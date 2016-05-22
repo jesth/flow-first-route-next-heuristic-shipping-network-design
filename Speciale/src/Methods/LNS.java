@@ -36,8 +36,11 @@ public class LNS {
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			double rand = Data.getRandomNumber(iteration);
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
-			for(Rotation r : remove){
+			for(Rotation r : graph.getResult().getRotations()){
 				r.createRotationGraph();
+			}
+			for(Rotation r : remove){
+//				r.createRotationGraph();
 				r.removeWorstPort();
 			}
 			remove.clear();
@@ -55,9 +58,6 @@ public class LNS {
 //					r.createRotationGraph();
 				}
 			} else {
-				for(Rotation r : graph.getResult().getRotations()){
-					r.createRotationGraph();
-				}
 				graph.serviceBiggestOmissionDemand();
 			}
 			
@@ -100,6 +100,8 @@ public class LNS {
 		graph.getResult().saveODSol("ODSol.csv");
 		graph.getResult().saveRotationSol("RotationSol.csv");
 		graph.getResult().saveTransferSol("TransferSol.csv");
+		graph.getResult().saveFlowCost("FlowCost.csv");
+		graph.getResult().saveRotationCost("RotationCost.csv");
 		graph.getResult().saveProgress(progressWriter, currentTime, objective);
 	}
 }

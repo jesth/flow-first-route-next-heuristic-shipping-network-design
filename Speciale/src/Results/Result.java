@@ -104,6 +104,55 @@ public class Result {
 	public void copyRotations(Result result) {
 		this.rotations.addAll(result.rotations);
 	}
+	
+	public void saveRotationCost(String fileName){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("RotationId;VesselSize;Distance;NoVessels;TotalCost;PortCallCost;SailingFuelCost;IdleFuelCost;CanalCost;TCCost"); 
+			out.newLine();
+				for(Rotation r : rotations){
+					out.write(r.getId() + ";" + r.getVesselClass().getCapacity() + ";" + r.getDistance() + ";" + r.getNoOfVessels() + ";" + r.calcCost() + ";");
+					out.write(r.getPortCallCost() + ";" + r.getSailingBunkerCost() + ";" + r.getIdleBunkerCost() + ";");
+					out.write(r.getCanalCost() + ";" + r.getTCCost());
+					out.newLine();
+			}
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveFlowCost(String fileName){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("ODId;ODFrom;ODTo;Omission;#FFE;TotalRev;TotalCost"); 
+			out.newLine();
+			for(Demand d : graph.getDemands()){
+				for(Route r : d.getRoutes()){
+					int FFE = r.getFFE();
+					out.write(d.getId() + ";" + d.getOrigin().getUNLocode() + ";" + d.getDestination().getUNLocode() + ";"); 
+					if(r.isOmission()){
+						out.write(1 + ";");
+					} else {
+						out.write(0 + ";");
+					}
+					int revenue = d.getRate() * FFE;
+					int cost = r.getCost() * FFE;
+					out.write(FFE + ";" + revenue + ";" + cost);
+					out.newLine();
+				}
+			}
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public void saveDemands(String fileName){
 		ArrayList<Demand> demands = graph.getDemands();

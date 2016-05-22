@@ -180,6 +180,14 @@ public class Route {
 		return realProfit;
 	}
 
+	public int getCost() {
+		int cost = 0;
+		for(Edge e : route){
+			cost += e.getRealCost();
+		}
+		return cost;
+	}
+
 	/**
 	 * @param realProfit - the profit excluding Lagrange values.
 	 */
@@ -224,5 +232,6 @@ public class Route {
 		str += "\n";
 		return str;
 	}
+
 
 }
