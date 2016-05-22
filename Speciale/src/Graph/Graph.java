@@ -1183,7 +1183,7 @@ public class Graph {
 				}
 			}
 		}
-		int bestObj = this.getResult().getObjective();
+		int bestObj = -Integer.MAX_VALUE;
 		Rotation bestRot = null;
 		int bestNoInRot = -1;
 		for(Rotation rot : result.getRotations()){
