@@ -705,6 +705,7 @@ public class Graph {
 			deleteNode(rotation.getRotationNodes().get(i));
 		}
 		rotation.delete();
+		result.removeRotation(rotation);
 	}
 
 	private void decrementNodeIds(int id){
