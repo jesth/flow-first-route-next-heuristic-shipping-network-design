@@ -131,6 +131,10 @@ public class AuxEdge implements Serializable{
 	public void setUsedInRotation(){
 		isUsedInRotation = true;
 	}
+	
+	public void setUnusedInRotation(){
+		isUsedInRotation = false;
+	}
 
 	public double getAvgLoad() {
 		return avgLoad;

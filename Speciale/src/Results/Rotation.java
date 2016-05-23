@@ -204,7 +204,7 @@ public class Rotation {
 		ArrayList<Node> newRotNodes = implementInsertPortNodes(graph, port, nextSailEdge);
 		implementInsertPortEdges(graph, newRotNodes, nextSailEdge, noInRot);
 		calcOptimalSpeed();
-		*/
+		 */
 	}
 
 	private void implementInsertPortEdges(Graph graph, ArrayList<Node> newNodes, Edge worstNextSail, int noInRot) {
@@ -255,8 +255,8 @@ public class Rotation {
 				int flowProfit = rotationGraph.getResult().getFlowProfit(false);
 				int rotationCost = (int) (subRotation.calcCost()*bonus);
 				int obj = flowProfit - rotationCost;
-//				System.out.println("flowProfit: " + flowProfit + " rotationCost: " + rotationCost + " obj: " + obj);
-				
+				//				System.out.println("flowProfit: " + flowProfit + " rotationCost: " + rotationCost + " obj: " + obj);
+
 				//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
 				if(obj > bestObj){
 					bestObj = obj;
@@ -801,13 +801,29 @@ public class Rotation {
 		mainGraph.insertPort(this, edge, p);
 	}
 
+	public double getLoadFactor(){
+		int load = 0;
+		int cap = 0;
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				load += e.getLoad();
+				cap += e.getCapacity();
+			}
+		}
+		double lf = (double) load / (double) cap;
+		return lf;
+	}
+
 	public void delete(){
 		if(!rotationNodes.isEmpty() || !rotationEdges.isEmpty()){
-			throw new RuntimeException("Nodes and edges must be deleted first via Graph class.");
+			throw new RuntimeException("Use deleteRotation in Graph class!");
 		}
 		setNoOfVessels(0);
 		distance = 0;
 		setInactive();
+		if(subRotation != null && rotationGraph != null){
+			rotationGraph.deleteRotation(subRotation);
+		}
 	}
 
 	public ArrayList<Integer> addCallsToList(ArrayList<Integer> portIds){
@@ -852,6 +868,6 @@ public class Rotation {
 				prevNo = no;
 			}
 		}
-		
+
 	}
 }
