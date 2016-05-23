@@ -239,7 +239,7 @@ public class Rotation {
 		return newNodes;
 	}
 
-	public boolean removeWorstPort() throws InterruptedException{
+	public boolean removeWorstPort(double bonus) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
@@ -252,7 +252,11 @@ public class Rotation {
 			if(e.isDwell() && isRelevantToRemove(e)){
 				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
 				rotationGraph.runMcf();
-				int obj = rotationGraph.getResult().getObjective();
+				int flowProfit = rotationGraph.getResult().getFlowProfit(false);
+				int rotationCost = (int) (subRotation.calcCost()*bonus);
+				int obj = flowProfit - rotationCost;
+//				System.out.println("flowProfit: " + flowProfit + " rotationCost: " + rotationCost + " obj: " + obj);
+				
 				//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
 				if(obj > bestObj){
 					bestObj = obj;

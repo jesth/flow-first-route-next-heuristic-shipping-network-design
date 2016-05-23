@@ -32,6 +32,7 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 
+		int lastImproveIter = 3;
 		int iteration = 23;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
@@ -41,7 +42,7 @@ public class LNS {
 			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
 			for(Rotation r : remove){
 				//				Rotation r = remove.remove(i);
-				if(r.removeWorstPort()){
+				if(r.removeWorstPort(1)){
 					if(r.isActive()){
 						newRemove.add(r);
 					}
@@ -49,7 +50,19 @@ public class LNS {
 			}
 			remove = newRemove;
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
-			if(rand < 0.33333){
+			
+			if(iteration > lastImproveIter+5){
+				System.out.println("Diversification because of lastImproveIter");
+				for(Rotation r : rotations){
+					if(r.removeWorstPort(0.5)){
+						if(r.isActive()){
+							remove.add(r);
+						}
+						madeChange = true;
+					}
+				}
+				lastImproveIter = iteration+1;
+			} else if(rand < 0.33333){
 				for(Rotation r : rotations){
 					if(r.insertBestPort(1.1, 0.1)){
 						remove.add(r);
@@ -58,7 +71,7 @@ public class LNS {
 				}
 			} else if (rand < 0.66666){
 				for(Rotation r : rotations){
-					if(r.removeWorstPort()){
+					if(r.removeWorstPort(1)){
 						if(r.isActive()){
 							remove.add(r);
 						}
@@ -80,11 +93,13 @@ public class LNS {
 					long currentTime = System.currentTimeMillis() - startTime;
 					bestObj = obj;
 					saveSol(progressWriter, currentTime, obj);
+					lastImproveIter = iteration+1;
 				}
 				System.out.println("Iteration objective: " + obj);
 				for(Rotation r : graph.getResult().getRotations()){
 					r.removeRotationGraph();
 				}
+				
 			}
 			iteration++;
 		}
@@ -92,7 +107,12 @@ public class LNS {
 	}
 
 	public ArrayList<Rotation> findRotationsToNS(double rand){
-		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>(graph.getResult().getRotations());
+		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>();
+		for(Rotation r : graph.getResult().getRotations()){
+			if(r.isActive()){
+				rotationsList.add(r);
+			}
+		}
 		ArrayList<Integer> portIds = new ArrayList<Integer>();
 		int noOfRotations = 5;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);

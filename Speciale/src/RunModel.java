@@ -869,6 +869,7 @@ public class RunModel {
 		
 		int orgObj = graph.getResult().getObjective();
 		int orgFlow = graph.getResult().getFlowProfit(false);
+		System.out.println("Starting objective " + orgObj);
 		
 		LNS lns = new LNS(graph);
 		
