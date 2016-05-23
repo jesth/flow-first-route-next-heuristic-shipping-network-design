@@ -1215,11 +1215,13 @@ public class Graph {
 		Rotation bestRot = null;
 		int bestNoInRot = -1;
 		for(Rotation rot : result.getRotations()){
-			int obj = rot.serviceOmissionDemand(oldDemands, port.getPortId());
-			if(obj > bestObj){
-				bestObj = obj;
-				bestRot = rot;
-				madeChange = true;
+			if(rot.isActive()){
+				int obj = rot.serviceOmissionDemand(oldDemands, port.getPortId());
+				if(obj > bestObj){
+					bestObj = obj;
+					bestRot = rot;
+					madeChange = true;
+				}
 			}
 		}
 		if(madeChange){

@@ -20,20 +20,21 @@ public class LNS {
 
 	public LNS(Graph inputGraph){
 		this.graph = inputGraph;
-		bestObj = -Integer.MAX_VALUE;
+		bestObj = graph.getResult().getObjective();
 		//		this.bestGraph = inputGraph;
 		//		this.timeToRun = timeToRun;
 	}
 
 	public void run(int timeToRunSeconds) throws InterruptedException, IOException{
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("ProgressSol.csv");
-
+		graph.getResult().saveProgress(progressWriter, 0, bestObj);
+		
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 
-		int lastImproveIter = 3;
-		int iteration = 23;
+		int lastImproveIter = 22;
+		int iteration = 22;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
@@ -42,8 +43,8 @@ public class LNS {
 			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
 			for(Rotation r : remove){
 				//				Rotation r = remove.remove(i);
-				if(r.removeWorstPort(1)){
-					if(r.isActive()){
+				if(r.isActive()){
+					if(r.removeWorstPort(1)){
 						newRemove.add(r);
 					}
 				}
@@ -53,26 +54,31 @@ public class LNS {
 			
 			if(iteration > lastImproveIter+5){
 				System.out.println("Diversification because of lastImproveIter");
-				for(Rotation r : rotations){
-					if(r.removeWorstPort(0.5)){
+				for(int i=0; i<5; i++){
+					for(Rotation r : rotations){
 						if(r.isActive()){
-							remove.add(r);
+							if(r.removeWorstPort(0.2)){
+								remove.add(r);
+							}
+							madeChange = true;
 						}
-						madeChange = true;
 					}
+					graph.runMcf();
+					rand = Data.getRandomNumber((iteration + i) * (i+1) * 13);
+					rotations = findRotationsToNS(rand);
 				}
 				lastImproveIter = iteration+1;
-			} else if(rand < 0.33333){
+			} else if(rand < 0){
 				for(Rotation r : rotations){
-					if(r.insertBestPort(1.1, 0.1)){
+					if(r.insertBestPort(1.1, 0.05)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 0.66666){
+			} else if (rand < 0.3){
 				for(Rotation r : rotations){
-					if(r.removeWorstPort(1)){
-						if(r.isActive()){
+					if(r.isActive()){
+						if(r.removeWorstPort(1)){
 							remove.add(r);
 						}
 						madeChange = true;
@@ -120,10 +126,10 @@ public class LNS {
 			int arraySize = rotationsList.size();
 			int pos = (int) (arraySize * rand);
 			Rotation rotation = rotationsList.remove(pos);
-			if(!rotation.calls(portIds)){
-				portIds = rotation.addCallsToList(portIds);
+//			if(!rotation.calls(portIds)){
+//				portIds = rotation.addCallsToList(portIds);
 				rotations.add(rotation);
-			}
+//			}
 		}
 		//		for(Rotation r : rotations){
 		//			r.createRotationGraph();
