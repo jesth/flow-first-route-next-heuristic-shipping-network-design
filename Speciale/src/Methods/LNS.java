@@ -32,7 +32,7 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 
-		int iteration = 3;
+		int iteration = 23;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 

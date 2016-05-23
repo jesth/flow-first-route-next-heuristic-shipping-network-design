@@ -560,7 +560,7 @@ public class Graph {
 	 * @param p
 	 */
 	public void insertPort(Rotation r, Edge e, Port p) {
-		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
+//		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
 		Node fromNode = e.getFromNode();
 		Node toNode = e.getToNode();
 		deleteEdge(e);
@@ -575,14 +575,41 @@ public class Graph {
 		createTransshipmentEdges(dwell);
 		createLoadUnloadEdges(dwell);
 		r.calcOptimalSpeed();
+		r.checkNoInRotation();
+	}
+	
+	public void insertDoublePort(Rotation r, Edge e, Port p1, Port p2){
+		Node fromNode = e.getFromNode();
+		Node toNode = e.getToNode();
+		deleteEdge(e);
+		r.incrementNoInRotation(e.getNoInRotation());
+		r.incrementNoInRotation(e.getNoInRotation());
+		Node newArrNode1 = createRotationNode(p1, r, false);
+		Node newDepNode1 = createRotationNode(p1, r, true);
+		Node newArrNode2 = createRotationNode(p2, r, false);
+		Node newDepNode2 = createRotationNode(p2, r, true);
+		DistanceElement newIngoing = Data.getBestDistanceElement(fromNode.getPort(), newArrNode1.getPort(), r.getVesselClass());
+		DistanceElement newOutgoing = Data.getBestDistanceElement(newDepNode2.getPort(), toNode.getPort(), r.getVesselClass());
+		DistanceElement newBetween = Data.getBestDistanceElement(newDepNode1.getPort(), newArrNode2.getPort(), r.getVesselClass());
+		createRotationEdge(r, fromNode, newArrNode1, 0, r.getVesselClass().getCapacity(), e.getNoInRotation(), newIngoing);
+		Edge dwell1 = createRotationEdge(r, newArrNode1, newDepNode1, 0, r.getVesselClass().getCapacity(), -1, null);
+		createRotationEdge(r, newDepNode1, newArrNode2, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+1, newBetween);
+		Edge dwell2 = createRotationEdge(r, newArrNode2, newDepNode2, 0, r.getVesselClass().getCapacity(), -1, null);
+		createRotationEdge(r, newDepNode2, toNode, 0, r.getVesselClass().getCapacity(), e.getNoInRotation()+2, newOutgoing);
+		createTransshipmentEdges(dwell1);
+		createLoadUnloadEdges(dwell1);
+		createTransshipmentEdges(dwell2);
+		createLoadUnloadEdges(dwell2);
+		r.calcOptimalSpeed();
+		r.checkNoInRotation();
 	}
 
 	/** Insert a port by adding a detour from a port to the new port and then back again.
 	 * @param r
 	 */
-	public void insertPort(Rotation r){
-
-	}
+//	public void insertPort(Rotation r){
+//
+//	}
 
 	public Edge removePort(Edge dwell){
 		Rotation r = dwell.getRotation();
@@ -616,7 +643,7 @@ public class Graph {
 		fromNode = ingoingEdge.getFromNode();
 		toNode = outgoingEdge.getToNode();
 		Edge newSailEdge = null;
-		if(fromNode.getPort().equals(toNode.getPort())){
+		if(fromNode.getPort().equals(toNode.getPort()) && r.getNoOfPortStays() == 1){
 			System.err.println("Rotation dying");
 			deleteNode(fromNode);
 			deleteNode(toNode);
@@ -628,6 +655,7 @@ public class Graph {
 			newSailEdge = createRotationEdge(r, fromNode, toNode, 0, r.getVesselClass().getCapacity(), ingoingEdge.getNoInRotation(), distance);
 			r.calcOptimalSpeed();
 		}
+		r.checkNoInRotation();
 		return newSailEdge;
 	}
 
