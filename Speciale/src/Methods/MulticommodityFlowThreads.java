@@ -323,7 +323,6 @@ public class MulticommodityFlowThreads {
 
 	}
 
-
 	public void setBFActive(int fromPortId) {
 		for(BellmanFord bf : bellmanFords){
 			if(bf.getCentroidNode().getPortId() == fromPortId){
@@ -332,6 +331,7 @@ public class MulticommodityFlowThreads {
 		}
 	}
 
+	
 	public void setBFsActive(){
 		boolean[] activeCentroids = new boolean[Data.getPortsMap().size()];
 		for(Demand d : graph.getDemands()){
