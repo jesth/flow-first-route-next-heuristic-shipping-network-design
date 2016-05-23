@@ -32,8 +32,8 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 
-		int iteration = 3;
 		int lastImproveIter = 3;
+		int iteration = 23;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
@@ -42,7 +42,7 @@ public class LNS {
 			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
 			for(Rotation r : remove){
 				//				Rotation r = remove.remove(i);
-				if(r.removeWorstPort(0.8)){
+				if(r.removeWorstPort(1)){
 					if(r.isActive()){
 						newRemove.add(r);
 					}
@@ -71,7 +71,7 @@ public class LNS {
 				}
 			} else if (rand < 0.66666){
 				for(Rotation r : rotations){
-					if(r.removeWorstPort(0.8)){
+					if(r.removeWorstPort(1)){
 						if(r.isActive()){
 							remove.add(r);
 						}

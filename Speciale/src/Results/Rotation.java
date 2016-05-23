@@ -192,6 +192,9 @@ public class Rotation {
 	//	}
 
 	public void implementInsertPort(Graph graph, Port port, Edge nextSailEdge){
+		Port prevPort = nextSailEdge.getFromNode().getPort();
+		graph.insertDoublePort(this, nextSailEdge, port, prevPort);
+		/*
 		int noInRot = nextSailEdge.getNoInRotation();
 
 		incrementNoInRotation(noInRot);
@@ -201,6 +204,7 @@ public class Rotation {
 		ArrayList<Node> newRotNodes = implementInsertPortNodes(graph, port, nextSailEdge);
 		implementInsertPortEdges(graph, newRotNodes, nextSailEdge, noInRot);
 		calcOptimalSpeed();
+		*/
 	}
 
 	private void implementInsertPortEdges(Graph graph, ArrayList<Node> newNodes, Edge worstNextSail, int noInRot) {
@@ -835,5 +839,19 @@ public class Rotation {
 
 	public void removeRotationGraph(){
 		this.rotationGraph = null;
+	}
+
+	public void checkNoInRotation() {
+		int prevNo = -1;
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				int no = e.getNoInRotation();
+				if(no == prevNo){
+					throw new RuntimeException("Duplicate number in rotation! Rotation no. " + id + ", duplicate ID " + no);
+				}
+				prevNo = no;
+			}
+		}
+		
 	}
 }
