@@ -88,6 +88,9 @@ public class LNS {
 					graph.runMcf();
 					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
 					madeChange = false;
+					for(Rotation r : graph.getResult().getRotations()){
+						r.removeRotationGraph();
+					}	
 				}
 			}
 			
@@ -111,6 +114,7 @@ public class LNS {
 				}
 			} else {
 				for(Rotation r : graph.getResult().getRotations()){
+					r.removeRotationGraph();
 					r.createRotationGraph();
 				}
 				if(graph.serviceBiggestOmissionDemand(iteration)){
@@ -191,7 +195,7 @@ public class LNS {
 			}
 		}
 		ArrayList<Integer> portIds = new ArrayList<Integer>();
-		int noOfRotations = 7;
+		int noOfRotations = 6;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
 		while(!rotationsList.isEmpty() && rotations.size()<noOfRotations){
 			int arraySize = rotationsList.size();

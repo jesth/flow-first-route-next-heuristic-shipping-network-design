@@ -1266,7 +1266,7 @@ public class Graph {
 			}
 		}
 		if(madeChange){
-			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
+//			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
 			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
 		}
 		return madeChange;
