@@ -458,6 +458,10 @@ public class Node {
 		idCounter.getAndDecrement();
 	}
 	
+	public static void resetIdCounter() {
+		idCounter.set(0);
+	}
+	
 	public String simplePrint(){
 		String str = "";
 		if(fromCentroid){

@@ -315,7 +315,6 @@ public class Graph {
 						toNode = e.getToNode();
 						if(!e.getFromNode().getRotation().equals(oldRotation)){
 							createFeederEdge(fromNode, toNode, newRotation, lowestFreeCap, r.getFFE());
-//							lowestFreeCap = Integer.MAX_VALUE-r.getFFE()-1;
 						}
 					} else if(e.getFromNode().isFromCentroid()){
 						fromNode = e.getFromNode();
@@ -1082,6 +1081,16 @@ public class Graph {
 		return insertNodes;
 	}
 
+	public ArrayList<Node> tryInsertMakeNodesEdge(Rotation r, Port feederPort, Edge nextSailEdge) {
+		ArrayList<Node> insertNodes = new ArrayList<Node>(4);
+		Node newFeederArrNode = createRotationNode(feederPort, r, false);
+		Node newFeederDepNode = createRotationNode(feederPort, r, true);
+		insertNodes.add(newFeederArrNode);
+		insertNodes.add(newFeederDepNode);
+		nextSailEdge.setInactive();
+		return insertNodes;
+	}
+
 	public ArrayList<Edge> tryInsertMakeEdges(Rotation r, ArrayList<Node> insertNodes, Node orgDepNode, Node orgNextArrPortNode) {
 		ArrayList<Edge> insertEdges = new ArrayList<Edge>();
 		Node newFeederArrNode = insertNodes.get(0);
@@ -1108,6 +1117,24 @@ public class Graph {
 		ArrayList<Edge> loadUnloadNewOrgPort = createLoadUnloadEdges(newOrgDwell);
 		insertEdges.addAll(loadUnloadNewOrgPort);
 
+		return insertEdges;
+	}
+
+	public ArrayList<Edge> tryInsertMakeEdgesEdge(Rotation r, ArrayList<Node> insertNodes, Node orgDepNode, Node orgNextArrPortNode) {
+		ArrayList<Edge> insertEdges = new ArrayList<Edge>();
+		Node newFeederArrNode = insertNodes.get(0);
+		Node newFeederDepNode = insertNodes.get(1);
+		DistanceElement newToFeederPortDist = Data.getBestDistanceElement(orgDepNode.getPort(), newFeederArrNode.getPort(), r.getVesselClass());
+		DistanceElement newFromFeederPortDist = Data.getBestDistanceElement(newFeederDepNode.getPort(), orgNextArrPortNode.getPort(), r.getVesselClass());
+		Edge newToFeederPort = createRotationEdge(r, orgDepNode, newFeederArrNode, 0, r.getVesselClass().getCapacity(), 0, newToFeederPortDist);
+		Edge newFromFeederPort = createRotationEdge(r, newFeederDepNode, orgNextArrPortNode, 0, r.getVesselClass().getCapacity(), 0, newFromFeederPortDist);
+		insertEdges.add(newToFeederPort);
+		insertEdges.add(newFromFeederPort);
+		Edge newFeederDwell = createRotationEdge(r, newFeederArrNode, newFeederDepNode, 0, r.getVesselClass().getCapacity(), -1, null);
+		ArrayList<Edge> transhipmentFeederPort = createTransshipmentEdges(newFeederDwell);
+		insertEdges.addAll(transhipmentFeederPort);
+		ArrayList<Edge> loadUnloadFeederPort = createLoadUnloadEdges(newFeederDwell);
+		insertEdges.addAll(loadUnloadFeederPort);
 		return insertEdges;
 	}
 
@@ -1177,7 +1204,7 @@ public class Graph {
 		return noVesselsAvailable[vesselId];
 	}
 
-	public boolean serviceBiggestOmissionDemand() throws InterruptedException{
+	public boolean serviceBiggestOmissionDemand(int iteration) throws InterruptedException{
 		int[] portOmission = new int[Data.getPorts().length];
 		for(Demand d : demandsList){
 			for(Route r : d.getRoutes()){
@@ -1189,15 +1216,28 @@ public class Graph {
 				}
 			}
 		}
-		int biggestPort = -1;
-		int biggestOmission = -1;
+		int[] biggestPorts = new int[5];
+		int[] biggestOmissions = new int[5];
+//		int biggestPort = -1;
+//		int biggestOmission = -1;
 		for(int i = 0; i < portOmission.length; i++){
-			if(portOmission[i] > biggestOmission){
-				biggestOmission = portOmission[i];
-				biggestPort = i;
+			int biggestOmissionArray = 0;
+			int biggestOmissionPlaceArray = -1;
+			for(int j = 0; j < 5; j++){
+				int omission = biggestOmissions[j];
+				if(portOmission[i] > omission){
+					biggestOmissionArray = omission;
+					biggestOmissionPlaceArray = j;
+				}
+			}
+			if(biggestOmissionPlaceArray != -1){
+				biggestOmissions[biggestOmissionPlaceArray] = portOmission[i];
+				biggestPorts[biggestOmissionPlaceArray] = i;
 			}
 		}
-		Port p = getPort(biggestPort);
+		double rand = Data.getRandomNumber(iteration * 21);
+		int index = (int) (rand * biggestPorts.length);
+		Port p = getPort(biggestPorts[index]);
 		return serviceOmissionDemand(p);
 	}
 
@@ -1230,5 +1270,21 @@ public class Graph {
 			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
 		}
 		return madeChange;
+	}
+	
+	public Demand findHighestCostDemand(){
+		int highestCost = -Integer.MAX_VALUE;
+		Demand highestCostDemand = null;
+		for(Demand d : demandsList){
+			int cost = 0;
+			for(Route r : d.getRoutes()){
+				cost += r.getLagrangeCost() * r.getFFE();
+			}
+			if(cost > highestCost){
+				highestCost = cost;
+				highestCostDemand = d;
+			}
+		}
+		return highestCostDemand;
 	}
 }

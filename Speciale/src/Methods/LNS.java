@@ -14,6 +14,7 @@ import Data.Port;
 import Data.VesselClass;
 import Graph.Edge;
 import Graph.Graph;
+import Graph.Node;
 import Results.Rotation;
 import Results.Route;
 
@@ -24,11 +25,11 @@ public class LNS {
 	//	int timeToRun;
 
 
-//	public LNS(Graph inputGraph){
-//		this.graph = inputGraph;
-//		bestObj = graph.getResult().getObjective();
-//	}
-	
+	//	public LNS(Graph inputGraph){
+	//		this.graph = inputGraph;
+	//		bestObj = graph.getResult().getObjective();
+	//	}
+
 	public LNS(){
 		bestObj = -Integer.MAX_VALUE;
 	}
@@ -48,9 +49,10 @@ public class LNS {
 		//			throw new RuntimeException("STOP");
 		//		}
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
+		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int lastImproveIter = 22;
-		int iteration = 22;
+		int lastImproveIter = 3;
+		int iteration = 3;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
@@ -59,82 +61,37 @@ public class LNS {
 			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
 			for(Rotation r : remove){
 				//				Rotation r = remove.remove(i);
-				if(r.isActive()){
-					if(r.removeWorstPort(1)){
-						newRemove.add(r);
-					}
+				if(r.isActive() && r.removeWorstPort(1)){
+					madeChange = true;
+					newRemove.add(r);
 				}
 			}
 			remove = newRemove;
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
+			ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
+			for(Rotation r : insert){
+				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05)){
+					newInsert.add(r);
+					madeChange = true;
+				}
+			}
+			insert = newInsert;
 
 			if(iteration > lastImproveIter+5){
-				System.out.println("Diversification because of lastImproveIter");
-				for(int i=0; i<5; i++){
-					for(Rotation r : rotations){
-						if(r.isActive()){
-							if(r.removeWorstPort(0.2)){
-								remove.add(r);
-							}
-							madeChange = true;
-						}
-					}
-					rand = Data.getRandomNumber((iteration + i)* (i+1)*13);
-					rotations = findRotationsToNS(rand);
-				}
-				/*
-				Rotation lowestLfRot = null;
-				double lowestLf = 1;
-				for(Rotation r : graph.getResult().getRotations()){
-					if(r.getVesselClass().getCapacity() >= 1200){
-						double lf = r.getLoadFactor();
-						if(lf < lowestLf){
-							lowestLf = lf;
-							lowestLfRot = r;
-						}
-					}
-					graph.runMcf();
-					rand = Data.getRandomNumber((iteration + i) * (i+1) * 13);
-					rotations = findRotationsToNS(rand);
-				}
-				VesselClass vessel = lowestLfRot.getVesselClass();
-				graph.deleteRotation(lowestLfRot);
-				
-				graph.runMcf();
-				int largestOmissionDemand = 0;
-				Demand largestOmission = null;
-				for(Demand d : graph.getDemands()){
-					int omission = 0;
-					for(Route r : d.getRoutes()){
-						if(r.isOmission()){
-							omission += r.getFFE();
-						}
-					}
-					if(omission > largestOmissionDemand){
-						largestOmissionDemand = omission;
-						largestOmission = d;
-					}
-				}
-				ArrayList<Integer> ports = new ArrayList<Integer>();
-				ports.add(largestOmission.getOrigin().getPortId());
-				ports.add(largestOmission.getDestination().getPortId());
-				graph.createRotationFromPorts(ports, vessel, -1);
-				System.out.println("Creating rotation from " + largestOmission.getOrigin().getUNLocode() + "-" + largestOmission.getDestination().getUNLocode());
-				*/
+				diversify(insert, remove, iteration);
+				madeChange = true;
 				lastImproveIter = iteration+1;
-			} else if(rand < 0){
+			} else if(rand < 0.2){
 				for(Rotation r : rotations){
-					if(r.insertBestPort(1.1, 0.05)){
+					if(r.insertBestPort(1.05, 0.05)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 0.3){
+			} else if (rand < 0.6){
 				for(Rotation r : rotations){
-					if(r.isActive()){
-						if(r.removeWorstPort(1)){
-							remove.add(r);
-						}
+					if(r.isActive() && r.removeWorstPort(1)){
+						remove.add(r);
 						madeChange = true;
 					}
 				}
@@ -142,7 +99,7 @@ public class LNS {
 				for(Rotation r : graph.getResult().getRotations()){
 					r.createRotationGraph();
 				}
-				if(graph.serviceBiggestOmissionDemand()){
+				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
 				}
 			}
@@ -166,6 +123,52 @@ public class LNS {
 		progressWriter.close();
 	}
 
+	private void diversify(ArrayList<Rotation> insert, ArrayList<Rotation> remove, int iteration) throws InterruptedException{
+		System.out.println("Diversification because of lastImproveIter");
+		for(int i=0; i<5; i++){
+			double rand = Data.getRandomNumber((iteration + i)* (i+1)*13);
+			ArrayList<Rotation> rotations = findRotationsToNS(rand);
+			for(Rotation r : rotations){
+				if(r.isActive()){
+					if(r.removeWorstPort(0.2)){
+						remove.add(r);
+					}
+				}
+			}
+		}
+
+		Rotation lowestLfRot = null;
+		double lowestLf = 1;
+		for(Rotation r : graph.getResult().getRotations()){
+			if(r.getVesselClass().getCapacity() >= 1200){
+				double lf = r.getLoadFactor();
+				if(lf < lowestLf){
+					lowestLf = lf;
+					lowestLfRot = r;
+				}
+			}
+		}
+		VesselClass vessel = lowestLfRot.getVesselClass();
+		graph.deleteRotation(lowestLfRot);
+		System.out.println("Rotation " + lowestLfRot.getId() + " deleted.");
+		graph.runMcf();
+		Demand demand = graph.findHighestCostDemand();
+		ArrayList<Integer> portsId = new ArrayList<Integer>();
+		ArrayList<Port> ports = new ArrayList<Port>();
+		ports.add(demand.getOrigin());
+		ports.add(demand.getDestination());
+		portsId.add(demand.getOrigin().getPortId());
+		portsId.add(demand.getDestination().getPortId());
+		int spareVessels = graph.getNoVesselsAvailable(vessel.getId()) - graph.getNoVesselsUsed(vessel.getId());
+		if(ComputeRotations.calcNumberOfVessels(ports, vessel) <= spareVessels){
+			if(vessel.getDraft() <= demand.getOrigin().getDraft() && vessel.getDraft() <= demand.getDestination().getDraft()){
+				Rotation newR = graph.createRotationFromPorts(portsId, vessel, -1);
+				insert.add(newR);
+				System.out.println("Creating rotation from " + demand.getOrigin().getUNLocode() + "-" + demand.getDestination().getUNLocode());
+			}
+		}
+	}
+
 	public ArrayList<Rotation> findRotationsToNS(double rand){
 		ArrayList<Rotation> rotationsList = new ArrayList<Rotation>();
 		for(Rotation r : graph.getResult().getRotations()){
@@ -180,10 +183,10 @@ public class LNS {
 			int arraySize = rotationsList.size();
 			int pos = (int) (arraySize * rand);
 			Rotation rotation = rotationsList.remove(pos);
-//			if(!rotation.calls(portIds)){
-//				portIds = rotation.addCallsToList(portIds);
-				rotations.add(rotation);
-//			}
+			//			if(!rotation.calls(portIds)){
+			//				portIds = rotation.addCallsToList(portIds);
+			rotations.add(rotation);
+			//			}
 		}
 		//		for(Rotation r : rotations){
 		//			r.createRotationGraph();
@@ -216,6 +219,7 @@ public class LNS {
 				e.setUnusedInRotation();
 			}
 		}
+		resetIds();
 		Graph graph = new Graph("Demand_WorldSmall.csv");
 		ComputeRotations cr = new ComputeRotations(graph);
 		implementSol(cr, graph, sortedEdges, bestVesselAndDuration);
@@ -280,6 +284,13 @@ public class LNS {
 			int length = bestVesselAndDuration.get(i+1);
 			cr.createAuxFlowRotation(length, sortedEdges, vesselClass);
 		}
+	}
+
+	private void resetIds(){
+		Rotation.resetIdCounter();
+		Edge.resetIdCounter();
+		Node.resetIdCounter();
+		Demand.resetIdCounter();
 	}
 
 	private void saveSol(BufferedWriter progressWriter, long currentTime, int objective){

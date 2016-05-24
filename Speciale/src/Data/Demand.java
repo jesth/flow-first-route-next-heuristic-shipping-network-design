@@ -251,6 +251,10 @@ public class Demand {
 		}
 		return profit;
 	}
+	
+	public static void resetIdCounter() {
+		idCounter.set(0);
+	}
 
 
 //	/* (non-Javadoc)

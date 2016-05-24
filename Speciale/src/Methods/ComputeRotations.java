@@ -47,7 +47,9 @@ public class ComputeRotations {
 	public Rotation createAuxFlowRotation(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
 		ArrayList<AuxNode> rotationNodes = new ArrayList<AuxNode>();
 		AuxEdge firstEdge = getFirstUnusedEdge(durationWeeks, sortedEdges, vesselClass);
-		firstEdge.setUsedInRotation();
+		if(Data.getRandomNumber(durationWeeks * vesselClass.getCapacity()) > 0.1){
+			firstEdge.setUsedInRotation();
+		}
 		AuxNode node1 = firstEdge.getFromNode();
 		AuxNode node2 = firstEdge.getToNode();
 		rotationNodes.add(node1);
@@ -96,29 +98,29 @@ public class ComputeRotations {
 		for(AuxEdge e : firstNode.getIngoingEdges()){
 			AuxNode newNode = e.getFromNode();
 			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
-					double newDemand = e.getAvgLoad();
-					double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
-					double ratio = newDemand / detourTime;
-					if(ratio > bestRatio){
-						bestRatio = ratio;
-						bestNode = newNode;
-						bestEdge = e;
-						//					extraDuration = detourTime;
-					}
+				double newDemand = e.getAvgLoad();
+				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
+				double ratio = newDemand / detourTime;
+				if(ratio > bestRatio){
+					bestRatio = ratio;
+					bestNode = newNode;
+					bestEdge = e;
+					//					extraDuration = detourTime;
+				}
 			}
 		}
 		for(AuxEdge e : lastNode.getOutgoingEdges()){
 			AuxNode newNode = e.getToNode();
 			if(!e.isUsedInRotation() && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
-					double newDemand = e.getAvgLoad();
-					double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
-					double ratio = newDemand / detourTime;
-					if(ratio > bestRatio){
-						bestRatio = ratio;
-						bestNode = newNode;
-						bestEdge = e;
-						//					extraDuration = detourTime;
-					}
+				double newDemand = e.getAvgLoad();
+				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
+				double ratio = newDemand / detourTime;
+				if(ratio > bestRatio){
+					bestRatio = ratio;
+					bestNode = newNode;
+					bestEdge = e;
+					//					extraDuration = detourTime;
+				}
 			}
 		}
 		rotationNodes.add(bestNode);

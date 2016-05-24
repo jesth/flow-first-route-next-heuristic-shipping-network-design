@@ -592,6 +592,10 @@ public class Edge {
 		}
 		setInactive();
 	}
+	
+	public static void resetIdCounter() {
+		idCounter.set(0);
+	}
 
 	/**
 	 * @return A simple print of the edge.
