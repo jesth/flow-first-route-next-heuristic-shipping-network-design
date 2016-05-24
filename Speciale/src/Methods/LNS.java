@@ -162,25 +162,41 @@ public class LNS {
 				}
 			}
 		}
-		VesselClass vessel = lowestLfRot.getVesselClass();
 		graph.deleteRotation(lowestLfRot);
 		System.out.println("Rotation " + lowestLfRot.getId() + " deleted.");
 		graph.runMcf();
-		Demand demand = graph.findHighestCostDemand();
+		ArrayList<Demand> noGoes = new ArrayList<Demand>();
+		Rotation newR = createNewRotation(noGoes);
+		insert.add(newR);
+
+	}
+	
+	public Rotation createNewRotation(ArrayList<Demand> noGoes){
+		Demand demand = graph.findHighestCostDemand(noGoes);
 		ArrayList<Integer> portsId = new ArrayList<Integer>();
 		ArrayList<Port> ports = new ArrayList<Port>();
 		ports.add(demand.getOrigin());
 		ports.add(demand.getDestination());
 		portsId.add(demand.getOrigin().getPortId());
 		portsId.add(demand.getDestination().getPortId());
-		int spareVessels = graph.getNoVesselsAvailable(vessel.getId()) - graph.getNoVesselsUsed(vessel.getId());
-		if(ComputeRotations.calcNumberOfVessels(ports, vessel) <= spareVessels){
-			if(vessel.getDraft() <= demand.getOrigin().getDraft() && vessel.getDraft() <= demand.getDestination().getDraft()){
-				Rotation newR = graph.createRotationFromPorts(portsId, vessel, -1);
-				insert.add(newR);
-				System.out.println("Creating rotation from " + demand.getOrigin().getUNLocode() + "-" + demand.getDestination().getUNLocode());
+		Rotation newR = null;
+		for(int i = Data.getVesselClasses().size()-1; i>=0; i--){
+			VesselClass v = Data.getVesselClasses().get(i);
+			int reqVessels = ComputeRotations.calcNumberOfVessels(ports, v);
+			int spareVessels = graph.getNoVesselsAvailable(v.getId()) - graph.getNoVesselsUsed(v.getId());
+			if(reqVessels < spareVessels){
+				if(v.getDraft() <= demand.getOrigin().getDraft() && v.getDraft() <= demand.getDestination().getDraft()){
+					newR = graph.createRotationFromPorts(portsId, v, -1);
+					System.out.println("Creating rotation from " + demand.getOrigin().getUNLocode() + "-" + demand.getDestination().getUNLocode());
+					break;
+				}
 			}
 		}
+		if(newR == null){
+			noGoes.add(demand);
+			newR = createNewRotation(noGoes);
+		}
+		return newR;
 	}
 
 	public ArrayList<Rotation> findRotationsToNS(double rand){

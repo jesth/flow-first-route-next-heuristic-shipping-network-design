@@ -873,7 +873,7 @@ public class RunModel {
 		
 		LNS lns = new LNS();
 		
-		lns.run(900, 6);
+		lns.run(300, 6);
 
 //		graph.getResult().getRotations().get(2).createRotationGraph();
 //		graph.getResult().getRotations().get(2).findRotationFlow();
