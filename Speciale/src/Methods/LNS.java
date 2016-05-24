@@ -94,10 +94,10 @@ public class LNS {
 							}
 						}
 					}
-//					graph.runMcf();
-//					for(Rotation r : rotations){
-//						r.removeRotationGraph();
-//					}
+					graph.runMcf();
+					for(Rotation r : rotations){
+						r.removeRotationGraph();
+					}
 					rand = Data.getRandomNumber((iteration + i)* (i+1)*13);
 					rotations = findRotationsToNS(rand);
 				}
@@ -143,7 +143,7 @@ public class LNS {
 				lastImproveIter = iteration+1;
 			} else if(rand < 0.1){
 				for(Rotation r : rotations){
-					if(r.insertBestPort(1.1, 0.1)){
+					if(r.insertBestPort(1.1, 0.05)){
 						remove.add(r);
 						madeChange = true;
 					}
