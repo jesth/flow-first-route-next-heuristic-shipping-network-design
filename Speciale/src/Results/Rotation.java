@@ -224,6 +224,14 @@ public class Rotation {
 			}
 			nextEdge = nextEdge.getNextEdge().getNextEdge();
 		}
+//		mainGraph.getResult().saveAllEdgesSol("AllEdgesSolErrMain.csv");
+//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
+//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
+//		rotationGraph.getResult().saveRotationSol("RotationSolErrRot.csv");
+//		System.out.println("Rotation " + id);
+//		for(Port p : portArray){
+//			System.out.println(p.getUNLocode());
+//		}
 		return portArray;
 	}
 
@@ -535,6 +543,9 @@ public class Rotation {
 
 	private boolean checkInsertPortEdge(Edge e, Port insertPort) {
 		if(insertPort.getDraft() < vesselClass.getDraft()){
+			return false;
+		}
+		if(insertPort.equals(e.getFromNode().getPort()) || insertPort.equals(e.getToNode().getPort())){
 			return false;
 		}
 		ArrayList<Port> portArray = getInsertionPortArrayEdge(e, insertPort);

@@ -73,11 +73,11 @@ public class Graph {
 		rotation.setSubRotation(subRotation);
 		mcf = new MulticommodityFlowThreads(this);
 	}
-	
+
 	public Graph(Graph copyGraph){
 		result = new Result(this);
 		result.copyRotations(copyGraph.getResult());
-		
+
 		noVesselsAvailable = new int[copyGraph.noVesselsAvailable.length];
 		for(int i=0; i<copyGraph.noVesselsAvailable.length; i++){
 			noVesselsAvailable[i] = copyGraph.noVesselsAvailable[i];
@@ -86,34 +86,34 @@ public class Graph {
 		for(int i=0; i<copyGraph.noVesselsUsed.length; i++){
 			noVesselsUsed[i] = copyGraph.noVesselsUsed[i];
 		}
-		
+
 		nodes = new ArrayList<Node>();
 		nodes.addAll(copyGraph.nodes);
-		
+
 		edges = new ArrayList<Edge>();
 		edges.addAll(copyGraph.edges);
-		
+
 		fromCentroids = new ArrayList<Node>();
 		fromCentroids.addAll(copyGraph.fromCentroids);
 		subGraph = false;
 		Node.setNoOfCentroids(Data.getPortsMap().size());
-		
+
 		ports = new Port[copyGraph.getPorts().length];
 		for(int i=0; i<copyGraph.getPorts().length; i++){
 			ports[i] = copyGraph.ports[i];
 		}
-		
+
 		demandsList = new ArrayList<Demand>(copyGraph.getDemands().size());
 		demandsList.addAll(copyGraph.demandsList);
-		
+
 		demandsMatrix = createDemandsMatrix();
-//		createPorts();
-//		readDemands(demandFileName);
-//		createCentroids();
-//		createOmissionEdges();
+		//		createPorts();
+		//		readDemands(demandFileName);
+		//		createCentroids();
+		//		createOmissionEdges();
 		mcf = new MulticommodityFlowThreads(this);
 	}
-	
+
 
 	private void setNoVessels(){
 		this.noVesselsAvailable = new int[Data.getVesselClasses().size()];
@@ -397,7 +397,7 @@ public class Graph {
 							} else {
 								feeder.addCapacity(routeFFE);
 							}
-							
+
 						}
 					}
 				}
@@ -441,7 +441,7 @@ public class Graph {
 
 		return avgCost;
 	}
-	
+
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass, int id){
 		ArrayList<DistanceElement> distances = findDistances(ports, vesselClass);
 		Rotation rotation = createRotation(distances, vesselClass, id);
@@ -559,7 +559,7 @@ public class Graph {
 	 * @param p
 	 */
 	public void insertPort(Rotation r, Edge e, Port p) {
-//		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
+		//		System.out.println("Inserting " + p.getUNLocode() + " on rotation " + r.getId() + " between " + e.getFromPortUNLo() + " and " + e.getToPortUNLo());
 		Node fromNode = e.getFromNode();
 		Node toNode = e.getToNode();
 		deleteEdge(e);
@@ -576,7 +576,7 @@ public class Graph {
 		r.calcOptimalSpeed();
 		r.checkNoInRotation();
 	}
-	
+
 	public void insertDoublePort(Rotation r, Edge e, Port p1, Port p2){
 		Node fromNode = e.getFromNode();
 		Node toNode = e.getToNode();
@@ -606,16 +606,16 @@ public class Graph {
 	/** Insert a port by adding a detour from a port to the new port and then back again.
 	 * @param r
 	 */
-//	public void insertPort(Rotation r){
-//
-//	}
+	//	public void insertPort(Rotation r){
+	//
+	//	}
 
 	public Edge removePort(Edge dwell){
 		Rotation r = dwell.getRotation();
 		if(!dwell.isDwell()){
 			throw new RuntimeException("Passed edge is not dwell.");
 		}
-//		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
+		//		System.out.println("Removing port " + dwell.getFromPortUNLo() + " from rotation " + r.getId() + " with noInRotation from " + dwell.getPrevEdge().getNoInRotation());
 		Edge ingoingEdge = dwell.getPrevEdge();
 		Edge outgoingEdge = dwell.getNextEdge();
 		r.decrementNoInRotation(outgoingEdge.getNoInRotation());
@@ -1046,9 +1046,9 @@ public class Graph {
 		for(Edge e : handledEdges){
 			e.setInactive();
 		}
-//		System.out.println();
-//		for(Edge e : r.getRotationEdges()){
-//		}
+		//		System.out.println();
+		//		for(Edge e : r.getRotationEdges()){
+		//		}
 		//		for(Edge e : edges){
 		//			if(e.isActive() && e.isSail() && e.getRotation().getId() == 0){
 		//				System.out.println(e.simplePrint());
@@ -1218,8 +1218,8 @@ public class Graph {
 		}
 		int[] biggestPorts = new int[5];
 		int[] biggestOmissions = new int[5];
-//		int biggestPort = -1;
-//		int biggestOmission = -1;
+		//		int biggestPort = -1;
+		//		int biggestOmission = -1;
 		for(int i = 0; i < portOmission.length; i++){
 			int biggestOmissionArray = 0;
 			int biggestOmissionPlaceArray = -1;
@@ -1271,18 +1271,20 @@ public class Graph {
 		}
 		return madeChange;
 	}
-	
-	public Demand findHighestCostDemand(){
+
+	public Demand findHighestCostDemand(ArrayList<Demand> noGoes){
 		int highestCost = -Integer.MAX_VALUE;
 		Demand highestCostDemand = null;
 		for(Demand d : demandsList){
-			int cost = 0;
-			for(Route r : d.getRoutes()){
-				cost += r.getLagrangeCost() * r.getFFE();
-			}
-			if(cost > highestCost){
-				highestCost = cost;
-				highestCostDemand = d;
+			if(!noGoes.contains(d)){
+				int cost = 0;
+				for(Route r : d.getRoutes()){
+					cost += r.getLagrangeCost() * r.getFFE();
+				}
+				if(cost > highestCost){
+					highestCost = cost;
+					highestCostDemand = d;
+				}
 			}
 		}
 		return highestCostDemand;
