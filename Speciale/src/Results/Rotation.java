@@ -868,6 +868,43 @@ public class Rotation {
 				prevNo = no;
 			}
 		}
-
+	}
+	
+	public boolean removeUnservingCalls(double percentToAccept){
+		for(int i=rotationEdges.size()-1; i>=0; i--){
+			Edge e = rotationEdges.get(i);
+			Node arrNode = null;
+			Node depNode = null;
+			boolean tooFewUnloading = false;
+			boolean tooFewLoading = false;
+			if(e.isDwell()){
+				arrNode = e.getFromNode();
+				int unloadLoad = 0;
+				for(Edge unload : arrNode.getOutgoingEdges()){
+					if(unload.isLoadUnload() || unload.isTransshipment()){
+						unloadLoad += unload.getLoad();
+					}
+				}
+				if(unloadLoad < percentToAccept * vesselClass.getCapacity()){
+					tooFewUnloading = true;
+				}
+				
+				depNode = e.getToNode();
+				int loadLoad = 0;
+				for(Edge load : depNode.getIngoingEdges()){
+					if(load.isLoadUnload() || load.isTransshipment()){
+						loadLoad += load.getLoad();
+					}
+				}
+				if(loadLoad < percentToAccept * vesselClass.getCapacity()){
+					tooFewLoading = true;
+				}
+			}
+			if(tooFewUnloading && tooFewLoading){
+				mainGraph.removePort(e);
+				return true;
+			}
+		}
+		return false;
 	}
 }

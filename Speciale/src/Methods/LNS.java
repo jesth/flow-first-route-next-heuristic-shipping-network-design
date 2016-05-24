@@ -33,11 +33,11 @@ public class LNS {
 		bestObj = -Integer.MAX_VALUE;
 	}
 
-	public void run(int timeToRunSeconds) throws InterruptedException, IOException{
+	public void run(int timeToRunSeconds, int numIterToFindInit) throws InterruptedException, IOException{
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
-		graph = findInitialSolution(25);
+		graph = findInitialSolution(numIterToFindInit);
 		graph.runMcf();
 		bestObj = graph.getResult().getObjective();
 		System.out.println("Rotations generated.");
@@ -68,17 +68,36 @@ public class LNS {
 			remove = newRemove;
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 
+			if((iteration % 5) == 0){
+				for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
+					Rotation r = graph.getResult().getRotations().get(i); 
+					if(r.removeUnservingCalls(0.05)){
+						madeChange = true;
+						System.out.println("removed a unserving call !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+					}
+				}
+				if(madeChange){
+					graph.runMcf();
+					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
+					madeChange = false;
+				}
+			}
+			
 			if(iteration > lastImproveIter+5){
 				System.out.println("Diversification because of lastImproveIter");
 				for(int i=0; i<5; i++){
 					for(Rotation r : rotations){
 						if(r.isActive()){
-							if(r.removeWorstPort(0.2)){
+							if(r.removeWorstPort(0.5)){
 								remove.add(r);
+								madeChange = true;
 							}
-							madeChange = true;
 						}
 					}
+//					graph.runMcf();
+//					for(Rotation r : rotations){
+//						r.removeRotationGraph();
+//					}
 					rand = Data.getRandomNumber((iteration + i)* (i+1)*13);
 					rotations = findRotationsToNS(rand);
 				}
@@ -122,20 +141,20 @@ public class LNS {
 				System.out.println("Creating rotation from " + largestOmission.getOrigin().getUNLocode() + "-" + largestOmission.getDestination().getUNLocode());
 				*/
 				lastImproveIter = iteration+1;
-			} else if(rand < 0){
+			} else if(rand < 0.1){
 				for(Rotation r : rotations){
-					if(r.insertBestPort(1.1, 0.05)){
+					if(r.insertBestPort(1.1, 0.1)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 0.3){
+			} else if (rand < 0.40){
 				for(Rotation r : rotations){
 					if(r.isActive()){
 						if(r.removeWorstPort(1)){
 							remove.add(r);
+							madeChange = true;
 						}
-						madeChange = true;
 					}
 				}
 			} else {
@@ -155,7 +174,7 @@ public class LNS {
 					saveSol(progressWriter, currentTime, obj);
 					lastImproveIter = iteration+1;
 				}
-				System.out.println("Iteration objective: " + obj);
+				System.out.println("#"+ iteration +" Iteration objective: " + obj);
 				for(Rotation r : graph.getResult().getRotations()){
 					r.removeRotationGraph();
 				}
@@ -174,7 +193,7 @@ public class LNS {
 			}
 		}
 		ArrayList<Integer> portIds = new ArrayList<Integer>();
-		int noOfRotations = 5;
+		int noOfRotations = 7;
 		ArrayList<Rotation> rotations = new ArrayList<Rotation>(noOfRotations);
 		while(!rotationsList.isEmpty() && rotations.size()<noOfRotations){
 			int arraySize = rotationsList.size();
@@ -203,7 +222,7 @@ public class LNS {
 			System.out.println("Activity " + i);
 			Graph graph = new Graph("Demand_WorldSmall.csv");
 			ComputeRotations cr = new ComputeRotations(graph);
-			vesselAndDuration = findSolution(cr, graph, sortedEdges, i);
+			vesselAndDuration = findSolution(cr, graph, sortedEdges, i+iterations);
 			graph.runMcf();
 			int obj = graph.getResult().getObjective();
 			System.out.println("Objective " + obj);
