@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
@@ -27,10 +28,10 @@ import RotationFlow.RotationNode;
 public class Graph {
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
 
-	private ArrayList<Node> nodes;
+	private HashMap<Integer, Node> nodes;
 	private ArrayList<Node> fromCentroids;
 	//	private ArrayList<Node> toCentroids;
-	private ArrayList<Edge> edges;
+	private HashMap<Integer, Edge> edges;
 	private Result result;
 	private MulticommodityFlowThreads mcf;
 	private Demand[][] demandsMatrix;
@@ -43,8 +44,8 @@ public class Graph {
 	public Graph(String demandFileName) throws FileNotFoundException {
 		result = new Result(this);
 		setNoVessels();
-		this.nodes = new ArrayList<Node>();
-		this.edges = new ArrayList<Edge>();
+		this.nodes = new HashMap<Integer, Node>();
+		this.edges = new HashMap<Integer, Edge>();
 		this.fromCentroids = new ArrayList<Node>();
 		this.subGraph = false;
 		//		this.toCentroids = new ArrayList<Node>();
@@ -59,8 +60,8 @@ public class Graph {
 	public Graph(Rotation rotation) {
 		result = new Result(this);
 		setNoVessels();
-		this.nodes = new ArrayList<Node>();
-		this.edges = new ArrayList<Edge>();
+		this.nodes = new HashMap<Integer, Node>();
+		this.edges = new HashMap<Integer, Edge>();
 		this.fromCentroids = new ArrayList<Node>();
 		this.subGraph = true;
 		//		this.toCentroids = new ArrayList<Node>();
@@ -75,45 +76,41 @@ public class Graph {
 	}
 
 	public Graph(Graph copyGraph){
+		createPorts();
 		result = new Result(this);
-		result.copyRotations(copyGraph.getResult());
+		result.copyRotations(copyGraph.getResult(), this);
+		
+		nodes = new HashMap<Integer, Node>(copyGraph.getNodes().size());
+		copyNodes(copyGraph.nodes);
+
+		edges = new HashMap<Integer, Edge>(copyGraph.getEdges().size());
+		copyEdges(copyGraph.edges);
 
 		noVesselsAvailable = new int[copyGraph.noVesselsAvailable.length];
-		for(int i=0; i<copyGraph.noVesselsAvailable.length; i++){
+		for(int i = 0; i < copyGraph.noVesselsAvailable.length; i++){
 			noVesselsAvailable[i] = copyGraph.noVesselsAvailable[i];
 		}
+		
 		noVesselsUsed = new int[copyGraph.noVesselsUsed.length];
-		for(int i=0; i<copyGraph.noVesselsUsed.length; i++){
-			noVesselsUsed[i] = copyGraph.noVesselsUsed[i];
+		for(Rotation r : result.getRotations()){
+			r.calcOptimalSpeed();
 		}
-
-		nodes = new ArrayList<Node>();
-		nodes.addAll(copyGraph.nodes);
-
-		edges = new ArrayList<Edge>();
-		edges.addAll(copyGraph.edges);
-
+		
 		fromCentroids = new ArrayList<Node>();
-		fromCentroids.addAll(copyGraph.fromCentroids);
+		for(Node n : nodes.values()){
+			if(n.isFromCentroid()){
+				fromCentroids.add(n);
+			}
+		}
 		subGraph = false;
 		Node.setNoOfCentroids(Data.getPortsMap().size());
 
-		ports = new Port[copyGraph.getPorts().length];
-		for(int i=0; i<copyGraph.getPorts().length; i++){
-			ports[i] = copyGraph.ports[i];
-		}
-
 		demandsList = new ArrayList<Demand>(copyGraph.getDemands().size());
-		demandsList.addAll(copyGraph.demandsList);
+		copyDemands(copyGraph.demandsList);
 
 		demandsMatrix = createDemandsMatrix();
-		//		createPorts();
-		//		readDemands(demandFileName);
-		//		createCentroids();
-		//		createOmissionEdges();
 		mcf = new MulticommodityFlowThreads(this);
 	}
-
 
 	private void setNoVessels(){
 		this.noVesselsAvailable = new int[Data.getVesselClasses().size()];
@@ -123,7 +120,41 @@ public class Graph {
 			noVesselsUsed[i] = 0;
 		}
 	}
-
+	
+	private void copyNodes(HashMap<Integer, Node> copyNodes){
+		for(Node n : copyNodes.values()){
+			Port newP = getPorts()[n.getPortId()];
+			Rotation newR = null;
+			if(n.getRotation() != null){
+				newR = result.getRotation(n.getRotation().getId());
+			}
+			Node newN = new Node(newP, newR, n);
+			nodes.put(newN.getId(), newN);
+		}
+	}
+	
+	private void copyEdges(HashMap<Integer, Edge> copyEdges){
+		for(Edge e : copyEdges.values()){
+			Node newFromNode = nodes.get(e.getFromNode().getId());
+			Node newToNode = nodes.get(e.getToNode().getId());
+			Rotation newR = null;
+			if(e.getRotation() != null){
+				newR = result.getRotation(e.getRotation().getId());
+			}
+			Edge newE = new Edge(newFromNode, newToNode, newR, e);
+			addEdge(newE);
+		}
+	}
+	
+	private void copyDemands(ArrayList<Demand> demands){
+		for(Demand d : demands){
+			Port newFromPort = ports[d.getOrigin().getPortId()];
+			Port newToPort = ports[d.getDestination().getPortId()];
+			Demand newD = new Demand(d, newFromPort, newToPort);
+			demandsList.add(newD);
+		}
+	}
+	
 	private void createPorts(){
 		int size = Data.getPorts().length;
 		ports = new Port[size];
@@ -211,8 +242,8 @@ public class Graph {
 			Node fromCentroid = new Node(p, true);
 			Node toCentroid = new Node(p, false);
 			fromCentroids.add(fromCentroid);
-			nodes.add(fromCentroid);
-			nodes.add(toCentroid);
+			nodes.put(fromCentroid.getId(), fromCentroid);
+			nodes.put(toCentroid.getId(), toCentroid);
 			//			}
 		}
 	}
@@ -222,7 +253,7 @@ public class Graph {
 			Node fromCentroid = d.getOrigin().getFromCentroidNode();
 			Node toCentroid = d.getDestination().getToCentroidNode();
 			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate());
-			edges.add(newOmissionEdge);
+			addEdge(newOmissionEdge);
 		}
 	}
 
@@ -237,7 +268,7 @@ public class Graph {
 			}
 		}
 		Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate());
-		edges.add(newOmissionEdge);
+		addEdge(newOmissionEdge);
 	}
 
 	public Rotation createRotation(ArrayList<DistanceElement> distances, VesselClass vesselClass){
@@ -374,14 +405,14 @@ public class Graph {
 			if(feeder == null){
 				int cost = computeFeederCost(fromNode, toNode, rotation);
 				feeder = new Edge(fromNode, toNode, cost, (freeCap+routeFFE), false, true, null, -1, null);
-				edges.add(feeder);
+				addEdge(feeder);
 				if(fromNode.isFromCentroid()){
 					for(Node n : rotation.getRotationNodes()){
 						if(!n.equals(toNode) && n.getPortId() == toNode.getPortId() && n.isDeparture()){
 							feeder = fromNode.getFeeder(n);
 							if(feeder == null){
 								feeder = new Edge(fromNode, n, cost, (freeCap+routeFFE), false, true, null, -1, null);
-								edges.add(feeder);
+								addEdge(feeder);
 							} else {
 								feeder.addCapacity(routeFFE);
 							}
@@ -393,7 +424,7 @@ public class Graph {
 							feeder = n.getFeeder(toNode);
 							if(feeder == null){
 								feeder = new Edge(n, toNode, cost, (freeCap+routeFFE), false, true, null, -1, null);
-								edges.add(feeder);
+								addEdge(feeder);
 							} else {
 								feeder.addCapacity(routeFFE);
 							}
@@ -503,7 +534,7 @@ public class Graph {
 	private Edge createTransshipmentEdge(Node fromNode, Node toNode){
 		int transshipCost = fromNode.getPort().getTransshipCost();
 		Edge newEdge = new Edge(fromNode, toNode, transshipCost, Integer.MAX_VALUE, false, false, null, -1, null);
-		edges.add(newEdge);
+		addEdge(newEdge);
 		return newEdge;
 	}
 
@@ -541,14 +572,14 @@ public class Graph {
 	public Node createRotationNode(Port port, Rotation rotation, boolean departure){
 		Node newNode = new Node(port, rotation, departure);
 		rotation.addRotationNode(newNode);
-		nodes.add(newNode);
+		nodes.put(newNode.getId(), newNode);
 		return newNode;
 	}
 
 	public Edge createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
 		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, false, rotation, noInRotation, distance);
 		rotation.addRotationEdge(newEdge);
-		edges.add(newEdge);
+		addEdge(newEdge);
 		return newEdge;
 	}
 
@@ -708,7 +739,7 @@ public class Graph {
 	}
 
 	private void decrementNodeIds(int id){
-		for(Node i : nodes){
+		for(Node i : nodes.values()){
 			if(i.getId() > id){
 				i.decrementId();
 			}
@@ -775,7 +806,7 @@ public class Graph {
 	public Edge createLoadUnloadEdge(Node fromNode, Node toNode){
 		int loadUnloadCost = fromNode.getPort().getMoveCost();
 		Edge newEdge = new Edge(fromNode, toNode, loadUnloadCost, Integer.MAX_VALUE, false, false, null, -1, null);
-		edges.add(newEdge);
+		addEdge(newEdge);
 		return newEdge;
 	}
 
@@ -789,7 +820,7 @@ public class Graph {
 			int[] demandTo = new int[noOfDemands];
 			int[] demand = new int[noOfDemands];
 
-			for(Edge e : edges){
+			for(Edge e : edges.values()){
 				int fromNode = e.getFromNode().getId();
 				int toNode = e.getToNode().getId();
 				capacity[fromNode][toNode] = e.getCapacity();
@@ -811,7 +842,7 @@ public class Graph {
 			outLegend = new BufferedWriter(new FileWriter(fileOutLegend));
 
 			outLegend.write("NodeId;Port;RotationId;Centroid");
-			for(Node i : nodes){
+			for(Node i : nodes.values()){
 				outLegend.newLine();
 				outLegend.write(i.getId()+";"+i.getPort().getUNLocode()+";");
 				if(i.isFromCentroid() || i.isToCentroid()){
@@ -885,11 +916,11 @@ public class Graph {
 		return fromCentroids;
 	}
 
-	public ArrayList<Node> getNodes() {
+	public HashMap<Integer, Node> getNodes() {
 		return nodes;
 	}
 
-	public ArrayList<Edge> getEdges() {
+	public HashMap<Integer, Edge> getEdges() {
 		return edges;
 	}
 
@@ -1288,5 +1319,9 @@ public class Graph {
 			}
 		}
 		return highestCostDemand;
+	}
+	
+	public void addEdge(Edge e){
+		edges.put(e.getId(), e);
 	}
 }

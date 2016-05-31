@@ -34,7 +34,7 @@ public class BellmanFord implements Runnable {
 	 * Sets centroids to unprocessed.
 	 */
 	public void reset(){
-		for(Node i : graph.getNodes()){
+		for(Node i : graph.getNodes().values()){
 			i.setLabels(centroidNode.getPortId(), Integer.MAX_VALUE, null);
 		}
 		centroidNode.setLabels(centroidNode.getPortId(), 0, null);
@@ -42,7 +42,7 @@ public class BellmanFord implements Runnable {
 	}
 
 	public void resetRep(){
-		for(Node i : graph.getNodes()){
+		for(Node i : graph.getNodes().values()){
 			i.setLabelsRep(centroidNode.getPortId(), Integer.MAX_VALUE, null);
 		}
 		centroidNode.setLabelsRep(centroidNode.getPortId(), 0, null);

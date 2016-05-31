@@ -50,7 +50,7 @@ public class Result {
 		int flowProfit = 0;
 		int omissionCost = 0;
 		int flowCost = 0;
-		for (Edge e : graph.getEdges()){
+		for (Edge e : graph.getEdges().values()){
 			if(e.isActive()){
 				if(repair){
 					if(e.isOmission()){
@@ -100,9 +100,20 @@ public class Result {
 
 		return OD;
 	}
+	
+	public Rotation getRotation(int id){
+		for(Rotation r : rotations){
+			if(r.getId() == id){
+				return r;
+			}
+		}
+		return null;
+	}
 
-	public void copyRotations(Result result) {
-		this.rotations.addAll(result.rotations);
+	public void copyRotations(Result copyResult, Graph newGraph) {
+		for(Rotation r : copyResult.getRotations()){
+			new Rotation(r, newGraph);
+		}
 	}
 	
 	public void saveRotationCost(String fileName){
@@ -259,7 +270,7 @@ public class Result {
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
 			out.write("Port;RotationFrom;RotationTo;ODId;ODFrom;ODTo;#FFE");
 			out.newLine();
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				if(e.isTransshipment()){
 					for(Route r : e.getRoutes()){
 						Demand d = r.getDemand();
@@ -284,7 +295,7 @@ public class Result {
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
 			out.write("Id;FromNodeId;ToNodeId;PortFrom;PortTo;Cost;Capacity;Load;TravelTimeRounded;Omission;Load;Unload;Transshipment;Sail/Dwell;Feeder;RotationIdFrom;RotationIdTo;NoInRotationFrom;NoInRotationTo");
 			out.newLine();
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				if(e.isActive()){
 					out.write(e.getId() + ";" + e.getFromNode().getId() + ";" + e.getToNode().getId() + ";");
 					out.write(e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";");
@@ -334,7 +345,7 @@ public class Result {
 			}
 			out.write(str); 
 			out.newLine();
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				if(e.isSail()){
 					out.write(e.getId() + ";" + e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";" + e.getCapacity());
 					for(int i : e.getLagrangeValues()){
@@ -359,7 +370,7 @@ public class Result {
 			}
 			out.write(str); 
 			out.newLine();
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				if(e.isSail()){
 					out.write(e.getId() + ";" + e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";" + e.getCapacity());
 					for(int i : e.getLoadValues()){

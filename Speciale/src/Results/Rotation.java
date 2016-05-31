@@ -1,5 +1,6 @@
 package Results;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.omg.CORBA.SystemException;
@@ -52,6 +53,22 @@ public class Rotation {
 		//		calculateSpeed();
 	}
 
+	public Rotation(Rotation r, Graph mainGraph) {
+		super();
+		this.id = r.getId();
+		this.vesselClass = r.getVesselClass();
+		this.rotationNodes = new ArrayList<Node>();
+		this.rotationEdges = new ArrayList<Edge>();
+		this.active = true;
+		this.speed = 0;
+		this.noOfVessels = 0;
+		this.distance = 0;
+		this.mainGraph = mainGraph;
+		this.rotationGraph = null;
+		this.subRotation = null;
+		mainGraph.getResult().addRotation(this);
+	}
+
 	public void createRotationGraph(){
 		if(rotationGraph == null){
 			this.rotationGraph = new Graph(this);
@@ -93,8 +110,9 @@ public class Rotation {
 		//		System.out.println("First bestObj: " + bestObj);
 		Port bestFeederPort = null;
 		Edge worstNextSail = null;
-		for(int i=rotationGraph.getEdges().size()-1; i >= 0; i--){
-			Edge e = rotationGraph.getEdges().get(i);
+		ArrayList<Edge> edges = new ArrayList<Edge>(rotationGraph.getEdges().values());
+		for(int i = edges.size()-1; i >= 0; i--){
+			Edge e = edges.get(i);
 			Edge nextSail = null;
 			Port feederPort = null;
 			if(e.isFeeder() && e.getLoad() >= vesselClass.getCapacity()*percentOfCapToAccept){
@@ -147,8 +165,9 @@ public class Rotation {
 		}
 		Port bestFeederPort = null;
 		Edge worstNextSail = null;
-		for(int i=rotationGraph.getEdges().size()-1; i >= 0; i--){
-			Edge e = rotationGraph.getEdges().get(i);
+		ArrayList<Edge> edges = new ArrayList<Edge>(rotationGraph.getEdges().values());
+		for(int i = edges.size()-1; i >= 0; i--){
+			Edge e = edges.get(i);
 			Edge nextSail = null;
 			Port feederPort = null;
 			if(e.isFeeder() && e.getLoad() >= vesselClass.getCapacity()*percentOfCapToAccept){
@@ -390,8 +409,9 @@ public class Rotation {
 		//		System.out.println("Org obj: " + bestObj);
 
 		Edge worstDwellEdge = null;
-		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
-			Edge e = rotationGraph.getEdges().get(i);
+		ArrayList<Edge> edges = new ArrayList<Edge>(rotationGraph.getEdges().values());
+		for(int i=edges.size()-1; i>=0; i--){
+			Edge e = edges.get(i);
 			if(e.isDwell() && isRelevantToRemove(e)){
 				if(checkRemovePort(e)){
 					ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
