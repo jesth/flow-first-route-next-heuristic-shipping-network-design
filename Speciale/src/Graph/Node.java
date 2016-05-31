@@ -85,6 +85,38 @@ public class Node {
 		this.outgoingEdges = new ArrayList<Edge>();
 	}
 	
+	public Node(Port port, Rotation rotation, Node copyNode){
+		super();
+		this.id = copyNode.getId();
+		this.active = true;
+		this.port = port;
+		if(copyNode.isDeparture()){
+			this.port.addDepartureNode(this);
+			this.departure = true;
+		} else if(copyNode.isArrival()) {
+			this.port.addArrivalNode(this);
+			this.arrival = true;
+		} else if(copyNode.isFromCentroid()){
+			this.port.setFromCentroidNode(this);
+			this.fromCentroid = true;
+		} else {
+			this.port.setToCentroidNode(this);
+			this.toCentroid = true;
+		}
+		this.rotation = rotation;
+		if(rotation != null){
+			rotation.addRotationNode(this);
+		}
+		this.distances = new int[noOfCentroids];
+		this.predecessors = new Edge[noOfCentroids];
+		this.unprocessed = new boolean[noOfCentroids];
+		this.distancesRep = new int[noOfCentroids];
+		this.predecessorsRep = new Edge[noOfCentroids];
+		this.unprocessedRep = new boolean[noOfCentroids];
+		this.ingoingEdges = new ArrayList<Edge>();
+		this.outgoingEdges = new ArrayList<Edge>();
+	}
+	
 	public static void setNoOfCentroids(int newNoOfCentroids){
 		noOfCentroids = newNoOfCentroids;
 	}

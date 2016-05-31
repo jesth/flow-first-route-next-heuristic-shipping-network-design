@@ -64,6 +64,22 @@ public class Demand {
 		destination.addDemand(demand, rate);
 		this.orgDemand = orgDemand;
 	}
+	
+	public Demand(Demand orgDemand, Port origin, Port destination) {
+		super();
+		this.id = orgDemand.getId();
+		this.origin = origin;
+		this.destination = destination;
+		this.demand = orgDemand.getDemand();
+		this.rate = orgDemand.getRate();
+		this.routes = new ArrayList<Route>();
+		this.maxTransitTime = orgDemand.getMaxTransitTime();
+		origin.setActive();
+		destination.setActive();
+		origin.addDemand(demand, rate);
+		destination.addDemand(demand, rate);
+		this.orgDemand = orgDemand;
+	}
 
 	/**
 	 * @return the origin

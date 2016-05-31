@@ -50,7 +50,7 @@ public class MulticommodityFlowThreads {
 	}
 
 	public void reset(){
-		for(Edge e : graph.getEdges()){
+		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
 				e.setLagrangeStep(50);
 				e.setLagrange(1);
@@ -71,7 +71,7 @@ public class MulticommodityFlowThreads {
 	public void run() throws InterruptedException{
 
 		ArrayList<Edge> sailEdges = new ArrayList<Edge>();
-		for(Edge e : graph.getEdges()){
+		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
 				sailEdges.add(e);
 			}
@@ -89,7 +89,7 @@ public class MulticommodityFlowThreads {
 		while (improvementCounter < 20 && iteration < 100){
 			//			System.out.println("Now running BellmanFord in iteration " + iteration);
 			//			System.out.println();
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				e.clearRoutes();
 			}
 			if(!graph.isSubGraph()){
@@ -177,7 +177,7 @@ public class MulticommodityFlowThreads {
 	private double getOverflow() {
 		double overflow = 0;
 		int sailEdges = 0;
-		for(Edge e : graph.getEdges()){
+		for(Edge e : graph.getEdges().values()){
 			if(e.isSail() && e.isActive()){
 				sailEdges++;
 				overflow += Math.max(((double) e.getLoad()/ (double) e.getCapacity())-1,0);
@@ -202,7 +202,7 @@ public class MulticommodityFlowThreads {
 		}
 		int length = graph.getEdges().size();
 		int counter = 0;
-		ArrayList<Edge> edges = new ArrayList<Edge>(graph.getEdges());
+		ArrayList<Edge> edges = new ArrayList<Edge>(graph.getEdges().values());
 		while(length > 0){
 			if(counter >= 1000){
 				counter -= 1000;
@@ -240,7 +240,7 @@ public class MulticommodityFlowThreads {
 //				System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
 			}
 			updateBestFlow(flowProfit);
-			for(Edge e : graph.getEdges()){
+			for(Edge e : graph.getEdges().values()){
 				if(e.isSail()){
 					e.decreaseLagrangeStep();
 				}
@@ -287,7 +287,7 @@ public class MulticommodityFlowThreads {
 		for(Demand d : graph.getDemands()){
 			d.clearRoutes();
 		}
-		for(Edge e : graph.getEdges()){
+		for(Edge e : graph.getEdges().values()){
 			e.clearRoutes();
 		}
 		for(Route r : bestRoutes){
@@ -306,7 +306,7 @@ public class MulticommodityFlowThreads {
 //		}
 
 
-		for(Edge e : graph.getEdges()){
+		for(Edge e : graph.getEdges().values()){
 			//			System.out.println(e.simplePrint() + " with load " + e.getLoad());
 //			if(e.isSail()){
 //				for(Route r : e.getRoutes()){

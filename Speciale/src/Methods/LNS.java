@@ -52,7 +52,7 @@ public class LNS {
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
 		int lastImproveIter = 3;
-		int iteration = 3;
+		int iteration = 4;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
@@ -228,32 +228,27 @@ public class LNS {
 	private Graph findInitialSolution(int iterations) throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
-		ArrayList<Integer> vesselAndDuration;
-		ArrayList<Integer> bestVesselAndDuration = new ArrayList<Integer>();
 		int bestObj = -Integer.MAX_VALUE;
+		Graph bestGraph = null;
 
 		for(int i = 0; i < iterations; i++){
+			resetIds();
 			System.out.println("Activity " + i);
 			Graph graph = new Graph("Demand_WorldSmall.csv");
 			ComputeRotations cr = new ComputeRotations(graph);
-			vesselAndDuration = findSolution(cr, graph, sortedEdges, i+iterations);
+			findSolution(cr, graph, sortedEdges, i+iterations);
 			graph.runMcf();
 			int obj = graph.getResult().getObjective();
 			System.out.println("Objective " + obj);
 			if(obj > bestObj){
 				bestObj = obj;
-				bestVesselAndDuration = new ArrayList<Integer>(vesselAndDuration);
+				bestGraph = graph;
 			}
-			vesselAndDuration.clear();
 			for(AuxEdge e : sortedEdges){
 				e.setUnusedInRotation();
 			}
 		}
-		resetIds();
-		Graph graph = new Graph("Demand_WorldSmall.csv");
-		ComputeRotations cr = new ComputeRotations(graph);
-		implementSol(cr, graph, sortedEdges, bestVesselAndDuration);
-		return graph;
+		return bestGraph;
 	}
 
 	private ArrayList<Integer> findSolution(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, int iteration){
