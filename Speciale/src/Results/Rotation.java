@@ -436,6 +436,9 @@ public class Rotation {
 		if(!eIn.isDwell()){
 			throw new RuntimeException("Input mismatch");
 		}
+		if(!eIn.isActive()){
+			return false;
+		}
 		Port pIn = eIn.getFromNode().getPort();
 		for(Edge e : rotationEdges){
 			if(e.isDwell()){

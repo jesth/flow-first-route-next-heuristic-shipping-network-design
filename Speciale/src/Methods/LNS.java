@@ -52,7 +52,7 @@ public class LNS {
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
 		int lastImproveIter = 3;
-		int iteration = 4;
+		int iteration = 3;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
