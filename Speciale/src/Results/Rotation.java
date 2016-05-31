@@ -78,13 +78,13 @@ public class Rotation {
 	}
 	 */
 
-	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean force) throws InterruptedException{
+	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
 		int bestObj = rotationGraph.getResult().getObjective();
-		if(force){
+		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;	
 		}
 		
@@ -137,11 +137,14 @@ public class Rotation {
 		return madeChange;
 	}
 	
-	public boolean insertBestPortEdge(double flowBonus, double percentOfCapToAccept) throws InterruptedException{
+	public boolean insertBestPortEdge(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
+		if(notImproving){
+			bestObj = -Integer.MAX_VALUE;
+		}
 		Port bestFeederPort = null;
 		Edge worstNextSail = null;
 		for(int i=rotationGraph.getEdges().size()-1; i >= 0; i--){
@@ -375,12 +378,12 @@ public class Rotation {
 		return newNodes;
 	}
 
-	public boolean removeWorstPort(double bonus, boolean force) throws InterruptedException{
+	public boolean removeWorstPort(double bonus, boolean notImproving) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
-		if(force){
+		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;
 		}
 		
@@ -390,20 +393,22 @@ public class Rotation {
 		for(int i=rotationGraph.getEdges().size()-1; i>=0; i--){
 			Edge e = rotationGraph.getEdges().get(i);
 			if(e.isDwell() && isRelevantToRemove(e)){
-				ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
-				rotationGraph.runMcf();
-				int flowProfit = rotationGraph.getResult().getFlowProfit(false);
-				int rotationCost = (int) (subRotation.calcCost()*bonus);
-				int obj = flowProfit - rotationCost;
-				//				System.out.println("flowProfit: " + flowProfit + " rotationCost: " + rotationCost + " obj: " + obj);
+				if(checkRemovePort(e)){
+					ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
+					rotationGraph.runMcf();
+					int flowProfit = rotationGraph.getResult().getFlowProfit(false);
+					int rotationCost = (int) (subRotation.calcCost()*bonus);
+					int obj = flowProfit - rotationCost;
+					//				System.out.println("flowProfit: " + flowProfit + " rotationCost: " + rotationCost + " obj: " + obj);
 
-				//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
-				if(obj > bestObj){
-					bestObj = obj;
-					worstDwellEdge = e;
-					madeChange = true;
+					//				System.out.println("Try obj: " + obj + " by removing " + e.getFromPortUNLo());
+					if(obj > bestObj){
+						bestObj = obj;
+						worstDwellEdge = e;
+						madeChange = true;
+					}
+					rotationGraph.undoTryRemovePort(handledEdges, subRotation);
 				}
-				rotationGraph.undoTryRemovePort(handledEdges, subRotation);
 			}
 		}
 		if(madeChange){
@@ -563,6 +568,47 @@ public class Rotation {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean checkRemovePort(Edge dwellEdge){
+		ArrayList<Port> portArray = getRemovePortArray(dwellEdge);
+		
+		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
+		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
+		if(noVesselsAvailable < neededVessels){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private ArrayList<Port> getRemovePortArray(Edge dwellEdge) {
+		ArrayList<Port> portArray = new ArrayList<Port>();
+		for(Edge e : rotationEdges){
+			if(e.isDwell() && !e.equals(dwellEdge)){
+				portArray.add(e.getFromNode().getPort());
+			}
+		}
+		boolean consecutivePorts = true;
+		while(consecutivePorts){
+			consecutivePorts = false;
+			Port i = portArray.get(0);
+			Port j = portArray.get(portArray.size()-1);
+			if(i.equals(j)){
+				portArray.remove(portArray.size()-1);
+				consecutivePorts = true;
+			}
+			for(int n=portArray.size()-1; n>=1; n--){
+				i = portArray.get(n);
+				j = portArray.get(n-1);
+				if(i.equals(j)){
+					portArray.remove(i);
+					consecutivePorts = true;
+				}
+			}
+		}
+		
+		return portArray;
 	}
 
 	private int findClosestPort(int portId){
