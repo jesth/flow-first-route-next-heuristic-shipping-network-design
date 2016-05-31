@@ -52,7 +52,7 @@ public class LNS {
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
 		int lastImproveIter = 3;
-		int iteration = 3;
+		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
@@ -70,14 +70,14 @@ public class LNS {
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 			ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
 			for(Rotation r : insert){
-				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05)){
+				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 					newInsert.add(r);
 					madeChange = true;
 				}
 			}
 			insert = newInsert;
 
-			if((iteration % 5) == 0){
+			if((iteration % 3) == 0){
 				for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
 					Rotation r = graph.getResult().getRotations().get(i); 
 					if(r.removeUnservingCalls(0.05)){
@@ -85,7 +85,7 @@ public class LNS {
 					}
 				}
 				if(madeChange){
-					graph.runMcf();
+//					graph.runMcf();
 					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
 					madeChange = false;
 					for(Rotation r : graph.getResult().getRotations()){
@@ -93,33 +93,35 @@ public class LNS {
 					}	
 				}
 			}
+			graph.runMcf();
+			for(Rotation r : graph.getResult().getRotations()){
+				r.removeRotationGraph();
+				r.createRotationGraph();
+			}
+			if(graph.serviceBiggestOmissionDemand(iteration)){
+				madeChange = true;
+			}
 			
 			if(iteration > lastImproveIter+5){
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastImproveIter = iteration+1;
-			} else if(rand < 0.1){
+			} else if(rand < 0.4){
 				for(Rotation r : rotations){
-					if(r.isActive() && r.insertBestPort(1.05, 0.05, true)){
+					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 0.2){
+			} else if (rand < 1){
 				for(Rotation r : rotations){
-					if(r.isActive() && r.removeWorstPort(1, true)){
+					if(r.isActive() && r.removeWorstPort(1, false)){
 //						remove.add(r);
 						madeChange = true;
 					}
 				}
 			} else {
-				for(Rotation r : graph.getResult().getRotations()){
-					r.removeRotationGraph();
-					r.createRotationGraph();
-				}
-				if(graph.serviceBiggestOmissionDemand(iteration)){
-					madeChange = true;
-				}
+				
 			}
 			if(madeChange){
 				graph.runMcf();	
@@ -143,12 +145,12 @@ public class LNS {
 
 	private void diversify(ArrayList<Rotation> insert, ArrayList<Rotation> remove, int iteration) throws InterruptedException{
 		System.out.println("Diversification because of lastImproveIter");
-		for(int i=0; i<5; i++){
+		for(int i=0; i<7; i++){
 			double rand = Data.getRandomNumber((iteration + i)* (i+1)*13);
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 			for(Rotation r : rotations){
 				if(r.isActive()){
-					if(r.removeWorstPort(0.2, false)){
+					if(r.removeWorstPort(0.5, false)){
 						remove.add(r);
 					}
 				}
