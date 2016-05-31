@@ -410,4 +410,14 @@ public class Result {
 		}
 	}
 
+	public int getHighestRotationId() {
+		int highestId = 0;
+		for(Rotation r : rotations){
+			if(r.getId() > highestId){
+				highestId = r.getId();
+			}
+		}
+		return highestId;
+	}
+
 }

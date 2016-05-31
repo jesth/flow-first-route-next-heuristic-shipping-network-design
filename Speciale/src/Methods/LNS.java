@@ -51,7 +51,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int lastImproveIter = 3;
+		int lastImproveIter = 33;
 		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
@@ -254,6 +254,7 @@ public class LNS {
 				e.setUnusedInRotation();
 			}
 		}
+		Rotation.setIdCounter(bestGraph.getResult().getHighestRotationId() + 1);
 		return bestGraph;
 	}
 

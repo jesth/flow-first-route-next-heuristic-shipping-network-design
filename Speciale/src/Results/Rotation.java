@@ -1140,4 +1140,9 @@ public class Rotation {
 	public static void resetIdCounter() {
 		idCounter.set(0);
 	}
+
+	public static void setIdCounter(int i) {
+		idCounter.set(i);
+		
+	}
 }
