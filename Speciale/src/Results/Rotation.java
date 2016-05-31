@@ -78,12 +78,16 @@ public class Rotation {
 	}
 	 */
 
-	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept) throws InterruptedException{
+	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean force) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
 		int bestObj = rotationGraph.getResult().getObjective();
+		if(force){
+			bestObj = -Integer.MAX_VALUE;	
+		}
+		
 		//		int bestObj = -Integer.MAX_VALUE;
 		//		System.out.println("\n\nObj before inserting port: " + rotationGraph.getResult().getObjective());
 		//		System.out.println("First bestObj: " + bestObj);
@@ -371,11 +375,15 @@ public class Rotation {
 		return newNodes;
 	}
 
-	public boolean removeWorstPort(double bonus) throws InterruptedException{
+	public boolean removeWorstPort(double bonus, boolean force) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
+		if(force){
+			bestObj = -Integer.MAX_VALUE;
+		}
+		
 		//		System.out.println("Org obj: " + bestObj);
 
 		Edge worstDwellEdge = null;

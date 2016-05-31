@@ -61,7 +61,7 @@ public class LNS {
 			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
 			for(Rotation r : remove){
 				//				Rotation r = remove.remove(i);
-				if(r.isActive() && r.removeWorstPort(1)){
+				if(r.isActive() && r.removeWorstPort(1, false)){
 					madeChange = true;
 					newRemove.add(r);
 				}
@@ -100,15 +100,15 @@ public class LNS {
 				lastImproveIter = iteration+1;
 			} else if(rand < 0.1){
 				for(Rotation r : rotations){
-					if(r.isActive() && r.insertBestPort(1.05, 0.05)){
+					if(r.isActive() && r.insertBestPort(1.05, 0.05, true)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 0.4){
+			} else if (rand < 0.2){
 				for(Rotation r : rotations){
-					if(r.isActive() && r.removeWorstPort(1)){
-						remove.add(r);
+					if(r.isActive() && r.removeWorstPort(1, true)){
+//						remove.add(r);
 						madeChange = true;
 					}
 				}
@@ -148,7 +148,7 @@ public class LNS {
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
 			for(Rotation r : rotations){
 				if(r.isActive()){
-					if(r.removeWorstPort(0.2)){
+					if(r.removeWorstPort(0.2, false)){
 						remove.add(r);
 					}
 				}
