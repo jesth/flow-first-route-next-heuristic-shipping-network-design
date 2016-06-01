@@ -222,6 +222,12 @@ public class LNS {
 	private Graph findInitialSolution(int iterations, AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
+		ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
+		for(AuxEdge ae : sortedEdges){
+			if(ae.isUsedInRotation()){
+				usedEdges.add(ae);
+			}
+		}
 		int bestObj = -Integer.MAX_VALUE;
 		Graph bestGraph = null;
 
@@ -237,8 +243,11 @@ public class LNS {
 				bestObj = obj;
 				bestGraph = graph;
 			}
-			for(AuxEdge e : sortedEdges){
-				e.setUnusedInRotation();
+			for(AuxEdge ae : sortedEdges){
+				ae.setUnusedInRotation();
+			}
+			for(AuxEdge ae : usedEdges){
+				ae.setUsedInRotation();
 			}
 		}
 		return bestGraph;
@@ -266,8 +275,8 @@ public class LNS {
 		return vesselAndDuration;
 	}
 	
-	private void restart(AuxGraph auxGraph){
-		ArrayList<Rotation> rotationsToKeep = findBestRotations();
+	private void restart(AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
+		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		auxGraph.setEdgesUsed(rotationsToKeep);
 		graph = findInitialSolution(5, auxGraph);
 	}
