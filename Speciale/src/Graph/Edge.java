@@ -30,7 +30,6 @@ public class Edge {
 	private Rotation rotation;
 	private int noInRotation;
 	private ArrayList<Route> routes;
-	private static AtomicInteger idCounter = new AtomicInteger();
 	private DistanceElement distance;
 	private int[] lagrangeValues = new int[1200];
 	private int[] loadValues = new int[1200];
@@ -48,10 +47,10 @@ public class Edge {
 	 * @param noInRotation - the number in the rotation for sail edges only. -1 if dwell, transshipment or load/unload.
 	 * @param distance - the DistanceElement associated with the edge. Null if dwell, transshipment or load/unload.
 	 */
-	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, boolean feederIn, Rotation rotation, int noInRotation, DistanceElement distance){
+	public Edge(Node fromNode, Node toNode, int cost, int capacity, boolean rotationEdge, boolean feederIn, Rotation rotation, int noInRotation, DistanceElement distance, int id){
 		super();
 		this.distance = distance;
-		this.id = idCounter.getAndIncrement();
+		this.id = id;
 		this.active = true;
 		this.fromNode = fromNode;
 		this.toNode = toNode;
@@ -101,9 +100,9 @@ public class Edge {
 	 * @param toNode
 	 * @param rate - the rate for transporting one FFE from origin to destination for the OD-pair represented by this edge.
 	 */
-	public Edge(Node fromNode, Node toNode, int rate){
+	public Edge(Node fromNode, Node toNode, int rate, int id){
 		super();
-		this.id = idCounter.getAndIncrement();
+		this.id = id;
 		this.active = true;
 		this.fromNode = fromNode;
 		this.toNode = toNode;
@@ -619,10 +618,6 @@ public class Edge {
 			}
 		}
 		setInactive();
-	}
-
-	public static void resetIdCounter() {
-		idCounter.set(0);
 	}
 
 	/**

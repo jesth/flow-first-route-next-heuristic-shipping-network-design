@@ -68,7 +68,7 @@ public class ComputeRotations {
 			rotationNodes.remove(rotationNodes.size()-1);
 		}
 		ArrayList<Integer> portsId = convertAuxNodes(rotationNodes);
-		return graph.createRotationFromPorts(portsId, vesselClass, -1);
+		return graph.createRotationFromPorts(portsId, vesselClass);
 	}
 
 	private AuxEdge getFirstUnusedEdge(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){

@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import Data.Demand;
 
 public class AuxDijkstra {
-	private static AuxGraph graph;
-	private static AuxHeap heap;
+	private AuxGraph graph;
+	private AuxHeap heap;
+	
+	public AuxDijkstra(AuxGraph graph){
+		this.graph = graph;
+		heap = new AuxHeap(graph);
+		reset();
+	}
 
-	public static void run(){
+	public void run(){
 		ArrayList<Demand> demandsList = graph.getDemands();
 		Demand[] demands = new Demand[demandsList.size()];
 		int[] remainingDemand = new int[demandsList.size()];
@@ -39,7 +45,7 @@ public class AuxDijkstra {
 		//		}
 	}
 
-	public static int chooseIndex(int[] remainingDemand, int totRemainingDemand){
+	public int chooseIndex(int[] remainingDemand, int totRemainingDemand){
 		int indexDemand = (int) (Math.random() * totRemainingDemand);
 		int index = -1;
 		int cumDemand = 0;
@@ -50,14 +56,7 @@ public class AuxDijkstra {
 		return index;
 	}
 
-	public static void initialize(AuxGraph inputGraph){
-		graph = inputGraph;
-		heap = new AuxHeap(graph);
-		reset();
-	}
-
-
-	private static void reset(){
+	private void reset(){
 		for(AuxNode i : graph.getNodes()){
 			i.setDistance(Integer.MAX_VALUE);
 			i.setPredecessor(null);
@@ -65,13 +64,13 @@ public class AuxDijkstra {
 		heap.reset();
 	}
 
-	public static void convert(int iterations){
+	public void convert(int iterations){
 		for(AuxEdge e : graph.getEdges()){
 			e.convertLoad(iterations);
 		}
 	}
 
-	private static void dijkstraSingle (AuxNode source, AuxNode sink){
+	private void dijkstraSingle (AuxNode source, AuxNode sink){
 		reset();
 		heap.setSource(source);
 		while (heap.getSize() > 0 && heap.getMin().getDistance() != Integer.MAX_VALUE){
@@ -100,7 +99,7 @@ public class AuxDijkstra {
 		}
 	}
 
-	private static void relax(AuxNode fromNode, AuxNode toNode, AuxEdge edge){
+	private void relax(AuxNode fromNode, AuxNode toNode, AuxEdge edge){
 		if (toNode.getDistance() > (fromNode.getDistance() + edge.getCost())){
 			toNode.setDistance(fromNode.getDistance() + edge.getCost());
 			toNode.setPredecessor(edge);

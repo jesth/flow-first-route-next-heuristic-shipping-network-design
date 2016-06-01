@@ -22,7 +22,6 @@ public class Node {
 	private Edge[] predecessorsRep;
 	private boolean[] unprocessedRep;
 	private static int noOfCentroids;
-	private static AtomicInteger idCounter = new AtomicInteger();
 	private ArrayList<Edge> ingoingEdges;
 	private ArrayList<Edge> outgoingEdges;
 
@@ -31,9 +30,9 @@ public class Node {
 	 * @param rotation - the rotation that the node represents.
 	 * @param departure - true if departure and false if arrival.
 	 */
-	public Node(Port port, Rotation rotation, boolean departure){
+	public Node(Port port, Rotation rotation, boolean departure, int id){
 		super();
-		this.id = idCounter.getAndIncrement();
+		this.id = id;
 		this.active = true;
 		this.port = port;
 		if(departure){
@@ -60,9 +59,9 @@ public class Node {
 	 * @param port - the port that the node represents.
 	 * @param fromCentroid - whether this is a fromCentroid.
 	 */
-	public Node(Port port, boolean fromCentroid){
+	public Node(Port port, boolean fromCentroid, int id){
 		super();
-		this.id = idCounter.getAndIncrement();
+		this.id = id;
 		this.active = true;
 		this.port = port;
 		this.rotation = null;
@@ -484,14 +483,6 @@ public class Node {
 	
 	public void decrementId(){
 		id--;
-	}
-	
-	public static void decrementIdCounter(){
-		idCounter.getAndDecrement();
-	}
-	
-	public static void resetIdCounter() {
-		idCounter.set(0);
 	}
 	
 	public String simplePrint(){
