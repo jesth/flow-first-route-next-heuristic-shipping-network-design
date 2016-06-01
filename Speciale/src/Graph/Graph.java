@@ -305,6 +305,7 @@ public class Graph {
 			e = e.getNextEdge().getNextEdge();
 		}
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass());
+		newRotation.setId(rotation.getId());
 		//		System.out.println("Creating feeder edges for " + newRotation.getId());
 		createFeederEdges(rotation, newRotation);
 		return newRotation;
@@ -1319,6 +1320,16 @@ public class Graph {
 			}
 		}
 		return highestCostDemand;
+	}
+	
+	public ArrayList<Rotation> findRotationsToKeep(){
+		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
+		for(Rotation r : result.getRotations()){
+			if(r.getPrimaryFFEPct() > 0.5 && r.getLoadFactor() > 0.7){
+				rotationsToKeep.add(r);
+			}
+		}
+		return rotationsToKeep;
 	}
 	
 	public void addEdge(Edge e){
