@@ -661,8 +661,8 @@ public class Rotation {
 	
 	public double percentPrimaryFFE() throws InterruptedException{
 		
-		int primary = 0;
-		int secondary = 0;
+		double primary = 0;
+		double secondary = 0;
 		for(Route r : getRoutes()){
 			boolean onlyRotaion = true;
 			for(Edge e : r.getRoute()){
@@ -678,7 +678,7 @@ public class Rotation {
 			}
 		}
 		
-		return (double) (primary/(primary+secondary));
+		return (primary/(primary+secondary));
 	}
 
 	public Edge getEdge(int noInRot){
