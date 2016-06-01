@@ -41,7 +41,8 @@ public class RunModel {
 	public static void saveAux() throws FileNotFoundException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_WorldSmall.csv");
-		AuxRun.initialize(testGraph, 10);
+		AuxRun auxRun = new AuxRun(testGraph, 10);
+		auxRun.run();
 		System.out.println("SaveAux is done");
 	}
 	
@@ -871,9 +872,12 @@ public class RunModel {
 //		int orgFlow = graph.getResult().getFlowProfit(false);
 //		System.out.println("Starting objective " + orgObj);
 		
+		
+		AuxGraph auxGraph = AuxGraph.deserialize();
+		
 		LNS lns = new LNS();
 		
-		lns.run(300, 6);
+		lns.run(300, 6, auxGraph);
 
 //		graph.getResult().getRotations().get(2).createRotationGraph();
 //		graph.getResult().getRotations().get(2).findRotationFlow();

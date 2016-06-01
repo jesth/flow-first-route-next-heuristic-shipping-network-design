@@ -16,6 +16,9 @@ import Data.DistanceElement;
 import Data.Port;
 import Data.PortData;
 import Data.VesselClass;
+import Graph.Edge;
+import Graph.Graph;
+import Results.Rotation;
 import Sortables.SortableAuxEdge;
 
 public class AuxGraph implements Serializable{
@@ -25,9 +28,10 @@ public class AuxGraph implements Serializable{
 	private AuxNode[] nodes;
 	private ArrayList<AuxEdge> edges;
 	private transient ArrayList<Demand> demandsList;
+	private transient AuxDijkstra dijkstra;
 
-	public AuxGraph(ArrayList<Demand> demandsList){
-		this.demandsList = demandsList;
+	public AuxGraph(Graph orgGraph){
+		this.demandsList = orgGraph.getDemands();
 		nodes = new AuxNode[Data.getPorts().length];
 		edges = new ArrayList<AuxEdge>();
 		ArrayList<VesselClass> vessels = Data.getVesselClasses();
@@ -39,7 +43,31 @@ public class AuxGraph implements Serializable{
 		}
 		generateNodes();
 		generateEdges();
-		AuxDijkstra.initialize(this);
+		dijkstra = new AuxDijkstra(this);
+	}
+	
+	public void setEdgesUsed(ArrayList<Rotation> rotationsToKeep){
+		for(Rotation r : rotationsToKeep){
+			for(Edge e : r.getRotationEdges()){
+				if(e.isSail()){
+					int fromPortId = e.getFromNode().getPortId();
+					int toPortId = e.getToNode().getPortId();
+					AuxNode fromNode = nodes[fromPortId];
+					AuxNode toNode = nodes[toPortId];
+					for(AuxEdge ae : fromNode.getOutgoingEdges()){
+						if(ae.getToNode().equals(toNode)){
+							ae.setUsedInRotation();
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public void runDijkstra(int iterations){
+		dijkstra.run();
+		dijkstra.convert(iterations);
 	}
 	
 	private void generateNodes(){
@@ -224,7 +252,7 @@ public class AuxGraph implements Serializable{
 		return auxGraph;
 	}
 	
-	public static ArrayList<AuxEdge> getSortedAuxEdges(){
+	public ArrayList<AuxEdge> getSortedAuxEdges(){
 		
 		AuxGraph auxGraph = deserialize();
 		ArrayList<SortableAuxEdge> sortableAuxEdges = new ArrayList<SortableAuxEdge>();

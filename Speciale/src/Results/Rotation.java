@@ -102,7 +102,7 @@ public class Rotation {
 		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;	
 		}
-		
+
 		//		int bestObj = -Integer.MAX_VALUE;
 		//		System.out.println("\n\nObj before inserting port: " + rotationGraph.getResult().getObjective());
 		//		System.out.println("First bestObj: " + bestObj);
@@ -152,7 +152,7 @@ public class Rotation {
 		}
 		return madeChange;
 	}
-	
+
 	public boolean insertBestPortEdge(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
 		this.createRotationGraph();
 		boolean madeChange = false;
@@ -248,14 +248,14 @@ public class Rotation {
 			}
 			nextEdge = nextEdge.getNextEdge().getNextEdge();
 		}
-//		mainGraph.getResult().saveAllEdgesSol("AllEdgesSolErrMain.csv");
-//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
-//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
-//		rotationGraph.getResult().saveRotationSol("RotationSolErrRot.csv");
-//		System.out.println("Rotation " + id);
-//		for(Port p : portArray){
-//			System.out.println(p.getUNLocode());
-//		}
+		//		mainGraph.getResult().saveAllEdgesSol("AllEdgesSolErrMain.csv");
+		//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
+		//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
+		//		rotationGraph.getResult().saveRotationSol("RotationSolErrRot.csv");
+		//		System.out.println("Rotation " + id);
+		//		for(Port p : portArray){
+		//			System.out.println(p.getUNLocode());
+		//		}
 		return portArray;
 	}
 
@@ -287,7 +287,7 @@ public class Rotation {
 
 		return flowProfit-rotationCost;
 	}
-	
+
 	public int insertPortObjectiveEdge(Edge nextSailEdge, Port insertPort, double flowBonus) throws InterruptedException{
 		Port orgPort = nextSailEdge.getFromNode().getPort();
 		if(insertPort.getDraft() < vesselClass.getDraft()){
@@ -403,7 +403,7 @@ public class Rotation {
 		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;
 		}
-		
+
 		//		System.out.println("Org obj: " + bestObj);
 
 		Edge worstDwellEdge = null;
@@ -562,10 +562,10 @@ public class Rotation {
 		if(insertPort.getDraft() < vesselClass.getDraft()){
 			return false;
 		}
-//		mainGraph.getResult().saveAllEdgesSol("AllEdgesSolErrMain.csv");
-//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
-//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
-//		rotationGraph.getResult().saveAllEdgesSol("RotationSolErrRot.csv");
+		//		mainGraph.getResult().saveAllEdgesSol("AllEdgesSolErrMain.csv");
+		//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
+		//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
+		//		rotationGraph.getResult().saveAllEdgesSol("RotationSolErrRot.csv");
 		ArrayList<Port> portArray = getInsertionPortArray(e, insertPort);
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
 		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
@@ -593,16 +593,16 @@ public class Rotation {
 
 	private boolean checkRemovePort(Edge dwellEdge){
 		ArrayList<Port> portArray = getRemovePortArray(dwellEdge);
-		
+
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
 		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	private ArrayList<Port> getRemovePortArray(Edge dwellEdge) {
 		ArrayList<Port> portArray = new ArrayList<Port>();
 		for(Edge e : rotationEdges){
@@ -628,7 +628,7 @@ public class Rotation {
 				}
 			}
 		}
-		
+
 		return portArray;
 	}
 
@@ -919,7 +919,7 @@ public class Rotation {
 				sailTime += e.getTravelTime();
 			}
 		}
- 
+
 		return sailTime;
 	}
 
@@ -1040,7 +1040,21 @@ public class Rotation {
 		double lf = (double) load / (double) cap;
 		return lf;
 	}
-	
+
+	public ArrayList<Route> getRoutes(){
+		ArrayList<Route> routes = new ArrayList<Route>();
+		for(Edge e : rotationEdges){
+			if(e.isSail()){
+				for(Route r : e.getRoutes()){
+					if(!routes.contains(r)){
+						routes.add(r);
+					}
+				}
+			}
+		}
+		return routes;
+	}
+
 	public void delete(){
 		if(!rotationNodes.isEmpty() || !rotationEdges.isEmpty()){
 			throw new RuntimeException("Use deleteRotation in Graph class!");
@@ -1096,7 +1110,7 @@ public class Rotation {
 			}
 		}
 	}
-	
+
 	public boolean removeUnservingCalls(double percentToAccept){
 		for(int i=rotationEdges.size()-1; i>=0; i--){
 			Edge e = rotationEdges.get(i);
@@ -1115,7 +1129,7 @@ public class Rotation {
 				if(unloadLoad < percentToAccept * vesselClass.getCapacity()){
 					tooFewUnloading = true;
 				}
-				
+
 				depNode = e.getToNode();
 				int loadLoad = 0;
 				for(Edge load : depNode.getIngoingEdges()){

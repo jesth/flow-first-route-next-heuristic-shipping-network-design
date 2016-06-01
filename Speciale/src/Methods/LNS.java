@@ -34,11 +34,11 @@ public class LNS {
 		bestObj = -Integer.MAX_VALUE;
 	}
 
-	public void run(int timeToRunSeconds, int numIterToFindInit) throws InterruptedException, IOException{
+	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
-		graph = findInitialSolution(numIterToFindInit);
+		graph = findInitialSolution(numIterToFindInit, auxGraph);
 		graph.runMcf();
 		bestObj = graph.getResult().getObjective();
 		System.out.println("Rotations generated.");
@@ -52,30 +52,14 @@ public class LNS {
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
 		int lastImproveIter = 33;
+		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
 
 			double rand = Data.getRandomNumber(iteration);
-			//			for(int i=remove.size()-1; i>=0; i--){
-			ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
-			for(Rotation r : remove){
-				//				Rotation r = remove.remove(i);
-				if(r.isActive() && r.removeWorstPort(1, false)){
-					madeChange = true;
-					newRemove.add(r);
-				}
-			}
-			remove = newRemove;
+			madeChange = removeAndInsert(remove, insert);
 			ArrayList<Rotation> rotations = findRotationsToNS(rand);
-			ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
-			for(Rotation r : insert){
-				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
-					newInsert.add(r);
-					madeChange = true;
-				}
-			}
-			insert = newInsert;
 
 			if((iteration % 3) == 0){
 				for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
@@ -102,10 +86,14 @@ public class LNS {
 				madeChange = true;
 			}
 			
-			if(iteration > lastImproveIter+5){
+			if(iteration > lastDiversification+5 && iteration > lastImproveIter+5){
 				diversify(insert, remove, iteration);
 				madeChange = true;
+				lastDiversification = iteration+1;
+			} else if(iteration > lastImproveIter+15) {
+				restart(auxGraph);
 				lastImproveIter = iteration+1;
+				lastDiversification = iteration+1;
 			} else if(rand < 0.4){
 				for(Rotation r : rotations){
 					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
@@ -231,9 +219,9 @@ public class LNS {
 		return rotations;
 	}
 
-	private Graph findInitialSolution(int iterations) throws FileNotFoundException, InterruptedException{
+	private Graph findInitialSolution(int iterations, AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
-		ArrayList<AuxEdge> sortedEdges = AuxGraph.getSortedAuxEdges();
+		ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
 		int bestObj = -Integer.MAX_VALUE;
 		Graph bestGraph = null;
 
@@ -276,6 +264,35 @@ public class LNS {
 		}
 
 		return vesselAndDuration;
+	}
+	
+	private void restart(AuxGraph auxGraph){
+		ArrayList<Rotation> rotationsToKeep = findBestRotations();
+		auxGraph.setEdgesUsed(rotationsToKeep);
+		graph = findInitialSolution(5, auxGraph);
+	}
+	
+	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{
+		boolean madeChange = false;
+		ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
+		for(Rotation r : remove){
+			//				Rotation r = remove.remove(i);
+			if(r.isActive() && r.removeWorstPort(1, false)){
+				madeChange = true;
+				newRemove.add(r);
+			}
+		}
+		remove = newRemove;
+		
+		ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
+		for(Rotation r : insert){
+			if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
+				newInsert.add(r);
+				madeChange = true;
+			}
+		}
+		insert = newInsert;
+		return madeChange;
 	}
 
 	private ArrayList<Integer> findRotations(ComputeRotations cr, ArrayList<Integer> vesselAndDuration, VesselClass vesselClass, ArrayList<AuxEdge> sortedEdges, int minLength, int maxLength, int noAvailable, int randIn){
