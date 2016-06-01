@@ -23,7 +23,6 @@ public class Rotation {
 	private double speed;
 	private int noOfVessels;
 	private int distance;
-	private static AtomicInteger idCounter = new AtomicInteger();
 	private boolean active;
 	private Graph mainGraph;
 	private Graph rotationGraph;
@@ -35,10 +34,9 @@ public class Rotation {
 	public Rotation(VesselClass vesselClass, Graph mainGraph, int id) {
 		super();
 		if(id == -1){
-			this.id = idCounter.getAndIncrement();
-		} else {
-			this.id = id;
+			throw new RuntimeException("Bug in code!");
 		}
+		this.id = id;
 		this.vesselClass = vesselClass;
 		this.rotationNodes = new ArrayList<Node>();
 		this.rotationEdges = new ArrayList<Edge>();
@@ -921,7 +919,7 @@ public class Rotation {
 				sailTime += e.getTravelTime();
 			}
 		}
-
+ 
 		return sailTime;
 	}
 
@@ -1135,14 +1133,5 @@ public class Rotation {
 			}
 		}
 		return false;
-	}
-
-	public static void resetIdCounter() {
-		idCounter.set(0);
-	}
-
-	public static void setIdCounter(int i) {
-		idCounter.set(i);
-		
 	}
 }

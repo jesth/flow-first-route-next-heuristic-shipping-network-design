@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
@@ -50,7 +51,7 @@ public class ReadData {
 		return ports;
 	}
 
-	public static ArrayList<Demand> readDemands(String fileName, HashMap<String, PortData> portsMap, Port[] ports) throws FileNotFoundException{
+	public static ArrayList<Demand> readDemands(String fileName, HashMap<String, PortData> portsMap, Port[] ports, AtomicInteger demandIdCounter) throws FileNotFoundException{
 		ArrayList<Demand> demands = new ArrayList<Demand>();
 		File input = new File("LinerLib_Data\\"+fileName);
 		Scanner scanner = new Scanner(input);
@@ -72,7 +73,7 @@ public class ReadData {
 			textIn = scanner.next();
 			textIn = textIn.replaceAll("\\s+","");	
 			int maxTransitTime = Integer.parseInt(textIn);
-			Demand newDemand = new Demand(origin, destination, demand, rate, maxTransitTime);
+			Demand newDemand = new Demand(origin, destination, demand, rate, maxTransitTime, demandIdCounter.getAndIncrement());
 			demands.add(newDemand);
 			scanner.nextLine();
 		}

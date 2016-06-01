@@ -18,7 +18,6 @@ public class Demand {
 	private ArrayList<Route> routes;
 	private int maxTransitTime;
 	private Demand orgDemand;
-	private static AtomicInteger idCounter = new AtomicInteger();
 
 	public Demand(){
 	}
@@ -30,9 +29,9 @@ public class Demand {
 	 * @param rate
 	 * @param maxTransitTime
 	 */
-	public Demand(Port origin, Port destination, int demand, int rate, int maxTransitTime) {
+	public Demand(Port origin, Port destination, int demand, int rate, int maxTransitTime, int id) {
 		super();
-		this.id = idCounter.getAndIncrement();
+		this.id = id;
 		this.origin = origin;
 		this.destination = destination;
 		this.demand = demand;
@@ -266,10 +265,6 @@ public class Demand {
 			profit -= e.getRealCost();
 		}
 		return profit;
-	}
-	
-	public static void resetIdCounter() {
-		idCounter.set(0);
 	}
 
 

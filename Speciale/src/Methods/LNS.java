@@ -192,7 +192,7 @@ public class LNS {
 			int spareVessels = graph.getNoVesselsAvailable(v.getId()) - graph.getNoVesselsUsed(v.getId());
 			if(reqVessels < spareVessels){
 				if(v.getDraft() <= demand.getOrigin().getDraft() && v.getDraft() <= demand.getDestination().getDraft()){
-					newR = graph.createRotationFromPorts(portsId, v, -1);
+					newR = graph.createRotationFromPorts(portsId, v);
 					System.out.println("Creating rotation from " + demand.getOrigin().getUNLocode() + "-" + demand.getDestination().getUNLocode());
 					break;
 				}
@@ -238,7 +238,6 @@ public class LNS {
 		Graph bestGraph = null;
 
 		for(int i = 0; i < iterations; i++){
-			resetIds();
 			System.out.println("Activity " + i);
 			Graph graph = new Graph("Demand_WorldSmall.csv");
 			ComputeRotations cr = new ComputeRotations(graph);
@@ -254,7 +253,6 @@ public class LNS {
 				e.setUnusedInRotation();
 			}
 		}
-		Rotation.setIdCounter(bestGraph.getResult().getHighestRotationId() + 1);
 		return bestGraph;
 	}
 
@@ -316,13 +314,6 @@ public class LNS {
 			int length = bestVesselAndDuration.get(i+1);
 			cr.createAuxFlowRotation(length, sortedEdges, vesselClass);
 		}
-	}
-
-	private void resetIds(){
-		Rotation.resetIdCounter();
-		Edge.resetIdCounter();
-		Node.resetIdCounter();
-		Demand.resetIdCounter();
 	}
 
 	private void saveSol(BufferedWriter progressWriter, long currentTime, int objective){
