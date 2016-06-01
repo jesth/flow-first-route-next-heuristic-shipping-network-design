@@ -35,10 +35,12 @@ public class LNS {
 	}
 
 	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
+		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
-		graph = findInitialSolution(numIterToFindInit, auxGraph);
+		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
+		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
 		graph.runMcf();
 		bestObj = graph.getResult().getObjective();
 		System.out.println("Rotations generated.");
@@ -51,7 +53,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int lastImproveIter = 33;
+		int lastImproveIter = 3;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
@@ -90,7 +92,7 @@ public class LNS {
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastDiversification = iteration+1;
-			} else if(iteration > lastImproveIter+15) {
+			} else if(iteration > lastImproveIter+10) {
 				restart(auxGraph);
 				lastImproveIter = iteration+1;
 				lastDiversification = iteration+1;
@@ -219,8 +221,7 @@ public class LNS {
 		return rotations;
 	}
 
-	private Graph findInitialSolution(int iterations, AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
+	private Graph findInitialSolution(int iterations, AuxGraph auxGraph, ArrayList<Rotation> rotationsToKeep) throws FileNotFoundException, InterruptedException{
 		ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
 		ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
 		for(AuxEdge ae : sortedEdges){
@@ -235,7 +236,7 @@ public class LNS {
 			System.out.println("Activity " + i);
 			Graph graph = new Graph("Demand_WorldSmall.csv");
 			ComputeRotations cr = new ComputeRotations(graph);
-			findSolution(cr, graph, sortedEdges, i+iterations);
+			findSolution(cr, graph, sortedEdges, rotationsToKeep, i+iterations);
 			graph.runMcf();
 			int obj = graph.getResult().getObjective();
 			System.out.println("Objective " + obj);
@@ -253,7 +254,9 @@ public class LNS {
 		return bestGraph;
 	}
 
-	private ArrayList<Integer> findSolution(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, int iteration){
+	private ArrayList<Integer> findSolution(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, ArrayList<Rotation> rotationsToKeep, int iteration){
+		graph.createRotations(rotationsToKeep);
+		
 		ArrayList<Integer> vesselAndDuration = new ArrayList<Integer>();		
 		VesselClass feeder450 = Data.getVesselClasses().get(0);
 		VesselClass feeder800 = Data.getVesselClasses().get(1);
@@ -265,8 +268,8 @@ public class LNS {
 		VesselClass[] vesselClasses = new VesselClass[]{superPanamax, postPanamax, panamax2400, panamax1200, feeder800, feeder450};
 		int[] minLengths = new int[]{10, 7, 6, 6, 4, 4};
 		int[] maxLengths = new int[]{10, 14, 12, 10, 8, 8};
-		int[] noAvailable = new int[]{superPanamax.getNoAvailable(), postPanamax.getNoAvailable(), panamax2400.getNoAvailable(),
-				panamax1200.getNoAvailable(), feeder800.getNoAvailable(), feeder450.getNoAvailable()};
+		int[] noAvailable = new int[]{graph.getNetNoVesselsAvailable(superPanamax.getId()), graph.getNetNoVesselsAvailable(postPanamax.getId()), graph.getNetNoVesselsAvailable(panamax2400.getId()),
+				graph.getNetNoVesselsAvailable(panamax1200.getId()), graph.getNetNoVesselsAvailable(feeder800.getId()), graph.getNetNoVesselsAvailable(feeder450.getId())};
 
 		for(int i = 0; i < 6; i++){
 			vesselAndDuration = findRotations(cr, vesselAndDuration, vesselClasses[i], sortedEdges, minLengths[i], maxLengths[i], noAvailable[i], iteration * (i+1));
@@ -276,9 +279,10 @@ public class LNS {
 	}
 	
 	private void restart(AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
+		System.out.println("RESTARTING!");
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		auxGraph.setEdgesUsed(rotationsToKeep);
-		graph = findInitialSolution(5, auxGraph);
+		graph = findInitialSolution(10, auxGraph, rotationsToKeep);
 	}
 	
 	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{

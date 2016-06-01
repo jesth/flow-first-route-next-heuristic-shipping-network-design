@@ -75,7 +75,7 @@ public class Graph {
 		createDemands(rotation);
 		createCentroids();
 		createOmissionEdges();
-		Rotation subRotation = createRotation(rotation);
+		Rotation subRotation = createRotation(rotation, true);
 		rotation.setSubRotation(subRotation);
 		mcf = new MulticommodityFlowThreads(this);
 	}
@@ -88,7 +88,7 @@ public class Graph {
 		createPorts();
 		result = new Result(this);
 		result.copyRotations(copyGraph.getResult(), this);
-		
+
 		nodes = new HashMap<Integer, Node>(copyGraph.getNodes().size());
 		copyNodes(copyGraph.nodes);
 
@@ -99,12 +99,12 @@ public class Graph {
 		for(int i = 0; i < copyGraph.noVesselsAvailable.length; i++){
 			noVesselsAvailable[i] = copyGraph.noVesselsAvailable[i];
 		}
-		
+
 		noVesselsUsed = new int[copyGraph.noVesselsUsed.length];
 		for(Rotation r : result.getRotations()){
 			r.calcOptimalSpeed();
 		}
-		
+
 		fromCentroids = new ArrayList<Node>();
 		for(Node n : nodes.values()){
 			if(n.isFromCentroid()){
@@ -129,7 +129,7 @@ public class Graph {
 			noVesselsUsed[i] = 0;
 		}
 	}
-	
+
 	private void copyNodes(HashMap<Integer, Node> copyNodes){
 		for(Node n : copyNodes.values()){
 			Port newP = getPorts()[n.getPortId()];
@@ -141,7 +141,7 @@ public class Graph {
 			nodes.put(newN.getId(), newN);
 		}
 	}
-	
+
 	private void copyEdges(HashMap<Integer, Edge> copyEdges){
 		for(Edge e : copyEdges.values()){
 			Node newFromNode = nodes.get(e.getFromNode().getId());
@@ -154,7 +154,7 @@ public class Graph {
 			addEdge(newE);
 		}
 	}
-	
+
 	private void copyDemands(ArrayList<Demand> demands){
 		for(Demand d : demands){
 			Port newFromPort = ports[d.getOrigin().getPortId()];
@@ -163,7 +163,7 @@ public class Graph {
 			demandsList.add(newD);
 		}
 	}
-	
+
 	private void createPorts(){
 		int size = Data.getPorts().length;
 		ports = new Port[size];
@@ -289,7 +289,7 @@ public class Graph {
 		return rotation;
 	}
 
-	public Rotation createRotation(Rotation rotation){
+	public Rotation createRotation(Rotation rotation, boolean rotationGraph){
 		ArrayList<Integer> ports = new ArrayList<Integer>();
 		Edge firstEdge = null;
 		for(Edge e : rotation.getRotationEdges()){
@@ -305,10 +305,17 @@ public class Graph {
 			e = e.getNextEdge().getNextEdge();
 		}
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass());
-		newRotation.setId(rotation.getId());
-		//		System.out.println("Creating feeder edges for " + newRotation.getId());
-		createFeederEdges(rotation, newRotation);
+		if(rotationGraph){
+			newRotation.setId(rotation.getId());
+			createFeederEdges(rotation, newRotation);
+		}
 		return newRotation;
+	}
+
+	public void createRotations(ArrayList<Rotation> rotationsToKeep) {
+		for(Rotation r : rotationsToKeep){
+			createRotation(r, false);
+		}
 	}
 
 	private void createFeederEdges(Rotation oldRotation, Rotation newRotation){
@@ -1235,6 +1242,10 @@ public class Graph {
 	public int getNoVesselsAvailable(int vesselId) {
 		return noVesselsAvailable[vesselId];
 	}
+	
+	public int getNetNoVesselsAvailable(int vesselId){
+		return getNoVesselsAvailable(vesselId) - getNoVesselsUsed(vesselId);
+	}
 
 	public boolean serviceBiggestOmissionDemand(int iteration) throws InterruptedException{
 		int[] portOmission = new int[Data.getPorts().length];
@@ -1298,7 +1309,7 @@ public class Graph {
 			}
 		}
 		if(madeChange){
-//			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
+			//			System.out.println("Adding " + port.getUNLocode() + " to rotation " + bestRot.getId());
 			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
 		}
 		return madeChange;
@@ -1321,34 +1332,35 @@ public class Graph {
 		}
 		return highestCostDemand;
 	}
-	
-	public ArrayList<Rotation> findRotationsToKeep(){
+
+	public ArrayList<Rotation> findRotationsToKeep() throws InterruptedException{
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
 		for(Rotation r : result.getRotations()){
-			if(r.getPrimaryFFEPct() > 0.5 && r.getLoadFactor() > 0.7){
+			if(r.getPercentPrimaryFFE() > 0.3 && r.getLoadFactor() > 0.6){
 				rotationsToKeep.add(r);
 			}
 		}
 		return rotationsToKeep;
 	}
-	
+
 	public void addEdge(Edge e){
 		edges.put(e.getId(), e);
 	}
-	
+
 	private int getNodeIdCounterValue(){
 		return nodeIdCounter.get();
 	}
-	
+
 	private int getEdgeIdCounterValue(){
 		return edgeIdCounter.get();
 	}
-	
+
 	private int getRotationIdCounterValue(){
 		return rotationIdCounter.get();
 	}
-	
+
 	private int getDemandIdCounterValue(){
 		return demandIdCounter.get();
 	}
+
 }

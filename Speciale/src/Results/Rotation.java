@@ -659,19 +659,19 @@ public class Rotation {
 		return false;
 	}
 	
-	public double percentPrimaryFFE() throws InterruptedException{
+	public double getPercentPrimaryFFE() throws InterruptedException{
 		
 		double primary = 0;
 		double secondary = 0;
 		for(Route r : getRoutes()){
-			boolean onlyRotaion = true;
+			boolean onlyRotation = true;
 			for(Edge e : r.getRoute()){
 				if(e.isTransshipment()){
-					onlyRotaion = false;
+					onlyRotation = false;
 					break;
 				}
 			}
-			if(onlyRotaion){
+			if(onlyRotation){
 				primary += r.getFFE();
 			} else {
 				secondary += r.getFFE();
