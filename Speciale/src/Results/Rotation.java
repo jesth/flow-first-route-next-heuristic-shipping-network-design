@@ -660,6 +660,28 @@ public class Rotation {
 		}
 		return false;
 	}
+	
+	public double percentPrimaryFFE() throws InterruptedException{
+		
+		int primary = 0;
+		int secondary = 0;
+		for(Route r : getRoutes()){
+			boolean onlyRotaion = true;
+			for(Edge e : r.getRoute()){
+				if(e.isTransshipment()){
+					onlyRotaion = false;
+					break;
+				}
+			}
+			if(onlyRotaion){
+				primary += r.getFFE();
+			} else {
+				secondary += r.getFFE();
+			}
+		}
+		
+		return (double) (primary/(primary+secondary));
+	}
 
 	public Edge getEdge(int noInRot){
 		for(Edge e : rotationEdges){
