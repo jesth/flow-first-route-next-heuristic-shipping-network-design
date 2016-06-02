@@ -1185,4 +1185,56 @@ public class Rotation {
 		}
 		return false;
 	}
+	
+	private ArrayList<Demand> findRelevantDemandsToInclude(){
+		ArrayList<Demand> relevantDemands = new ArrayList<Demand>();
+		ArrayList<Port> classAPorts = subRotation.getPorts();
+		ArrayList<Port> classBPorts = new ArrayList<Port>(classAPorts);
+		for(Edge e : rotationGraph.getEdges().values()){
+			if(e.isFeeder()){
+				Port feederPort = null;
+				if(e.getFromNode().isFromCentroid()){
+					feederPort = e.getFromNode().getPort();
+				} else if(e.getToNode().isToCentroid()){
+					feederPort = e.getToNode().getPort();
+				}
+				if(feederPort != null && !classBPorts.contains(feederPort)){
+					classBPorts.add(feederPort);
+				}
+			}
+		}
+		for(Port p1 : classAPorts){
+			for(Port p2 : classBPorts){
+				if(!p1.equals(p2)){
+					Demand dem1 = mainGraph.getDemand(p1.getPortId(), p2.getPortId());
+					Demand dem2 = mainGraph.getDemand(p2.getPortId(), p1.getPortId());
+					if(dem1 != null){
+						relevantDemands.add(dem1);
+					}
+					if(dem2 != null){
+						relevantDemands.add(dem2);
+					}
+				}
+			}
+		}
+		return relevantDemands;
+	}
+	
+	public void includeOmissionDemands(){
+		ArrayList<Demand> relevantDemands = findRelevantDemandsToInclude();
+		for(Demand d : relevantDemands){
+			int omission = d.getOmissionFFEs();
+			if(omission > 0){
+				Port origin = rotationGraph.getPort(d.getOrigin().getPortId());
+				Port destination = rotationGraph.getPort(d.getDestination().getPortId());
+				Demand orgDemand = rotationGraph.getDemand(origin, destination);
+				if(orgDemand == null){
+					Demand newDemand = new Demand(d, origin, destination, omission);
+					rotationGraph.addDemand(newDemand);
+				} else {
+					orgDemand.addDemand(omission);
+				}
+			}
+		}
+	}
 }
