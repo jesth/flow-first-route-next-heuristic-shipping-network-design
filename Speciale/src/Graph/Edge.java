@@ -127,6 +127,7 @@ public class Edge {
 	}
 
 	public Edge(Node fromNode, Node toNode, Rotation r, Edge copyEdge){
+//		System.out.println("Edge id " + copyEdge.getId() + " from " + copyEdge.getFromNode().getId() + " to " + copyEdge.getToNode().getId());
 		this.id = copyEdge.getId();
 		this.active = true;
 		this.fromNode = fromNode;

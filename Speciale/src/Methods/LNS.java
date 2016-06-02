@@ -43,6 +43,7 @@ public class LNS {
 		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
 		graph.runMcf();
 		bestObj = graph.getResult().getObjective();
+		Graph bestGraph = null;
 		System.out.println("Rotations generated.");
 
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("ProgressSol.csv");
@@ -53,7 +54,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int lastImproveIter = 3;
+		int lastImproveIter = 55;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
@@ -71,62 +72,57 @@ public class LNS {
 					}
 				}
 				if(madeChange){
-//					graph.runMcf();
-					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
+//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
 					madeChange = false;
-					for(Rotation r : graph.getResult().getRotations()){
-						r.removeRotationGraph();
-					}	
 				}
 			}
-			graph.runMcf();
 			for(Rotation r : graph.getResult().getRotations()){
 				r.removeRotationGraph();
 				r.createRotationGraph();
 			}
-			if(graph.serviceBiggestOmissionDemand(iteration)){
-				madeChange = true;
-			}
-			
-			if(iteration > lastDiversification+5 && iteration > lastImproveIter+5){
+			if(iteration > lastDiversification + 5 && iteration > lastImproveIter + 5){
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastDiversification = iteration+1;
-			} else if(iteration > lastImproveIter+10) {
+			} else if(iteration > lastImproveIter + 10) {
+				graph = bestGraph;
 				restart(auxGraph);
 				lastImproveIter = iteration+1;
 				lastDiversification = iteration+1;
 			} else if(rand < 0.4){
+				if(graph.serviceBiggestOmissionDemand(iteration)){
+					madeChange = true;
+				}
+			} else if(rand < 0.6){
 				for(Rotation r : rotations){
 					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else if (rand < 1){
+			} else {
 				for(Rotation r : rotations){
 					if(r.isActive() && r.removeWorstPort(1, false)){
-//						remove.add(r);
 						madeChange = true;
 					}
 				}
-			} else {
-				
 			}
+			graph.runMcf();	
 			if(madeChange){
-				graph.runMcf();	
 				int obj = graph.getResult().getObjective();
 				if(bestObj < obj){
 					long currentTime = System.currentTimeMillis() - startTime;
 					bestObj = obj;
+					graph.getResult().saveAllEdgesSol("TestAllEdgesSol.csv");
+					bestGraph = new Graph(graph);
 					saveSol(progressWriter, currentTime, obj);
 					lastImproveIter = iteration+1;
+					System.out.println("New best solution: " + bestObj);
 				}
 				System.out.println("#"+ iteration +" Iteration objective: " + obj);
-				for(Rotation r : graph.getResult().getRotations()){
-					r.removeRotationGraph();
-				}
-
+			}
+			for(Rotation r : graph.getResult().getRotations()){
+				r.removeRotationGraph();
 			}
 			iteration++;
 		}
@@ -166,7 +162,7 @@ public class LNS {
 		insert.add(newR);
 
 	}
-	
+
 	public Rotation createNewRotation(ArrayList<Demand> noGoes){
 		Demand demand = graph.findHighestCostDemand(noGoes);
 		ArrayList<Integer> portsId = new ArrayList<Integer>();
@@ -256,7 +252,7 @@ public class LNS {
 
 	private ArrayList<Integer> findSolution(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, ArrayList<Rotation> rotationsToKeep, int iteration){
 		graph.createRotations(rotationsToKeep);
-		
+
 		ArrayList<Integer> vesselAndDuration = new ArrayList<Integer>();		
 		VesselClass feeder450 = Data.getVesselClasses().get(0);
 		VesselClass feeder800 = Data.getVesselClasses().get(1);
@@ -277,14 +273,16 @@ public class LNS {
 
 		return vesselAndDuration;
 	}
-	
+
 	private void restart(AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
 		System.out.println("RESTARTING!");
+		graph.runMcf();
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
+		System.out.println("Keeping " + rotationsToKeep.size() + " rotations.");
 		auxGraph.setEdgesUsed(rotationsToKeep);
 		graph = findInitialSolution(10, auxGraph, rotationsToKeep);
 	}
-	
+
 	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{
 		boolean madeChange = false;
 		ArrayList<Rotation> newRemove = new ArrayList<Rotation>();
@@ -296,7 +294,7 @@ public class LNS {
 			}
 		}
 		remove = newRemove;
-		
+
 		ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
 		for(Rotation r : insert){
 			if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){

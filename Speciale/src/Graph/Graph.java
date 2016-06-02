@@ -81,6 +81,8 @@ public class Graph {
 	}
 
 	public Graph(Graph copyGraph){
+		this.nodes = new HashMap<Integer, Node>();
+		this.edges = new HashMap<Integer, Edge>();
 		nodeIdCounter.set(copyGraph.getNodeIdCounterValue());
 		edgeIdCounter.set(copyGraph.getEdgeIdCounterValue());
 		rotationIdCounter.set(copyGraph.getRotationIdCounterValue());
@@ -89,10 +91,7 @@ public class Graph {
 		result = new Result(this);
 		result.copyRotations(copyGraph.getResult(), this);
 
-		nodes = new HashMap<Integer, Node>(copyGraph.getNodes().size());
 		copyNodes(copyGraph.nodes);
-
-		edges = new HashMap<Integer, Edge>(copyGraph.getEdges().size());
 		copyEdges(copyGraph.edges);
 
 		noVesselsAvailable = new int[copyGraph.noVesselsAvailable.length];
@@ -699,7 +698,7 @@ public class Graph {
 
 	public void deleteEdge(Edge e){
 		e.delete();
-		edges.remove(e);
+		edges.remove(e.getId());
 	}
 
 	public void deleteNode(Node i){
@@ -714,14 +713,15 @@ public class Graph {
 			deleteEdge(e);
 		}
 		i.getRotation().getRotationNodes().remove(i);
-		decrementNodeIds(i.getId());
+//		decrementNodeIds(i.getId());
 		Port nodePort = i.getPort();
 		nodePort.getArrivalNodes().remove(i);
 		nodePort.getDepartureNodes().remove(i);
-		nodes.remove(i);
+		nodes.remove(i.getId());
 		i.setInactive();
 	}
 
+	/*
 	public void deleteRotNode(Node i){
 		//		ArrayList<Edge> ingoingEdges = i.getIngoingEdges();
 		//		for(int j = ingoingEdges.size()-1; j >= 0; j--){
@@ -735,8 +735,9 @@ public class Graph {
 		//		}
 		i.getRotation().getRotationNodes().remove(i);
 		decrementNodeIds(i.getId());
-		nodes.remove(i);
+		nodes.remove(i.getId());
 	}
+	*/
 
 	public void deleteRotation(Rotation rotation){
 		for(int i = rotation.getRotationEdges().size()-1; i >= 0; i--){
@@ -746,6 +747,7 @@ public class Graph {
 		result.removeRotation(rotation);
 	}
 
+	/*
 	private void decrementNodeIds(int id){
 		for(Node i : nodes.values()){
 			if(i.getId() > id){
@@ -754,6 +756,7 @@ public class Graph {
 		}
 		nodeIdCounter.decrementAndGet();
 	}
+	*/
 
 	private void checkDistances(ArrayList<DistanceElement> distances, VesselClass vesselClass){
 		PortData firstPort = distances.get(0).getOrigin();
@@ -1242,7 +1245,7 @@ public class Graph {
 	public int getNoVesselsAvailable(int vesselId) {
 		return noVesselsAvailable[vesselId];
 	}
-	
+
 	public int getNetNoVesselsAvailable(int vesselId){
 		return getNoVesselsAvailable(vesselId) - getNoVesselsUsed(vesselId);
 	}
@@ -1264,18 +1267,17 @@ public class Graph {
 		//		int biggestPort = -1;
 		//		int biggestOmission = -1;
 		for(int i = 0; i < portOmission.length; i++){
-			int biggestOmissionArray = 0;
-			int biggestOmissionPlaceArray = -1;
+			int smallestReplacing = Integer.MAX_VALUE;
+			int index = -1;
 			for(int j = 0; j < 5; j++){
-				int omission = biggestOmissions[j];
-				if(portOmission[i] > omission){
-					biggestOmissionArray = omission;
-					biggestOmissionPlaceArray = j;
+				if(portOmission[i] > biggestOmissions[j] && smallestReplacing > biggestOmissions[j]){
+					smallestReplacing = biggestOmissions[j];
+					index = j;
 				}
 			}
-			if(biggestOmissionPlaceArray != -1){
-				biggestOmissions[biggestOmissionPlaceArray] = portOmission[i];
-				biggestPorts[biggestOmissionPlaceArray] = i;
+			if(index != -1){
+				biggestOmissions[index] = portOmission[i];
+				biggestPorts[index] = i;
 			}
 		}
 		double rand = Data.getRandomNumber(iteration * 21);
@@ -1295,14 +1297,14 @@ public class Graph {
 				}
 			}
 		}
-		int bestObj = -Integer.MAX_VALUE;
+		//		int bestObjImprovement = -Integer.MAX_VALUE;
+		int bestObjImprovement = 0;
 		Rotation bestRot = null;
-		int bestNoInRot = -1;
 		for(Rotation rot : result.getRotations()){
 			if(rot.isActive()){
-				int obj = rot.serviceOmissionDemand(oldDemands, port.getPortId());
-				if(obj > bestObj){
-					bestObj = obj;
+				int objImprovement = rot.serviceOmissionDemand(oldDemands, port.getPortId());
+				if(objImprovement > bestObjImprovement){
+					bestObjImprovement = objImprovement;
 					bestRot = rot;
 					madeChange = true;
 				}

@@ -481,9 +481,12 @@ public class Node {
 		return noOfCentroids;
 	}
 	
+	//DO NOT USE!
+	/*
 	public void decrementId(){
 		id--;
 	}
+	*/
 	
 	public String simplePrint(){
 		String str = "";

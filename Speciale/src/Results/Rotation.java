@@ -168,12 +168,12 @@ public class Rotation {
 			Edge e = edges.get(i);
 			Edge nextSail = null;
 			Port feederPort = null;
-			if(e.isFeeder() && e.getLoad() >= vesselClass.getCapacity()*percentOfCapToAccept){
+			if(e.isFeeder() && e.getLoad() >= vesselClass.getCapacity()*percentOfCapToAccept && e.getLoad() == e.getCapacity()){
 				if(e.getFromNode().isFromCentroid()){
 					nextSail = e.getToNode().getNextEdge();
 					feederPort = e.getFromNode().getPort();	
 				} else if(e.getToNode().isToCentroid()){
-					nextSail = e.getFromNode().getNextEdge().getNextEdge();
+					nextSail = e.getFromNode().getPrevEdge();
 					feederPort = e.getToNode().getPort();
 				} else {
 					continue;
@@ -192,6 +192,11 @@ public class Rotation {
 		}
 
 		if(madeChange){
+			//DELETE LINES BELOW!!!
+//			rotationGraph.runMcf();
+//			getRotationGraph().getResult().saveRotationSol("RotSolBefImplement.csv");
+//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolBefImplement.csv");
+//			getRotationGraph().getResult().saveRotationCost("RotationCostBefImplement.csv");
 			subRotation.implementInsertPortEdge(rotationGraph, bestFeederPort, worstNextSail);
 			int noInRot = worstNextSail.getNoInRotation();
 			Edge mainGraphWorstNextSail = null;
@@ -202,7 +207,15 @@ public class Rotation {
 			}
 			Port mainGraphBestFeederPort = mainGraph.getPort(bestFeederPort.getPortId());
 			this.implementInsertPortEdge(mainGraph, mainGraphBestFeederPort, mainGraphWorstNextSail);
+			//DELETE LINES BELOW!!!
+//			rotationGraph.runMcf();
+//			getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
+//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
+//			getRotationGraph().getResult().saveRotationCost("RotationCostAfterImplement.csv");
 			System.out.println("Improvement by INSERTING. Rotation: " + mainGraphWorstNextSail.getRotation().getId() + " Port: " +mainGraphBestFeederPort.getUNLocode() + " noInRot: " + noInRot);
+//			if(true){
+//				throw new RuntimeException("Stopping");
+//			}
 		}
 		return madeChange;
 	}
@@ -498,15 +511,17 @@ public class Rotation {
 		}
 
 		int closestPortId = findClosestPort(portId);
-		int bestObj = -Integer.MAX_VALUE;
+		int bestObjImprovement = -Integer.MAX_VALUE;
+		rotationGraph.runMcf();
+		int startObj = rotationGraph.getResult().getObjective();
 		ArrayList<Edge> rotationEdges = subRotation.getRotationEdges();
 		for(int i = rotationEdges.size()-1; i >= 0; i--){
 			Edge e = rotationEdges.get(i);
 			if(e.isSail() && e.getFromNode().getPortId() == closestPortId){
 				if(checkInsertPort(e, insertPort)){
-					int obj = insertPortObjective(e, insertPort, 1);
-					if(obj > bestObj){
-						bestObj = obj;
+					int objImprovement = insertPortObjective(e, insertPort, 1) - startObj;
+					if(objImprovement > bestObjImprovement){
+						bestObjImprovement = objImprovement;
 					}
 				}
 			}
@@ -519,7 +534,7 @@ public class Rotation {
 				rotationGraph.removeDemand(d);
 			}
 		}
-		return bestObj;
+		return bestObjImprovement;
 	}
 
 	public void implementServiceOmissionDemand(ArrayList<Demand> oldDemands, int portId) throws InterruptedException{
