@@ -12,10 +12,12 @@ import Graph.Graph;
 public class AuxRun {
 	private AuxGraph graph;
 	private int iterations;
+	private int rand;
 	
-	public AuxRun(Graph orgGraph, int iterations){
+	public AuxRun(Graph orgGraph, int iterations, int rand){
 		graph = new AuxGraph(orgGraph);
 		this.iterations = iterations;
+		this.rand = rand;
 	}
 
 //	public void initialize(Graph originalGraph, int iterationsIn){
@@ -33,7 +35,7 @@ public class AuxRun {
 	public void run(){
 		for(int i = 0; i < iterations; i++){
 //			System.out.println("Running iteration " + i);
-			graph.runDijkstra(iterations);
+			graph.runDijkstra(iterations, rand);
 			System.out.println("AuxDijkstra iteration " + i + " done");
 		}
 		graph.serialize();

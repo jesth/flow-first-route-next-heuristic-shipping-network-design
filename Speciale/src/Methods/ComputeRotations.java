@@ -61,7 +61,7 @@ public class ComputeRotations {
 		ports.add(graph.getPort(node1.getPortId()));
 		ports.add(graph.getPort(node2.getPortId()));
 		while(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
-			ports.add(addBestLeg(rotationNodes, sortedEdges, vesselClass));
+			ports.add(addBestLeg(rotationNodes, sortedEdges, vesselClass, true));
 		}
 		if(calcNumberOfVessels(ports, vesselClass) > durationWeeks){
 			ports.remove(ports.size()-1);
@@ -88,7 +88,7 @@ public class ComputeRotations {
 		throw new RuntimeException("No ports could be added to the rotation without exceeding the time limit.");
 	}
 
-	private Port addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
+	private Port addBestLeg(ArrayList<AuxNode> rotationNodes, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass, boolean considerUsed){
 		AuxNode firstNode = rotationNodes.get(0);
 		AuxNode lastNode = rotationNodes.get(rotationNodes.size()-1);
 		double bestRatio = 0;
@@ -97,7 +97,7 @@ public class ComputeRotations {
 		//		double extraDuration = 0;
 		for(AuxEdge e : firstNode.getIngoingEdges()){
 			AuxNode newNode = e.getFromNode();
-			if(!e.isUsedInRotation() && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
+			if((!e.isUsedInRotation() || !considerUsed) && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -111,7 +111,8 @@ public class ComputeRotations {
 		}
 		for(AuxEdge e : lastNode.getOutgoingEdges()){
 			AuxNode newNode = e.getToNode();
-			if(!e.isUsedInRotation() && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
+			//			System.out.println("Considering edge " + e.getFromNode().getUNLocode() + "-" + e.getToNode().getUNLocode());
+			if((!e.isUsedInRotation() || !considerUsed) && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
 				double ratio = newDemand / detourTime;
@@ -123,9 +124,15 @@ public class ComputeRotations {
 				}
 			}
 		}
-		rotationNodes.add(bestNode);
-		bestEdge.setUsedInRotation();
-		Port realNode = graph.getPort(bestNode.getPortId());
+		Port realNode = null;
+		if(bestEdge == null){
+			realNode = addBestLeg(rotationNodes, sortedEdges, vesselClass, false);
+			//			throw new RuntimeException("No edge could be found from " + lastNode.getUNLocode() + " or to " + firstNode.getUNLocode());
+		} else {
+			rotationNodes.add(bestNode);
+			bestEdge.setUsedInRotation();
+			realNode = graph.getPort(bestNode.getPortId());
+		}
 		return realNode;
 	}
 

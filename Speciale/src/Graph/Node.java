@@ -8,6 +8,7 @@ import Results.Rotation;
 
 public class Node {
 	private int id;
+	private int sequenceId;
 	private boolean active;
 	private Port port;
 	private Rotation rotation;
@@ -427,6 +428,14 @@ public class Node {
 	
 	public int getId(){
 		return id;
+	}
+	
+	public int getSequenceId(){
+		return sequenceId;
+	}
+	
+	public void setSequenceId(int sequenceId){
+		this.sequenceId = sequenceId;
 	}
 	
 	public void removeIngoingEdge(Edge e){

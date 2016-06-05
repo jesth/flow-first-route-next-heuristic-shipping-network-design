@@ -108,7 +108,7 @@ public class Data {
 	
 	public static double getRandomNumber(int num){
 		int matrixSize = randomNumbers[0].length * randomNumbers.length;
-		while(num > matrixSize){
+		while(num >= matrixSize){
 			num -= matrixSize;
 		}
 		int row = num / randomNumbers[0].length;

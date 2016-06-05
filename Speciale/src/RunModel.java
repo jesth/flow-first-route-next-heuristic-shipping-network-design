@@ -873,11 +873,12 @@ public class RunModel {
 //		System.out.println("Starting objective " + orgObj);
 		
 		
-		AuxGraph auxGraph = AuxGraph.deserialize();
+//		AuxGraph auxGraph = AuxGraph.deserialize();
 		
 		LNS lns = new LNS();
 		
-		lns.run(300, 6, auxGraph);
+//		lns.run(300, 6, auxGraph);
+		lns.run(1200, 20);
 
 //		graph.getResult().getRotations().get(2).createRotationGraph();
 //		graph.getResult().getRotations().get(2).findRotationFlow();

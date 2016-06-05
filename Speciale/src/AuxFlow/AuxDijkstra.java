@@ -2,6 +2,7 @@ package AuxFlow;
 
 import java.util.ArrayList;
 
+import Data.Data;
 import Data.Demand;
 
 public class AuxDijkstra {
@@ -14,7 +15,7 @@ public class AuxDijkstra {
 		reset();
 	}
 
-	public void run(){
+	public void run(int rand){
 		ArrayList<Demand> demandsList = graph.getDemands();
 		Demand[] demands = new Demand[demandsList.size()];
 		int[] remainingDemand = new int[demandsList.size()];
@@ -25,7 +26,7 @@ public class AuxDijkstra {
 			totRemainingDemand += d.getDemand();
 		}
 		while(totRemainingDemand > 0){
-			int index = chooseIndex(remainingDemand, totRemainingDemand);
+			int index = chooseIndex(remainingDemand, totRemainingDemand, rand);
 			Demand demand = demands[index];
 			int sourcePortId = demand.getOrigin().getPortId();
 			int sinkPortId = demand.getDestination().getPortId();
@@ -38,15 +39,15 @@ public class AuxDijkstra {
 				throw new RuntimeException("Negative remaining demand");
 			}
 		}
-		//		for(AuxEdge e : graph.getEdges()){
-		//			if(e.getLoad() > 0){
-		//				System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getLoad());
-		//			}
-		//		}
+//				for(AuxEdge e : graph.getEdges()){
+//					if(e.getLoad() > 0){
+//						System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getLoad());
+//					}
+//				}
 	}
 
-	public int chooseIndex(int[] remainingDemand, int totRemainingDemand){
-		int indexDemand = (int) (Math.random() * totRemainingDemand);
+	public int chooseIndex(int[] remainingDemand, int totRemainingDemand, int rand){
+		int indexDemand = (int) (Data.getRandomNumber(totRemainingDemand + 13*rand) * totRemainingDemand);
 		int index = -1;
 		int cumDemand = 0;
 		while(cumDemand <= indexDemand){

@@ -69,7 +69,7 @@ public class AuxEdge implements Serializable{
 	}
 
 	private void calcCostFunction(double startMultiplier, double endMultiplier){
-		VesselClass vessel = graph.getLargestVessel();
+		VesselClass vessel = Data.getVesselClassId(2);
 		int panamaCost = 0;
 		if(distance.isPanama()){
 			panamaCost = vessel.getPanamaFee();

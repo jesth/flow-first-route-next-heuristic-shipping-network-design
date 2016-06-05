@@ -820,104 +820,13 @@ public class Graph {
 		addEdge(newEdge);
 		return newEdge;
 	}
-
-	public void saveOPLData(String fileName){
-		try {
-			int noOfNodes = nodes.size();
-			int noOfDemands = getDemands().size();
-			int[][] capacity = new int[noOfNodes][noOfNodes];
-			int[][] cost = new int[noOfNodes][noOfNodes];
-			int[] demandFrom = new int[noOfDemands];
-			int[] demandTo = new int[noOfDemands];
-			int[] demand = new int[noOfDemands];
-
-			for(Edge e : edges.values()){
-				int fromNode = e.getFromNode().getId();
-				int toNode = e.getToNode().getId();
-				capacity[fromNode][toNode] = e.getCapacity();
-				cost[fromNode][toNode] = e.getRealCost();
-			}
-			for(int i = 0; i < noOfDemands; i++){
-				Demand d = getDemands().get(i);
-				demandFrom[i] = d.getOrigin().getFromCentroidNode().getId();
-				demandTo[i] = d.getDestination().getToCentroidNode().getId();
-				demand[i] = d.getDemand();
-
-			}
-			File fileOut = new File(fileName);
-			File fileOutLegend = new File("legendOPLdata.csv");
-			BufferedWriter out;
-			BufferedWriter outLegend;
-
-			out = new BufferedWriter(new FileWriter(fileOut));
-			outLegend = new BufferedWriter(new FileWriter(fileOutLegend));
-
-			outLegend.write("NodeId;Port;RotationId;Centroid");
-			for(Node i : nodes.values()){
-				outLegend.newLine();
-				outLegend.write(i.getId()+";"+i.getPort().getUNLocode()+";");
-				if(i.isFromCentroid() || i.isToCentroid()){
-					outLegend.write("-1;1");
-				} else {
-					outLegend.write(i.getRotation().getId()+";0");
-				}
-			}
-			outLegend.close();
-
-			out.write("n = " + noOfNodes + ";");
-			out.newLine();
-			out.write("d = " + noOfDemands + ";");
-			out.newLine();
-			out.newLine();
-
-			out.write("u = [");
-			writeDouble(out, capacity, noOfNodes);
-			out.newLine();
-			out.newLine();
-
-			out.write("c = [");
-			writeDouble(out, cost, noOfNodes);
-			out.newLine();
-			out.newLine();
-
-			out.write("dFrom = [");
-			writeSingle(out, demandFrom, noOfDemands);
-			out.newLine();
-			out.newLine();
-
-			out.write("dTo = [");
-			writeSingle(out, demandTo, noOfDemands);
-			out.newLine();
-			out.newLine();
-
-			out.write("D = [");
-			writeSingle(out, demand, noOfDemands);
-			out.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+	
+	public void updateNodeSequenceIds(){
+		int id = 0;
+		for(Node n : nodes.values()){
+			n.setSequenceId(id);
+			id++;
 		}
-	}
-
-	private void writeSingle(BufferedWriter out, int[] array, int number) throws IOException{
-		for(int i = 0; i < number; i++){
-			out.write(array[i] + " ");				
-		}
-		out.write("];");
-	}
-
-	private void writeDouble(BufferedWriter out, int[][] array, int number) throws IOException{
-		for(int i = 0; i < number; i++){
-			out.write("[");
-			for(int j = 0; j < number; j++){
-				out.write(array[i][j] + " ");				
-			}
-			out.write("]");
-			if(i < number-1){
-				out.newLine();
-			}
-		}
-		out.write("];");
 	}
 
 	/**
@@ -1363,6 +1272,16 @@ public class Graph {
 
 	private int getDemandIdCounterValue(){
 		return demandIdCounter.get();
+	}
+
+	public int getNoOfPorts() {
+		int noOfPorts = 0;
+		for(Port p : ports){
+			if(p.isActive()){
+				noOfPorts++;
+			}
+		}
+		return noOfPorts;
 	}
 
 }

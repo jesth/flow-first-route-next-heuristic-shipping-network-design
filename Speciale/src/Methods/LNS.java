@@ -8,6 +8,7 @@ import java.util.Random;
 
 import AuxFlow.AuxEdge;
 import AuxFlow.AuxGraph;
+import AuxFlow.AuxRun;
 import Data.Data;
 import Data.Demand;
 import Data.Port;
@@ -30,16 +31,20 @@ public class LNS {
 	//	}
 
 	public LNS(){
-//		bestObj = -Integer.MAX_VALUE;
+		//		bestObj = -Integer.MAX_VALUE;
 	}
 
-	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
+	//	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
+	public void run(int timeToRunSeconds, int numIterToFindInit) throws InterruptedException, IOException{
 		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
+		//		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
+		
+		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep);
+		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
@@ -73,7 +78,7 @@ public class LNS {
 					}
 				}
 				if(madeChange){
-//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
+					//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
 					madeChange = false;
 				}
 			}
@@ -85,12 +90,12 @@ public class LNS {
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastDiversification = iteration+1;
-			} else if(iteration > lastImproveIter + 10) {
-				graph = bestGraph;
-				restart(auxGraph);
-				currBestObj = -Integer.MAX_VALUE;
-				lastImproveIter = iteration+1;
-				lastDiversification = iteration+1;
+//			} else if(iteration > lastImproveIter + 10) {
+//				graph = bestGraph;
+//				restart(auxGraph);
+//				currBestObj = -Integer.MAX_VALUE;
+//				lastImproveIter = iteration+1;
+//				lastDiversification = iteration+1;
 			} else if(rand < 0.2){
 				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
@@ -128,7 +133,6 @@ public class LNS {
 				if(allTimeBestObj < obj){
 					long currentTime = System.currentTimeMillis() - startTime;
 					allTimeBestObj = obj;
-					graph.getResult().saveAllEdgesSol("TestAllEdgesSol.csv");
 					bestGraph = new Graph(graph);
 					saveSol(progressWriter, currentTime, obj);
 					allTimeLastImproveIter = iteration+1;
@@ -264,6 +268,48 @@ public class LNS {
 		return bestGraph;
 	}
 
+	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep) throws FileNotFoundException, InterruptedException{
+		Graph bestGraph = null;
+		int bestObj = -Integer.MAX_VALUE;
+		for(int i = 0; i < 3; i++){
+			graph = new Graph("Demand_WorldSmall.csv");
+			System.out.println("Running outer loop at iteration " + i);
+			AuxRun auxRun = new AuxRun(graph, 10, i);
+			auxRun.run();
+			AuxGraph auxGraph = AuxGraph.deserialize();
+			ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
+//			for(AuxEdge e : sortedEdges){
+//				System.out.println("AuxEdge " + e.getFromNode().getUNLocode() + "-" + e.getToNode().getUNLocode() + " with load " + e.getAvgLoad());
+//			}
+			ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
+			for(AuxEdge ae : sortedEdges){
+				if(ae.isUsedInRotation()){
+					usedEdges.add(ae);
+				}
+			}
+			for(int j = 0; j < iterations; j++){
+				System.out.println("Activity " + j);
+				Graph graph = new Graph("Demand_WorldSmall.csv");
+				ComputeRotations cr = new ComputeRotations(graph);
+				findSolution(cr, graph, sortedEdges, rotationsToKeep, j+iterations);
+				graph.runMcf();
+				int obj = graph.getResult().getObjective();
+				System.out.println("Objective " + obj);
+				if(obj > bestObj){
+					bestObj = obj;
+					bestGraph = graph;
+				}
+				for(AuxEdge ae : sortedEdges){
+					ae.setUnusedInRotation();
+				}
+				for(AuxEdge ae : usedEdges){
+					ae.setUsedInRotation();
+				}
+			}
+		}
+		return bestGraph;
+	}
+
 	private ArrayList<Integer> findSolution(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, ArrayList<Rotation> rotationsToKeep, int iteration){
 		graph.createRotations(rotationsToKeep);
 
@@ -365,6 +411,7 @@ public class LNS {
 		graph.getResult().saveTransferSol("TransferSol.csv");
 		graph.getResult().saveFlowCost("FlowCost.csv");
 		graph.getResult().saveRotationCost("RotationCost.csv");
+		graph.getResult().saveOPLData("OPLData.dat");
 		graph.getResult().saveProgress(progressWriter, currentTime, objective);
 	}
 }

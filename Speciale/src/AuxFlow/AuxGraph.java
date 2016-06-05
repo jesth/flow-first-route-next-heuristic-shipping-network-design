@@ -23,7 +23,7 @@ import Sortables.SortableAuxEdge;
 
 public class AuxGraph implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+
 	private transient VesselClass largestVessel;
 	private AuxNode[] nodes;
 	private ArrayList<AuxEdge> edges;
@@ -45,7 +45,7 @@ public class AuxGraph implements Serializable{
 		generateEdges();
 		dijkstra = new AuxDijkstra(this);
 	}
-	
+
 	public void setEdgesUsed(ArrayList<Rotation> rotationsToKeep){
 		for(Rotation r : rotationsToKeep){
 			for(Edge e : r.getRotationEdges()){
@@ -64,12 +64,12 @@ public class AuxGraph implements Serializable{
 			}
 		}
 	}
-	
-	public void runDijkstra(int iterations){
-		dijkstra.run();
+
+	public void runDijkstra(int iterations, int rand){
+		dijkstra.run(rand);
 		dijkstra.convert(iterations);
 	}
-	
+
 	private void generateNodes(){
 		for(PortData p : Data.getPorts()){
 			AuxNode newNode = new AuxNode(p);
@@ -90,7 +90,9 @@ public class AuxGraph implements Serializable{
 						AuxNode fromNode = nodes[fromId];
 						int toId = distanceElement.getDestination().getPortId();
 						AuxNode toNode = nodes[toId];
-						new AuxEdge(this, fromNode, toNode, distanceElement);
+						if(fromNode != null && toNode != null){
+							new AuxEdge(this, fromNode, toNode, distanceElement);
+						}
 					}
 				}
 			}
@@ -216,8 +218,8 @@ public class AuxGraph implements Serializable{
 		}
 		return null;
 	}
-	
-	
+
+
 	public void addEdge(AuxEdge edge){
 		edges.add(edge);
 	}
@@ -234,26 +236,26 @@ public class AuxGraph implements Serializable{
 			i.printStackTrace();
 		}
 	}
-	
+
 	public static AuxGraph deserialize(){
 		AuxGraph auxGraph = null;
 		try{
 			FileInputStream fileIn = new FileInputStream("AuxGraph.ser");
-	         ObjectInputStream in = new ObjectInputStream(fileIn);
-	         auxGraph = (AuxGraph) in.readObject();
-	         in.close();
-	         fileIn.close();
-	    }catch(IOException i){
-	         i.printStackTrace();
-	    }catch(ClassNotFoundException c){
-	         System.out.println("AuxGraph class not found");
-	         c.printStackTrace();
-	    }
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			auxGraph = (AuxGraph) in.readObject();
+			in.close();
+			fileIn.close();
+		}catch(IOException i){
+			i.printStackTrace();
+		}catch(ClassNotFoundException c){
+			System.out.println("AuxGraph class not found");
+			c.printStackTrace();
+		}
 		return auxGraph;
 	}
-	
+
 	public ArrayList<AuxEdge> getSortedAuxEdges(){
-		
+
 		AuxGraph auxGraph = deserialize();
 		ArrayList<SortableAuxEdge> sortableAuxEdges = new ArrayList<SortableAuxEdge>();
 		for(int i=0; i<auxGraph.getEdges().size(); i++){
@@ -264,7 +266,7 @@ public class AuxGraph implements Serializable{
 			}
 		}
 		Collections.sort(sortableAuxEdges);
-		
+
 		ArrayList<AuxEdge> auxEdges = new ArrayList<AuxEdge>(sortableAuxEdges.size());
 		for(int i=0; i<sortableAuxEdges.size(); i++){
 			auxEdges.add(sortableAuxEdges.get(i).getAuxEdge());
