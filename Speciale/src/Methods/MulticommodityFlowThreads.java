@@ -184,7 +184,9 @@ public class MulticommodityFlowThreads {
 			}
 		}
 		overflow = overflow/(double) sailEdges;
-
+		if(sailEdges == 0){
+			return 0;
+		}
 		return overflow;
 	}
 

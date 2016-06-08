@@ -118,9 +118,9 @@ public class ReadData {
 				suez = true;
 			}
 			try {
-			Distance currDist = distances[origin.getPortId()][destination.getPortId()];
-			currDist.setPorts(origin, destination);
-			currDist.setDistanceDraft(distance, draft, suez, panama);
+				Distance currDist = distances[origin.getPortId()][destination.getPortId()];
+				currDist.setPorts(origin, destination);
+				currDist.setDistanceDraft(distance, draft, suez, panama);
 			} catch(NullPointerException e){
 			}
 			//			try{
@@ -184,18 +184,19 @@ public class ReadData {
 		input = new File("LinerLib_Data\\"+fileName);
 		Scanner scanner2 = new Scanner(input);
 		scanner2.useDelimiter("\t|\n");
-		scanner2.nextLine();
 		while(scanner2.hasNextLine()){
-			String name = scanner2.next();
-			String textIn = scanner2.next();
-			int noAvailable = Integer.parseInt(textIn);	
-			for(VesselClass i : vesselClasses){
-				if(i.getName().equals(name)){
-					i.setNoAvailable(noAvailable);
-					break;
+			scanner2.nextLine();
+			if(scanner2.hasNext()){
+				String name = scanner2.next();
+				String textIn = scanner2.next();
+				int noAvailable = Integer.parseInt(textIn);	
+				for(VesselClass i : vesselClasses){
+					if(i.getName().equals(name)){
+						i.setNoAvailable(noAvailable);
+						break;
+					}
 				}
 			}
-			scanner2.nextLine();
 		}
 		scanner2.close();
 		return vesselClasses;

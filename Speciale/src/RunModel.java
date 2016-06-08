@@ -32,20 +32,70 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testWorldSmall3Auto();
+		testLNS("Baltic");
 //		testMedManual2();
 //		testWorldLargeAuto();
 		
 	}
 	
+	public static void testLNS(String caseName) throws InterruptedException, IOException{
+		String fleetFileName = getFleetFileName(caseName);
+		String demandFileName = getDemandFileName(caseName);
+		LNS lns = new LNS();
+		lns.run(300, 20, fleetFileName, demandFileName);
+	}
+	
+	private static String getFleetFileName(String caseName){
+		if(caseName.equals("WorldSmall")){
+			return "fleet_WorldSmall.csv";
+		} else if(caseName.equals("WorldLarge")){
+			return "fleet_WorldLarge.csv";
+		} else if(caseName.equals("Mediterranean")){
+			return "fleet_Mediterranean.csv";
+		} else if(caseName.equals("Baltic")){
+			return "fleet_Baltic.csv";
+		} else if(caseName.equals("EuropeAsia")){
+			return "fleet_EuropeAsia.csv";
+		} else if(caseName.equals("Pacific")){
+			return "fleet_Pacific.csv";
+		} else if(caseName.equals("WAF")){
+			return "fleet_WAF.csv";
+		} else if(true){
+			throw new RuntimeException("Wrong case name given.");
+		}
+		return "";
+	}
+	
+	private static String getDemandFileName(String caseName){
+		if(caseName.equals("WorldSmall")){
+			return "Demand_WorldSmall.csv";
+		} else if(caseName.equals("WorldLarge")){
+			return "Demand_WorldLarge.csv";
+		} else if(caseName.equals("Mediterranean")){
+			return "Demand_Mediterranean.csv";
+		} else if(caseName.equals("Baltic")){
+			return "Demand_Baltic.csv";
+		} else if(caseName.equals("EuropeAsia")){
+			return "Demand_EuropeAsia.csv";
+		} else if(caseName.equals("Pacific")){
+			return "Demand_Pacific.csv";
+		} else if(caseName.equals("WAF")){
+			return "Demand_WAF.csv";
+		} else if(true){
+			throw new RuntimeException("Wrong case name given.");
+		}
+		return "";
+	}
+	
 	public static void saveAux() throws FileNotFoundException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph testGraph = new Graph("Demand_WorldSmall.csv");
-		AuxRun auxRun = new AuxRun(testGraph, 10);
+		AuxRun auxRun = new AuxRun(testGraph, 10, 0);
 		auxRun.run();
 		System.out.println("SaveAux is done");
 	}
 	
+	/* Out-of-date method.
 	public static void testAux() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_Mediterranean.csv");
@@ -65,11 +115,9 @@ public class RunModel {
 //			rotationPorts.add(p.getName());
 //		}
 //		RuneVisualization.makeVisualization(rotationPorts, "beforeOptimization");
-		/*
 		Rotation optRotation = graph.getResult().getRotations().get(0);
 		Edge remove = optRotation.getRotationEdges().get(14);
 		graph.removePort(optRotation, remove);
-		*/
 //		ComputeRotations.addPorts();
 		graph.getMcf().run();
 //		ComputeRotations.removePorts();
@@ -92,8 +140,9 @@ public class RunModel {
 		System.out.println("Objective " + graph.getResult().getObjective());
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
-		graph.saveOPLData("OPLData.dat");
+		graph.getResult().saveOPLData("OPLData.dat");
 	}
+	*/
 	
 	/*
 	public static void testAutomatic() throws FileNotFoundException{
@@ -124,13 +173,6 @@ public class RunModel {
 		System.out.println(r2);
 	}
 	*/
-	
-	public static void initialize(Graph graph) throws FileNotFoundException{
-		ComputeRotations.intialize(graph);
-//		MulticommodityFlow.initialize(graph);
-//		MulticommodityFlowThreads.initialize(graph);
-//		RotationGraph.initialize(graph);
-	}
 	
 	public static void testBalticManual() throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
@@ -188,7 +230,7 @@ public class RunModel {
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
-		testGraph.saveOPLData("OPLData.dat");
+		testGraph.getResult().saveOPLData("OPLData.dat");
 	}
 	
 	public static void testBaltic() throws FileNotFoundException, InterruptedException{
@@ -243,7 +285,7 @@ public class RunModel {
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
-		testGraph.saveOPLData("OPLData.dat");
+		testGraph.getResult().saveOPLData("OPLData.dat");
 	}
 	
 	public static void testMedManual() throws FileNotFoundException, InterruptedException{
@@ -360,7 +402,7 @@ public class RunModel {
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
-		testGraph.saveOPLData("OPLData.dat");
+		testGraph.getResult().saveOPLData("OPLData.dat");
 	}
 	
 	public static void testMedManual2() throws FileNotFoundException, InterruptedException{
@@ -505,7 +547,7 @@ public class RunModel {
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
-		testGraph.saveOPLData("OPLData.dat");
+		testGraph.getResult().saveOPLData("OPLData.dat");
 	}
 
 	
@@ -660,9 +702,10 @@ public class RunModel {
 		System.out.println("Objective " + testGraph.getResult().getObjective());
 		System.out.println("Flow profit " + testGraph.getResult().getFlowProfit(false));
 		
-		testGraph.saveOPLData("OPLData.dat");
+		testGraph.getResult().saveOPLData("OPLData.dat");
 	}
 	
+	/* Out-of-date method.
 	public static void testWorldSmall1Auto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -732,10 +775,10 @@ public class RunModel {
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
 		graph.saveOPLData("OPLData.dat");
-		
 	}
+	*/
 
-	
+	/* Out-of-date method.
 	public static void testWorldSmall2Auto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -805,8 +848,10 @@ public class RunModel {
 		graph.saveOPLData("OPLData.dat");
 		
 	}
+	*/
+
 	
-	
+	/* Out-of-date method.
 	public static void testWorldSmall3Auto()throws InterruptedException, IOException{
 //		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
 //		Graph graph = new Graph("Demand_WorldSmall.csv");
@@ -951,7 +996,9 @@ public class RunModel {
 //		graph.saveOPLData("OPLData.dat");
 		
 	}
+	*/
 	
+	/* Out-of-date method.
 	public static void testWorldLargeAuto()throws FileNotFoundException, InterruptedException{
 		Data.initialize("fleet_WorldLarge.csv", "LinerLib_Data\\RandomNumbers.csv");
 		Graph graph = new Graph("Demand_WorldLarge.csv");
@@ -1053,6 +1100,6 @@ public class RunModel {
 		System.out.println("Flow profit " + graph.getResult().getFlowProfit(false));
 		
 		graph.saveOPLData("OPLData.dat");
-		
 	}
+	*/
 }

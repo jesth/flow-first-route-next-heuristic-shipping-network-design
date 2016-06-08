@@ -35,15 +35,15 @@ public class LNS {
 	}
 
 	//	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
-	public void run(int timeToRunSeconds, int numIterToFindInit) throws InterruptedException, IOException{
-		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
+	public void run(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName) throws InterruptedException, IOException{
+		Data.initialize(fleetFileName, "randomNumbers.csv");
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
 		//		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
-		
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep);
+
+		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -90,12 +90,12 @@ public class LNS {
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastDiversification = iteration+1;
-//			} else if(iteration > lastImproveIter + 10) {
-//				graph = bestGraph;
-//				restart(auxGraph);
-//				currBestObj = -Integer.MAX_VALUE;
-//				lastImproveIter = iteration+1;
-//				lastDiversification = iteration+1;
+			} else if(iteration > lastImproveIter + 10) {
+				graph = bestGraph;
+				restart(AuxGraph.deserialize(), demandFileName);
+				currBestObj = -Integer.MAX_VALUE;
+				lastImproveIter = iteration+1;
+				lastDiversification = iteration+1;
 			} else if(rand < 0.2){
 				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
@@ -108,17 +108,12 @@ public class LNS {
 						madeChange = true;
 					}
 				}
-			} else if(rand < 0.8){
-				for(Rotation r : rotations){
-					if(r.isActive() && r.removeWorstPort(1, false)){
-						madeChange = true;
-					}
-				}
 			} else {
 				System.out.println("Removing based on LF.");
 				ArrayList<Rotation> rotatons = graph.getResult().getRotations();
 				for(Rotation r : rotations){
-					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
+//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
+						if(r.isActive() && r.removeWorstPort(1, false)){
 						madeChange = true;
 					}
 				}
@@ -173,12 +168,14 @@ public class LNS {
 				}
 			}
 		}
-		graph.deleteRotation(lowestLfRot);
-		System.out.println("Rotation " + lowestLfRot.getId() + " deleted.");
-		graph.runMcf();
-		ArrayList<Demand> noGoes = new ArrayList<Demand>();
-		Rotation newR = createNewRotation(noGoes);
-		insert.add(newR);
+		if(lowestLf < 1){
+			graph.deleteRotation(lowestLfRot);
+			System.out.println("Rotation " + lowestLfRot.getId() + " deleted.");
+			graph.runMcf();
+			ArrayList<Demand> noGoes = new ArrayList<Demand>();
+			Rotation newR = createNewRotation(noGoes);
+			insert.add(newR);
+		}
 	}
 
 	public Rotation createNewRotation(ArrayList<Demand> noGoes){
@@ -235,7 +232,7 @@ public class LNS {
 		return rotations;
 	}
 
-	private Graph findInitialSolution(int iterations, AuxGraph auxGraph, ArrayList<Rotation> rotationsToKeep) throws FileNotFoundException, InterruptedException{
+	private Graph findInitialSolution(int iterations, AuxGraph auxGraph, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
 		ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
 		ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
 		for(AuxEdge ae : sortedEdges){
@@ -248,7 +245,7 @@ public class LNS {
 
 		for(int i = 0; i < iterations; i++){
 			System.out.println("Activity " + i);
-			Graph graph = new Graph("Demand_WorldSmall.csv");
+			Graph graph = new Graph(demandFileName);
 			ComputeRotations cr = new ComputeRotations(graph);
 			findSolution(cr, graph, sortedEdges, rotationsToKeep, i+iterations);
 			graph.runMcf();
@@ -268,19 +265,19 @@ public class LNS {
 		return bestGraph;
 	}
 
-	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep) throws FileNotFoundException, InterruptedException{
+	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
 		Graph bestGraph = null;
 		int bestObj = -Integer.MAX_VALUE;
 		for(int i = 0; i < 3; i++){
-			graph = new Graph("Demand_WorldSmall.csv");
+			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
-			AuxRun auxRun = new AuxRun(graph, 10, i);
+			AuxRun auxRun = new AuxRun(graph, 3, i);
 			auxRun.run();
 			AuxGraph auxGraph = AuxGraph.deserialize();
 			ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
-//			for(AuxEdge e : sortedEdges){
-//				System.out.println("AuxEdge " + e.getFromNode().getUNLocode() + "-" + e.getToNode().getUNLocode() + " with load " + e.getAvgLoad());
-//			}
+			//			for(AuxEdge e : sortedEdges){
+			//				System.out.println("AuxEdge " + e.getFromNode().getUNLocode() + "-" + e.getToNode().getUNLocode() + " with load " + e.getAvgLoad());
+			//			}
 			ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
 			for(AuxEdge ae : sortedEdges){
 				if(ae.isUsedInRotation()){
@@ -289,7 +286,7 @@ public class LNS {
 			}
 			for(int j = 0; j < iterations; j++){
 				System.out.println("Activity " + j);
-				Graph graph = new Graph("Demand_WorldSmall.csv");
+				Graph graph = new Graph(demandFileName);
 				ComputeRotations cr = new ComputeRotations(graph);
 				findSolution(cr, graph, sortedEdges, rotationsToKeep, j+iterations);
 				graph.runMcf();
@@ -322,7 +319,7 @@ public class LNS {
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
 
 		VesselClass[] vesselClasses = new VesselClass[]{superPanamax, postPanamax, panamax2400, panamax1200, feeder800, feeder450};
-		int[] minLengths = new int[]{10, 7, 6, 6, 4, 4};
+		int[] minLengths = new int[]{10, 7, 6, 6, 2, 2};
 		int[] maxLengths = new int[]{10, 14, 12, 10, 8, 8};
 		int[] noAvailable = new int[]{graph.getNetNoVesselsAvailable(superPanamax.getId()), graph.getNetNoVesselsAvailable(postPanamax.getId()), graph.getNetNoVesselsAvailable(panamax2400.getId()),
 				graph.getNetNoVesselsAvailable(panamax1200.getId()), graph.getNetNoVesselsAvailable(feeder800.getId()), graph.getNetNoVesselsAvailable(feeder450.getId())};
@@ -334,13 +331,13 @@ public class LNS {
 		return vesselAndDuration;
 	}
 
-	private void restart(AuxGraph auxGraph) throws FileNotFoundException, InterruptedException{
+	private void restart(AuxGraph auxGraph, String demandFileName) throws FileNotFoundException, InterruptedException{
 		System.out.println("RESTARTING!");
 		graph.runMcf();
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		System.out.println("Keeping " + rotationsToKeep.size() + " rotations.");
 		auxGraph.setEdgesUsed(rotationsToKeep);
-		graph = findInitialSolution(10, auxGraph, rotationsToKeep);
+		graph = findInitialSolution(10, auxGraph, rotationsToKeep, demandFileName);
 	}
 
 	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{
