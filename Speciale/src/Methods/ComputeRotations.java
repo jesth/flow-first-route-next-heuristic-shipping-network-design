@@ -100,7 +100,8 @@ public class ComputeRotations {
 			if((!e.isUsedInRotation() || !considerUsed) && !newNode.equals(lastNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
-				double ratio = newDemand / detourTime;
+//				double ratio = newDemand / detourTime;
+				double ratio = newDemand;
 				if(ratio > bestRatio){
 					bestRatio = ratio;
 					bestNode = newNode;
@@ -115,7 +116,8 @@ public class ComputeRotations {
 			if((!e.isUsedInRotation() || !considerUsed) && !newNode.equals(firstNode) && graph.getPort(newNode.getPortId()).getDraft() >= vesselClass.getDraft() && graph.getPort(newNode.getPortId()).isActive()){
 				double newDemand = e.getAvgLoad();
 				double detourTime = getDetourTime(lastNode.getPortId(), firstNode.getPortId(), newNode.getPortId(), vesselClass);
-				double ratio = newDemand / detourTime;
+//				double ratio = newDemand / detourTime;
+				double ratio = newDemand;
 				if(ratio > bestRatio){
 					bestRatio = ratio;
 					bestNode = newNode;

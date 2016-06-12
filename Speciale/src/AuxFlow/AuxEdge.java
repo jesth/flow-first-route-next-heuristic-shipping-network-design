@@ -67,6 +67,21 @@ public class AuxEdge implements Serializable{
 			cost = (int) (a * Math.pow(b, load));
 		}
 	}
+	
+	private VesselClass getMaxSize(){
+		double maxDraftFrom = fromNode.getPort().getDraft();
+		double maxDraftTo = toNode.getPort().getDraft();
+		VesselClass maxSizeVessel = null;
+		int maxSize = 0;
+		for(VesselClass v : Data.getVesselClasses()){
+			if(v.getNoAvailable() > 0 && v.getDraft() <= maxDraftFrom && v.getDraft() <= maxDraftTo && 
+					v.getCapacity() > maxSize && v.getDraft() <= distance.getDraft()){
+				maxSizeVessel = v;
+				maxSize = v.getCapacity();
+			}
+		}
+		return maxSizeVessel;
+	}
 
 	private void calcCostFunction(double startMultiplier, double endMultiplier){
 		VesselClass vessel = Data.getVesselClassId(2);

@@ -136,7 +136,6 @@ public class Rotation {
 				}
 			}
 		}
-
 		if(madeChange){
 			subRotation.implementInsertPort(rotationGraph, bestFeederPort, worstNextSail);
 			int noInRot = worstNextSail.getNoInRotation();

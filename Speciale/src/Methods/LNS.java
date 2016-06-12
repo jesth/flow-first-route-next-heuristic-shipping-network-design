@@ -100,7 +100,7 @@ public class LNS {
 				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
 				}
-			} else if(rand < 0.6){
+			} else if(rand < 0.4){
 				for(Rotation r : rotations){
 					r.includeOmissionDemands();
 					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
@@ -108,8 +108,15 @@ public class LNS {
 						madeChange = true;
 					}
 				}
+			} else if(rand < 0.6){
+				System.out.println("Trying to reduce transfer load.");
+				Rotation r = findBiggestTransferRotation();
+				r.includeOmissionDemands();
+				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
+					remove.add(r);
+					madeChange = true;
+				}
 			} else {
-				System.out.println("Removing based on LF.");
 				ArrayList<Rotation> rotatons = graph.getResult().getRotations();
 				for(Rotation r : rotations){
 //					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
@@ -376,6 +383,37 @@ public class LNS {
 			nextLength = (int) ((maxLength - minLength) * rand) + minLength;
 		}
 		return vesselAndDuration;
+	}
+	
+	private Rotation findBiggestTransferRotation(){
+		Edge biggestTransshipmentEdge = null;
+		int biggestTransshipment = -1;
+		for(Edge e : graph.getEdges().values()){
+			if(e.isTransshipment()){
+				int load = e.getLoad();
+				if(load > biggestTransshipment){
+					biggestTransshipment = load;
+					biggestTransshipmentEdge = e;
+				}
+			}
+		}
+		int kmFrom = 0;
+		Rotation from = biggestTransshipmentEdge.getFromNode().getRotation();
+		int kmTo = 0;
+		Rotation to = biggestTransshipmentEdge.getToNode().getRotation();
+		for(Route r : biggestTransshipmentEdge.getRoutes()){
+			for(Edge e : r.getRoute()){
+				if(e.isSail() && e.getRotation().equals(from)){
+					kmTo += e.getDistance().getDistance();
+				} else if(e.isSail() && e.getRotation().equals(to)){
+					kmFrom += e.getDistance().getDistance();
+				}
+			}
+		}
+		if(kmFrom < kmTo){
+			return from;
+		}
+		return to;
 	}
 
 	private void implementSol(ComputeRotations cr, Graph graph, ArrayList<AuxEdge> sortedEdges, ArrayList<Integer> bestVesselAndDuration){
