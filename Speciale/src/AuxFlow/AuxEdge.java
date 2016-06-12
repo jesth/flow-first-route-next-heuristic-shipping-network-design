@@ -5,6 +5,7 @@ import java.io.Serializable;
 import Data.Data;
 import Data.DistanceElement;
 import Data.VesselClass;
+import Graph.Graph;
 
 public class AuxEdge implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -103,7 +104,6 @@ public class AuxEdge implements Serializable{
 		int TCCost = (int) (vessel.getTCRate() * (sailTimeDays + 1));
 		int totalCost = panamaCost + suezCost + fuelCost + portCostFrom + portCostTo + TCCost;
 		int avgCost = totalCost / vessel.getCapacity();
-
 		double startCost = avgCost * startMultiplier;
 		a = startCost;
 		double endCost = avgCost * endMultiplier;
@@ -116,6 +116,21 @@ public class AuxEdge implements Serializable{
 
 	public AuxNode getToNode() {
 		return toNode;
+	}
+	
+	public boolean isLegal(VesselClass v, Graph mainGraph){
+		if(v.getCapacity() > 800){
+			return true;
+		}
+		if(v.getCapacity() <= 800){
+			if(Data.getPort(fromNode.getPortId()).getDraft() < (v.getDraft() + 0.1) || Data.getPort(toNode.getPortId()).getDraft() < (v.getDraft() + 0.1)){
+				return true;
+				
+			} else if(mainGraph.getPort(fromNode.getPortId()).getTotalDemand() <= v.getCapacity()*2 || mainGraph.getPort(toNode.getPortId()).getTotalDemand() <= v.getCapacity()*2){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void convertLoad(double iterations){

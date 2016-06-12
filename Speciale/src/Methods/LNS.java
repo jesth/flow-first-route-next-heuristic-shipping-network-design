@@ -41,9 +41,8 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		//		graph = findInitialSolution(numIterToFindInit, auxGraph, rotationsToKeep);
-
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+				graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
+//		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -59,7 +58,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 1;
+		int allTimeLastImproveIter = 6;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -100,7 +99,7 @@ public class LNS {
 				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
 				}
-			} else if(rand < 0.4){
+			} else if(rand < 0.6){
 				for(Rotation r : rotations){
 					r.includeOmissionDemands();
 					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
@@ -108,19 +107,19 @@ public class LNS {
 						madeChange = true;
 					}
 				}
-			} else if(rand < 0.6){
-				System.out.println("Trying to reduce transfer load.");
-				Rotation r = findBiggestTransferRotation();
-				r.includeOmissionDemands();
-				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
-					remove.add(r);
-					madeChange = true;
-				}
+				//			} else if(rand < 0.6){
+				//				System.out.println("Trying to reduce transfer load.");
+				//				Rotation r = findBiggestTransferRotation();
+				//				r.includeOmissionDemands();
+				//				if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
+				//					remove.add(r);
+				//					madeChange = true;
+				//				}
 			} else {
 				ArrayList<Rotation> rotatons = graph.getResult().getRotations();
 				for(Rotation r : rotations){
-//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
-						if(r.isActive() && r.removeWorstPort(1, false)){
+					//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
+					if(r.isActive() && r.removeWorstPort(1, false)){
 						madeChange = true;
 					}
 				}
@@ -239,7 +238,8 @@ public class LNS {
 		return rotations;
 	}
 
-	private Graph findInitialSolution(int iterations, AuxGraph auxGraph, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
+	private Graph findInitialSolution(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
+		AuxGraph auxGraph = AuxGraph.deserialize();
 		ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
 		ArrayList<AuxEdge> usedEdges = new ArrayList<AuxEdge>();
 		for(AuxEdge ae : sortedEdges){
@@ -344,7 +344,7 @@ public class LNS {
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		System.out.println("Keeping " + rotationsToKeep.size() + " rotations.");
 		auxGraph.setEdgesUsed(rotationsToKeep);
-		graph = findInitialSolution(10, auxGraph, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(10, rotationsToKeep, demandFileName);
 	}
 
 	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{
@@ -384,7 +384,7 @@ public class LNS {
 		}
 		return vesselAndDuration;
 	}
-	
+
 	private Rotation findBiggestTransferRotation(){
 		Edge biggestTransshipmentEdge = null;
 		int biggestTransshipment = -1;

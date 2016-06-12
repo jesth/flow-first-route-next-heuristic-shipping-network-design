@@ -46,6 +46,83 @@ public class AuxDijkstra {
 //				}
 	}
 
+	public void run2(int rand){
+		ArrayList<Demand> demandsList = graph.getDemands();
+		Demand[] demands = new Demand[demandsList.size()];
+		int[] remainingDemandHigh = new int[demandsList.size()];
+		int[] remainingDemandMedium = new int[demandsList.size()];
+		int[] remainingDemandLow = new int[demandsList.size()];
+		int totRemainingDemandHigh = 0;
+		int totRemainingDemandMedium = 0;
+		int totRemainingDemandLow = 0;
+		for(Demand d : demandsList){
+			demands[d.getId()] = d;
+			if(d.getOrigin().getDraft() > 9.5 && d.getDestination().getDraft() > 9.5){
+				remainingDemandHigh[d.getId()] = d.getDemand();
+				remainingDemandMedium[d.getId()] = 0;
+				remainingDemandLow[d.getId()] = 0;
+				totRemainingDemandHigh += d.getDemand();
+			} else if(d.getOrigin().getDraft() <= 8 || d.getDestination().getDraft() <= 8){
+				remainingDemandHigh[d.getId()] = 0;
+				remainingDemandMedium[d.getId()] = 0;
+				remainingDemandLow[d.getId()] = d.getDemand();
+				totRemainingDemandLow += d.getDemand();
+			} else {
+				remainingDemandHigh[d.getId()] = 0;
+				remainingDemandMedium[d.getId()] = d.getDemand();
+				remainingDemandLow[d.getId()] = 0;
+				totRemainingDemandMedium += d.getDemand();
+			}
+		}
+		while(totRemainingDemandLow > 0){
+			if(totRemainingDemandHigh > 0){
+				int index = chooseIndex(remainingDemandHigh, totRemainingDemandHigh, rand);
+				Demand demand = demands[index];
+				int sourcePortId = demand.getOrigin().getPortId();
+				int sinkPortId = demand.getDestination().getPortId();
+				AuxNode source = graph.getNode(sourcePortId);
+				AuxNode sink = graph.getNode(sinkPortId);
+				dijkstraSingle(source, sink);
+				remainingDemandHigh[index]--;
+				totRemainingDemandHigh--;
+				if(remainingDemandHigh[index] < 0){
+					throw new RuntimeException("Negative remaining demand");
+				}
+			} else if(totRemainingDemandMedium > 0){
+				int index = chooseIndex(remainingDemandMedium, totRemainingDemandMedium, rand);
+				Demand demand = demands[index];
+				int sourcePortId = demand.getOrigin().getPortId();
+				int sinkPortId = demand.getDestination().getPortId();
+				AuxNode source = graph.getNode(sourcePortId);
+				AuxNode sink = graph.getNode(sinkPortId);
+				dijkstraSingle(source, sink);
+				remainingDemandMedium[index]--;
+				totRemainingDemandMedium--;
+				if(remainingDemandMedium[index] < 0){
+					throw new RuntimeException("Negative remaining demand");
+				}
+			} else {
+				int index = chooseIndex(remainingDemandLow, totRemainingDemandLow, rand);
+				Demand demand = demands[index];
+				int sourcePortId = demand.getOrigin().getPortId();
+				int sinkPortId = demand.getDestination().getPortId();
+				AuxNode source = graph.getNode(sourcePortId);
+				AuxNode sink = graph.getNode(sinkPortId);
+				dijkstraSingle(source, sink);
+				remainingDemandLow[index]--;
+				totRemainingDemandLow--;
+				if(remainingDemandLow[index] < 0){
+					throw new RuntimeException("Negative remaining demand");
+				}
+			}
+		}
+//				for(AuxEdge e : graph.getEdges()){
+//					if(e.getLoad() > 0){
+//						System.out.println("Edge from " + e.getFromNode().getPort().getUNLocode() + " to " + e.getToNode().getPort().getUNLocode() + " has expected load " + e.getLoad());
+//					}
+//				}
+	}
+
 	public int chooseIndex(int[] remainingDemand, int totRemainingDemand, int rand){
 		int indexDemand = (int) (Data.getRandomNumber(totRemainingDemand + 13*rand) * totRemainingDemand);
 		int index = -1;

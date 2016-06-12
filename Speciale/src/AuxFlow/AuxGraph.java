@@ -277,4 +277,14 @@ public class AuxGraph implements Serializable{
 	public ArrayList<Demand> getDemands() {
 		return demandsList;
 	}
+
+	public int getTotalDemand(PortData port) {
+		int demand = 0;
+		for(Demand d : demandsList){
+			if(d.getOrigin().getPortData().equals(port) || d.getDestination().getPortData().equals(port)){
+				demand += d.getDemand();
+			}
+		}
+		return demand;
+	}
 }
