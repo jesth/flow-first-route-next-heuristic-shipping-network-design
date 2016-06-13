@@ -41,8 +41,8 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-				graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
-//		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+//				graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -327,7 +327,7 @@ public class LNS {
 
 		VesselClass[] vesselClasses = new VesselClass[]{superPanamax, postPanamax, panamax2400, panamax1200, feeder800, feeder450};
 		int[] minLengths = new int[]{10, 7, 6, 6, 2, 2};
-		int[] maxLengths = new int[]{10, 14, 12, 10, 8, 8};
+		int[] maxLengths = new int[]{10, 14, 12, 10, 8, 5};
 		int[] noAvailable = new int[]{graph.getNetNoVesselsAvailable(superPanamax.getId()), graph.getNetNoVesselsAvailable(postPanamax.getId()), graph.getNetNoVesselsAvailable(panamax2400.getId()),
 				graph.getNetNoVesselsAvailable(panamax1200.getId()), graph.getNetNoVesselsAvailable(feeder800.getId()), graph.getNetNoVesselsAvailable(feeder450.getId())};
 
@@ -343,8 +343,10 @@ public class LNS {
 		graph.runMcf();
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		System.out.println("Keeping " + rotationsToKeep.size() + " rotations.");
-		auxGraph.setEdgesUsed(rotationsToKeep);
-		graph = findInitialSolution(10, rotationsToKeep, demandFileName);
+//		auxGraph.setEdgesUsed(rotationsToKeep);
+		AuxRun auxRun = new AuxRun(graph, rotationsToKeep, 5, 43);
+		auxRun.run();
+		graph = findInitialSolution(20, rotationsToKeep, demandFileName);
 	}
 
 	private boolean removeAndInsert(ArrayList<Rotation> remove, ArrayList<Rotation> insert) throws InterruptedException{
@@ -385,6 +387,7 @@ public class LNS {
 		return vesselAndDuration;
 	}
 
+	/*
 	private Rotation findBiggestTransferRotation(){
 		Edge biggestTransshipmentEdge = null;
 		int biggestTransshipment = -1;
@@ -438,6 +441,7 @@ public class LNS {
 			cr.createAuxFlowRotation(length, sortedEdges, vesselClass);
 		}
 	}
+	*/
 
 	private void saveSol(BufferedWriter progressWriter, long currentTime, int objective){
 		graph.getResult().saveAllEdgesSol("AllEdgesSol.csv");

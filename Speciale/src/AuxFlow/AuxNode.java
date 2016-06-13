@@ -2,12 +2,14 @@ package AuxFlow;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import Data.Data;
 import Data.Port;
 import Data.PortData;
 
 public class AuxNode implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+
 	private transient PortData port;
 	private int portId;
 	private String UNLocode;
@@ -16,7 +18,8 @@ public class AuxNode implements Serializable{
 	private ArrayList<AuxEdge> ingoingEdges;
 	private ArrayList<AuxEdge> outgoingEdges;
 	private transient int heapIndex;
-	
+	private boolean active;
+
 	public AuxNode(PortData port){
 		this.port = port;
 		portId = port.getPortId();
@@ -26,12 +29,67 @@ public class AuxNode implements Serializable{
 		this.ingoingEdges = new ArrayList<AuxEdge>();
 		this.outgoingEdges = new ArrayList<AuxEdge>();
 		this.heapIndex = -1;
+		this.active = false;
 	}
-	
+
+	public AuxEdge[] findClosestOutgoing(int noClosest, double minDraft){
+		AuxEdge[] closest = new AuxEdge[noClosest];
+		int[] closestDist = new int[noClosest];
+		for(int j = 0; j < closestDist.length; j++){
+			closestDist[j] = Integer.MAX_VALUE;
+		}
+		for(AuxEdge e : outgoingEdges){
+			if(e.getToNode().getPort().getDraft() >= minDraft && e.getToNode().isActive()){
+				int dist = e.getDistance().getDistance();
+				int highestDist = -Integer.MAX_VALUE;
+				int index = -1;
+				for(int i = 0; i < closest.length; i++){
+					int currDist = closestDist[i];
+					if(currDist > highestDist){
+						highestDist = currDist;
+						index = i;
+					}
+				}
+				if(highestDist > dist){
+					closestDist[index] = dist;
+					closest[index] = e;
+				}
+			}
+		}
+		return closest;
+	}
+
+	public AuxEdge[] findClosestIngoing(int noClosest, double minDraft){
+		AuxEdge[] closest = new AuxEdge[noClosest];
+		int[] closestDist = new int[noClosest];
+		for(int j = 0; j < closestDist.length; j++){
+			closestDist[j] = Integer.MAX_VALUE;
+		}
+		for(AuxEdge e : ingoingEdges){
+			if(e.getFromNode().getPort().getDraft() >= minDraft && e.getToNode().isActive()){
+				int dist = e.getDistance().getDistance();
+				int highestDist = -Integer.MAX_VALUE;
+				int index = -1;
+				for(int i = 0; i < closest.length; i++){
+					int currDist = closestDist[i];
+					if(currDist > highestDist){
+						highestDist = currDist;
+						index = i;
+					}
+				}
+				if(highestDist > dist){
+					closestDist[index] = dist;
+					closest[index] = e;
+				}
+			}
+		}
+		return closest;
+	}
+
 	public void addIngoingEdge(AuxEdge edge){
 		ingoingEdges.add(edge);
 	}	
-	
+
 	public void addOutgoingEdge(AuxEdge edge){
 		outgoingEdges.add(edge);
 	}
@@ -55,11 +113,11 @@ public class AuxNode implements Serializable{
 	public PortData getPort() {
 		return port;
 	}
-	
+
 	public int getPortId(){
 		return portId;
 	}
-	
+
 	public String getUNLocode(){
 		return UNLocode;
 	}
@@ -80,5 +138,11 @@ public class AuxNode implements Serializable{
 		this.heapIndex = heapIndex;
 	}
 	
-	
+	public boolean isActive(){
+		return active;
+	}
+
+	public void setActive(){
+		active = true;
+	}
 }

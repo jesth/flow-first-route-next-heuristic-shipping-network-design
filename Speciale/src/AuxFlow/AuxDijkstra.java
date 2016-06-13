@@ -46,6 +46,7 @@ public class AuxDijkstra {
 //				}
 	}
 
+	/*
 	public void run2(int rand){
 		ArrayList<Demand> demandsList = graph.getDemands();
 		Demand[] demands = new Demand[demandsList.size()];
@@ -122,6 +123,7 @@ public class AuxDijkstra {
 //					}
 //				}
 	}
+	*/
 
 	public int chooseIndex(int[] remainingDemand, int totRemainingDemand, int rand){
 		int indexDemand = (int) (Data.getRandomNumber(totRemainingDemand + 13*rand) * totRemainingDemand);
@@ -156,7 +158,7 @@ public class AuxDijkstra {
 			if (!currentNode.equals(sink)){
 				for (int i = 0; i < currentNode.getOutgoingEdges().size(); i++){
 					AuxEdge currentEdge = currentNode.getOutgoingEdges().get(i);
-					if(!currentEdge.isFull()){
+					if(!currentEdge.isFull() && currentEdge.isActive()){
 						if(currentEdge.getToNode().getHeapIndex() < heap.getSize()){
 							relax(currentNode, currentEdge.getToNode(), currentEdge);
 							heap.bubbleUp(currentEdge.getToNode().getHeapIndex());

@@ -18,6 +18,7 @@ public class AuxEdge implements Serializable{
 	private double avgLoad;
 	private transient DistanceElement distance;
 	private transient boolean rotation;
+	private boolean active;
 	private int capacity;
 	private boolean isUsedInRotation;
 	private transient double a;
@@ -37,21 +38,24 @@ public class AuxEdge implements Serializable{
 		this.capacity = Integer.MAX_VALUE;
 		calcCostFunction(10, 0.001);
 		calcCost();
+		this.active = true;
 	}
 	
 	public AuxEdge(AuxEdge copyEdge, int capacity){
 		this.graph = copyEdge.graph;
 		graph.addEdge(this);
-		this.fromNode = copyEdge.fromNode;
-		this.toNode = copyEdge.toNode;
+		this.fromNode = copyEdge.getFromNode();
+		this.toNode = copyEdge.getToNode();
 		fromNode.addOutgoingEdge(this);
 		toNode.addIngoingEdge(this);
 		this.load = 0;
 		this.avgLoad = 0;
-		this.distance = copyEdge.distance;
+		this.distance = copyEdge.getDistance();
 		this.rotation = true;
 		this.capacity = capacity;
 		this.cost = 0;
+		this.active = true;
+		this.setUsedInRotation();
 	}
 
 	public void addFFE(){
@@ -119,18 +123,19 @@ public class AuxEdge implements Serializable{
 	}
 	
 	public boolean isLegal(VesselClass v, Graph mainGraph){
-		if(v.getCapacity() > 800){
-			return true;
-		}
-		if(v.getCapacity() <= 800){
-			if(Data.getPort(fromNode.getPortId()).getDraft() < (v.getDraft() + 0.1) || Data.getPort(toNode.getPortId()).getDraft() < (v.getDraft() + 0.1)){
-				return true;
-				
-			} else if(mainGraph.getPort(fromNode.getPortId()).getTotalDemand() <= v.getCapacity()*2 || mainGraph.getPort(toNode.getPortId()).getTotalDemand() <= v.getCapacity()*2){
-				return true;
-			}
-		}
-		return false;
+//		if(v.getCapacity() > 800){
+//			return true;
+//		}
+//		if(v.getCapacity() <= 800){
+//			if(Data.getPort(fromNode.getPortId()).getDraft() < (v.getDraft() + 0.1) || Data.getPort(toNode.getPortId()).getDraft() < (v.getDraft() + 0.1)){
+//				return true;
+//				
+//			} else if(mainGraph.getPort(fromNode.getPortId()).getTotalDemand() <= v.getCapacity()*2 || mainGraph.getPort(toNode.getPortId()).getTotalDemand() <= v.getCapacity()*2){
+//				return true;
+//			}
+//		}
+//		return false;
+		return true;
 	}
 	
 	public void convertLoad(double iterations){
@@ -169,4 +174,21 @@ public class AuxEdge implements Serializable{
 	public double getAvgLoad() {
 		return avgLoad;
 	}
+
+	public void setActive() {
+		active = true;
+	}
+	
+	public void setInactive(){
+		active = false;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+	
+	public DistanceElement getDistance(){
+		return distance;
+	}
+
 }
