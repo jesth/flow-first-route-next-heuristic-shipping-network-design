@@ -75,6 +75,12 @@ public class AuxGraph implements Serializable{
 			AuxNode newNode = new AuxNode(p);
 			nodes[p.getPortId()] = newNode;
 		}
+		for(Demand d : demandsList){
+			Port fromPort = d.getOrigin();
+			Port toPort = d.getDestination();
+			nodes[fromPort.getPortId()].setActive();
+			nodes[toPort.getPortId()].setActive();
+		}
 	}
 
 	private void generateEdges(){
@@ -97,8 +103,35 @@ public class AuxGraph implements Serializable{
 				}
 			}
 		}
+		setEdgesInactive();
 	}
-
+	
+	public void setEdgesInactive(){
+		for(AuxNode n : nodes){
+			if(n.isActive() && n.getPort().getDraft() < 8.1){
+				AuxEdge[] out = n.findClosestOutgoing(3, 8.1);
+				AuxEdge[] in = n.findClosestIngoing(3, 8.1);
+				for(AuxEdge e : n.getOutgoingEdges()){
+					e.setInactive();
+				}
+				for(AuxEdge e : n.getIngoingEdges()){
+					e.setInactive();
+				}
+				for(AuxEdge e : out){
+					e.setActive();
+				}
+				for(AuxEdge e : in){
+					e.setActive();
+				}
+			}
+		}
+		for(AuxEdge e : edges){
+			if(!e.getFromNode().isActive() || !e.getToNode().isActive()){
+				e.setInactive();
+			}
+		}
+	}
+	
 	public VesselClass getLargestVessel() {
 		return largestVessel;
 	}
@@ -113,6 +146,15 @@ public class AuxGraph implements Serializable{
 
 	public ArrayList<AuxEdge> getEdges(){
 		return edges;
+	}
+	
+	public void addRotation(Rotation r){
+		for(Edge e : r.getRotationEdges()){
+			if(e.isSail()){
+				AuxEdge ae = findEdge(e);
+				new AuxEdge(ae, e.getCapacity());
+			}
+		}
 	}
 
 	public void addFirstRotationManual() {
@@ -218,6 +260,12 @@ public class AuxGraph implements Serializable{
 		}
 		return null;
 	}
+	
+	private AuxEdge findEdge(Edge e){
+		String fromPort = e.getFromPortUNLo();
+		String toPort = e.getToPortUNLo();
+		return findEdge(fromPort, toPort);
+	}
 
 
 	public void addEdge(AuxEdge edge){
@@ -255,13 +303,11 @@ public class AuxGraph implements Serializable{
 	}
 
 	public ArrayList<AuxEdge> getSortedAuxEdges(){
-
-		AuxGraph auxGraph = deserialize();
 		ArrayList<SortableAuxEdge> sortableAuxEdges = new ArrayList<SortableAuxEdge>();
-		for(int i=0; i<auxGraph.getEdges().size(); i++){
-			int auxAvgLoad = (int) (auxGraph.getEdges().get(i).getAvgLoad()*1000);
+		for(int i=0; i<this.getEdges().size(); i++){
+			int auxAvgLoad = (int) (this.getEdges().get(i).getAvgLoad()*1000);
 			if(auxAvgLoad > 0){
-				SortableAuxEdge e = new SortableAuxEdge(auxAvgLoad, auxGraph.getEdges().get(i));
+				SortableAuxEdge e = new SortableAuxEdge(auxAvgLoad, this.getEdges().get(i));
 				sortableAuxEdges.add(e);
 			}
 		}
