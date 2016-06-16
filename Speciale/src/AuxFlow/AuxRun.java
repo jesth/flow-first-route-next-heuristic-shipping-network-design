@@ -48,14 +48,14 @@ public class AuxRun {
 			graph.runDijkstra(iterations, rand);
 			System.out.println("AuxDijkstra iteration " + i + " done");
 		}
-		for(AuxEdge ae : graph.getSortedAuxEdges()){
-			System.out.print(ae.getFromNode().getUNLocode()+"-"+ae.getToNode().getUNLocode() + " with load " + ae.getAvgLoad());
-			if(ae.isRotation()){
-				System.out.println(" is rotation.");
-			} else {
-				System.out.println(" is not rotation.");
-			}
-		}
+//		for(AuxEdge ae : graph.getSortedAuxEdges()){
+//			System.out.print(ae.getFromNode().getUNLocode()+"-"+ae.getToNode().getUNLocode() + " with load " + ae.getAvgLoad());
+//			if(ae.isRotation()){
+//				System.out.println(" is rotation.");
+//			} else {
+//				System.out.println(" is not rotation.");
+//			}
+//		}
 		graph.serialize();
 	}
 }
