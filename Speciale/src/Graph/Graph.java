@@ -62,7 +62,7 @@ public class Graph {
 		mcf = new MulticommodityFlowThreads(this);
 	}
 
-	public Graph(Rotation rotation) {
+	public Graph(Rotation rotation, boolean considerUnservedPorts) {
 		result = new Result(this);
 		setNoVessels();
 		this.nodes = new HashMap<Integer, Node>();
@@ -72,10 +72,10 @@ public class Graph {
 		//		this.toCentroids = new ArrayList<Node>();
 		Node.setNoOfCentroids(Data.getPortsMap().size());
 		createPorts();
-		createDemands(rotation);
+		createDemands(rotation, considerUnservedPorts);
 		createCentroids();
 		createOmissionEdges();
-		Rotation subRotation = createRotation(rotation, true);
+		Rotation subRotation = createRotation(rotation, true, considerUnservedPorts);
 		rotation.setSubRotation(subRotation);
 		mcf = new MulticommodityFlowThreads(this);
 	}
@@ -181,7 +181,7 @@ public class Graph {
 		demandsMatrix = createDemandsMatrix();
 	}
 
-	private void createDemands(Rotation rotation){
+	private void createDemands(Rotation rotation, boolean considerUnservedPorts){
 		ArrayList<Route> orgRoutes = new ArrayList<Route>();
 		ArrayList<Demand> orgDemands = new ArrayList<Demand>();
 		demandsList = new ArrayList<Demand>();
@@ -208,6 +208,38 @@ public class Graph {
 			Demand newDemand = new Demand(d, origin, destination, demands[origin.getPortId()][destination.getPortId()]);
 			demandsList.add(newDemand);
 		}
+		
+		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
+		for(Port p : rotation.getMainGraph().getPorts()){
+			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
+				unservedPorts.add(p.getPortId());
+			}
+		}
+		
+		if(considerUnservedPorts){
+			Graph mainGraph = rotation.getMainGraph();
+			for(Integer i : unservedPorts){
+				//is the port unserved in the main graph
+				for(Port p : mainGraph.getPorts()){
+					int id = p.getPortId();
+					if(id != i && !unservedPorts.contains(id)){
+						Demand dFrom = mainGraph.getDemand(i, id);
+						Demand dTo = mainGraph.getDemand(id, i);
+						Port unserved = getPort(i);
+						Port served = getPort(id);
+						if(dFrom != null){
+							Demand newDemandFrom = new Demand(dFrom, unserved, served, dFrom.getDemand());
+							demandsList.add(newDemandFrom);
+						} 
+						if(dTo != null){
+							Demand newDemandTo = new Demand(dTo, served, unserved, dTo.getDemand());
+							demandsList.add(newDemandTo);
+						}
+					}
+				}
+			}
+		}
+		
 		demandsMatrix = createDemandsMatrix();
 	}
 
@@ -288,7 +320,7 @@ public class Graph {
 		return rotation;
 	}
 
-	public Rotation createRotation(Rotation rotation, boolean rotationGraph){
+	public Rotation createRotation(Rotation rotation, boolean rotationGraph, boolean considerUnservedPorts){
 		ArrayList<Integer> ports = new ArrayList<Integer>();
 		Edge firstEdge = null;
 		for(Edge e : rotation.getRotationEdges()){
@@ -306,18 +338,18 @@ public class Graph {
 		Rotation newRotation = createRotationFromPorts(ports, rotation.getVesselClass());
 		if(rotationGraph){
 			newRotation.setId(rotation.getId());
-			createFeederEdges(rotation, newRotation);
+			createFeederEdges(rotation, newRotation, considerUnservedPorts);
 		}
 		return newRotation;
 	}
 
 	public void createRotations(ArrayList<Rotation> rotationsToKeep) {
 		for(Rotation r : rotationsToKeep){
-			createRotation(r, false);
+			createRotation(r, false, false);
 		}
 	}
 
-	private void createFeederEdges(Rotation oldRotation, Rotation newRotation){
+	private void createFeederEdges(Rotation oldRotation, Rotation newRotation, boolean considerUnservedPorts){
 		ArrayList<Route> orgRoutes = new ArrayList<Route>();
 		for(Edge e : oldRotation.getRotationEdges()){
 			if(e.isSail()){
@@ -360,8 +392,48 @@ public class Graph {
 				} 
 			}
 		}
+		
+		
+		if(considerUnservedPorts)
+			createFeederToUservedPorts(oldRotation, newRotation);
+		
 	}
 
+	private void createFeederToUservedPorts(Rotation oldRotation, Rotation newRotation){
+		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
+		for(Port p : oldRotation.getMainGraph().getPorts()){
+			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
+				unservedPorts.add(p.getPortId());
+			}
+		}
+		for(Integer i : unservedPorts){
+			Port unservedPort = getPort(i);
+			Node fromCentroid = unservedPort.getFromCentroidNode();
+			Node toCentroid = unservedPort.getToCentroidNode();
+			Node arrNode = null;
+			Node depNode = null;
+			for(Node n : nodes.values()){
+				double arrDist = Double.MAX_VALUE;
+				double depDist = Double.MAX_VALUE;
+				double distToUnserved = Data.getBestDistanceElement(i, n.getPortId(), oldRotation.getVesselClass()).getDistance();
+				double rotationDist = oldRotation.getDistance();
+				if(n.isArrival()){
+					if(distToUnserved < arrDist && distToUnserved < rotationDist/5)
+						arrNode = n;
+				} else if (n.isDeparture()){
+					if(distToUnserved < depDist && distToUnserved < rotationDist/5)
+						depNode = n;
+				}
+			}
+			int cost = computeFeederCost(fromCentroid, depNode, newRotation);
+			Edge feeder = new Edge(fromCentroid, depNode, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
+			addEdge(feeder);
+			cost = computeFeederCost(arrNode, toCentroid, newRotation);
+			feeder = new Edge(arrNode, toCentroid, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
+			addEdge(feeder);
+		}
+	}
+	
 	private void createFeederEdge(Node oldFromNode, Node oldToNode, Rotation rotation, int freeCap, int routeFFE){
 		Edge feeder = null;
 		if(!oldFromNode.getPort().equals(oldToNode.getPort())){
@@ -1283,5 +1355,4 @@ public class Graph {
 		}
 		return noOfPorts;
 	}
-
 }

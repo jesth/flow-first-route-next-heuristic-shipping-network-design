@@ -67,9 +67,12 @@ public class Rotation {
 		mainGraph.getResult().addRotation(this);
 	}
 
-	public void createRotationGraph(){
+	public void createRotationGraph(boolean considerUnservedPorts){
 		if(rotationGraph == null){
-			this.rotationGraph = new Graph(this);
+			if(considerUnservedPorts)
+				this.rotationGraph = new Graph(this, true);
+			else
+				this.rotationGraph = new Graph(this, false);
 		}
 	}
 
@@ -94,7 +97,8 @@ public class Rotation {
 	 */
 
 	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
-		this.createRotationGraph();
+		boolean considerUnservedPorts = true;
+		this.createRotationGraph(considerUnservedPorts);
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
@@ -153,7 +157,8 @@ public class Rotation {
 	}
 
 	public boolean insertBestPortEdge(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
-		this.createRotationGraph();
+		boolean considerUnservedPorts = true;
+		this.createRotationGraph(considerUnservedPorts);
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
@@ -216,6 +221,11 @@ public class Rotation {
 //				throw new RuntimeException("Stopping");
 //			}
 		}
+		getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
+		getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
+		if(true)
+			throw new RuntimeException("");
+		
 		return madeChange;
 	}
 
@@ -408,7 +418,8 @@ public class Rotation {
 	}
 
 	public boolean removeWorstPort(double bonus, boolean notImproving) throws InterruptedException{
-		this.createRotationGraph();
+		boolean considerUnservedPorts = false;
+		this.createRotationGraph(considerUnservedPorts);
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
@@ -986,6 +997,13 @@ public class Rotation {
 		return active;
 	}
 
+
+	/**
+	 * @return the mainGraph
+	 */
+	public Graph getMainGraph() {
+		return mainGraph;
+	}
 
 	/**
 	 * Set rotation to active
