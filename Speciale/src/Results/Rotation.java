@@ -69,10 +69,8 @@ public class Rotation {
 
 	public void createRotationGraph(boolean considerUnservedPorts){
 		if(rotationGraph == null){
-			if(considerUnservedPorts)
-				this.rotationGraph = new Graph(this, true);
-			else
-				this.rotationGraph = new Graph(this, false);
+			this.rotationGraph = new Graph(this, considerUnservedPorts);
+			
 		}
 	}
 
@@ -223,8 +221,8 @@ public class Rotation {
 		}
 		getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
 		getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
-		if(true)
-			throw new RuntimeException("");
+//		if(true)
+//			throw new RuntimeException("");
 		
 		return madeChange;
 	}
@@ -419,6 +417,7 @@ public class Rotation {
 
 	public boolean removeWorstPort(double bonus, boolean notImproving) throws InterruptedException{
 		boolean considerUnservedPorts = false;
+		this.rotationGraph = null;
 		this.createRotationGraph(considerUnservedPorts);
 		boolean madeChange = false;
 		rotationGraph.runMcf();

@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
+import AuxFlow.AuxEdge;
 import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
@@ -400,37 +401,46 @@ public class Graph {
 	}
 
 	private void createFeederToUservedPorts(Rotation oldRotation, Rotation newRotation){
+		
 		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
 		for(Port p : oldRotation.getMainGraph().getPorts()){
 			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
 				unservedPorts.add(p.getPortId());
 			}
 		}
+		if(unservedPorts.size()<1){
+			return;
+		}
+		System.out.println("in createFeederToUnservedPorts(). # unservedPorts = " + unservedPorts.size());
 		for(Integer i : unservedPorts){
 			Port unservedPort = getPort(i);
 			Node fromCentroid = unservedPort.getFromCentroidNode();
 			Node toCentroid = unservedPort.getToCentroidNode();
-			Node arrNode = null;
-			Node depNode = null;
+			Port[] closestPorts = findClosestPorts(unservedPort, 5, 8, oldRotation);
+			
 			for(Node n : nodes.values()){
-				double arrDist = Double.MAX_VALUE;
-				double depDist = Double.MAX_VALUE;
-				double distToUnserved = Data.getBestDistanceElement(i, n.getPortId(), oldRotation.getVesselClass()).getDistance();
-				double rotationDist = oldRotation.getDistance();
 				if(n.isArrival()){
-					if(distToUnserved < arrDist && distToUnserved < rotationDist/5)
-						arrNode = n;
+					for(Port p : closestPorts){
+						if(n.getPort().getPortData().equals(p.getPortData())){
+							int cost = computeFeederCost(n, toCentroid, newRotation);
+							Edge feeder = new Edge(n, toCentroid, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
+							addEdge(feeder);
+//							System.out.println("made feeder edge from " + n.getPort().getUNLocode() +" to unserved " + unservedPort.getUNLocode());
+							break;
+						}
+					}
 				} else if (n.isDeparture()){
-					if(distToUnserved < depDist && distToUnserved < rotationDist/5)
-						depNode = n;
+					for(Port p : closestPorts){
+						if(n.getPort().getPortData().equals(p.getPortData())){
+							int cost = computeFeederCost(fromCentroid, n, newRotation);
+							Edge feeder = new Edge(fromCentroid, n, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
+							addEdge(feeder);
+//							System.out.println("made feeder edge from unserved " + unservedPort.getUNLocode() +" to " + n.getPort().getUNLocode());
+							break;
+						}
+					}
 				}
 			}
-			int cost = computeFeederCost(fromCentroid, depNode, newRotation);
-			Edge feeder = new Edge(fromCentroid, depNode, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
-			addEdge(feeder);
-			cost = computeFeederCost(arrNode, toCentroid, newRotation);
-			feeder = new Edge(arrNode, toCentroid, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
-			addEdge(feeder);
 		}
 	}
 	
@@ -1354,5 +1364,32 @@ public class Graph {
 			}
 		}
 		return noOfPorts;
+	}
+	
+	public Port[] findClosestPorts(Port unserved, int noClosest, double minDraft, Rotation r){
+		Port[] closest = new Port[noClosest];
+		int[] closestDist = new int[noClosest];
+		for(int j = 0; j < closestDist.length; j++){
+			closestDist[j] = Integer.MAX_VALUE;
+		}
+		for(Port p : ports){
+			if(p.getDraft() >= minDraft && p.isActive() && !unserved.equals(p)){
+				int dist = Data.getBestDistanceElement(unserved.getPortId(), p.getPortId(), r.getVesselClass()).getDistance();
+				int highestDist = -Integer.MAX_VALUE;
+				int index = -1;
+				for(int i = 0; i < closest.length; i++){
+					int currDist = closestDist[i];
+					if(currDist > highestDist){
+						highestDist = currDist;
+						index = i;
+					}
+				}
+				if(highestDist > dist){
+					closestDist[index] = dist;
+					closest[index] = p;
+				}
+			}
+		}
+		return closest;
 	}
 }

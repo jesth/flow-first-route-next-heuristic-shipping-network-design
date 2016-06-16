@@ -42,7 +42,7 @@ public class LNS {
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
 //				graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -58,7 +58,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 6;
+		int allTimeLastImproveIter = 306;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -77,13 +77,12 @@ public class LNS {
 					}
 				}
 				if(madeChange){
-					//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
+//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
 					madeChange = false;
 				}
 			}
 			for(Rotation r : graph.getResult().getRotations()){
 				r.removeRotationGraph();
-				r.createRotationGraph();
 			}
 			if(iteration > lastDiversification + 5 && iteration > lastImproveIter + 5){
 				diversify(insert, remove, iteration);
@@ -91,16 +90,21 @@ public class LNS {
 				lastDiversification = iteration+1;
 			} else if(iteration > lastImproveIter + 10) {
 				graph = bestGraph;
-				restart(AuxGraph.deserialize(), demandFileName);
-				currBestObj = -Integer.MAX_VALUE;
+//				restart(AuxGraph.deserialize(), demandFileName);
+//				currBestObj = -Integer.MAX_VALUE;
 				lastImproveIter = iteration+1;
 				lastDiversification = iteration+1;
 			} else if(rand < 0.2){
+				System.out.println("    serviceOmissionDemand() chosen");
+				for(Rotation r : graph.getResult().getRotations())
+					r.createRotationGraph(false);
 				if(graph.serviceBiggestOmissionDemand(iteration)){
 					madeChange = true;
 				}
 			} else if(rand < 0.6){
+				System.out.println("    insertBestPortEdge() chosen");
 				for(Rotation r : rotations){
+					r.createRotationGraph(true);
 					r.includeOmissionDemands();
 					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 						remove.add(r);
@@ -116,7 +120,7 @@ public class LNS {
 				//					madeChange = true;
 				//				}
 			} else {
-				ArrayList<Rotation> rotatons = graph.getResult().getRotations();
+				System.out.println("    removeWorstPort() chosen");
 				for(Rotation r : rotations){
 					//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
 					if(r.isActive() && r.removeWorstPort(1, false)){
@@ -140,9 +144,6 @@ public class LNS {
 					System.out.println("New best solution: " + allTimeBestObj);
 				}
 				System.out.println("#"+ iteration +" Iteration objective: " + obj);
-			}
-			for(Rotation r : graph.getResult().getRotations()){
-				r.removeRotationGraph();
 			}
 			iteration++;
 		}
@@ -363,6 +364,7 @@ public class LNS {
 
 		ArrayList<Rotation> newInsert = new ArrayList<Rotation>();
 		for(Rotation r : insert){
+//			System.out.println("        insert in removeAndInsert()");
 			if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 				newInsert.add(r);
 				madeChange = true;
