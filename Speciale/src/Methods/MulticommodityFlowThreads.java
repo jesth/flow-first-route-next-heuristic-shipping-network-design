@@ -77,7 +77,7 @@ public class MulticommodityFlowThreads {
 			}
 		}
 		reset();
-		bestFlowProfit = Integer.MIN_VALUE;
+		bestFlowProfit = -Integer.MAX_VALUE;
 		bestRoutes = new ArrayList<Route>();
 		int iteration = 0;
 		int repairCounter = 0;
@@ -99,7 +99,7 @@ public class MulticommodityFlowThreads {
 			}
 			boolean validFlow = false;
 			double overflow = getOverflow();
-			if(overflow < 0.3){
+			if(overflow < 0.3 || improvementCounter == 19 || iteration == 99){
 				improvementCounter++;
 				//				System.out.println("Finding repair flow.");
 				validFlow = findRepairFlow(improvementCounter, iteration);
@@ -322,7 +322,6 @@ public class MulticommodityFlowThreads {
 		for(Demand d : graph.getDemands()){
 			d.checkDemand();
 		}
-
 	}
 
 	public void setBFActive(int fromPortId) {

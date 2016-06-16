@@ -134,6 +134,19 @@ public class Rotation {
 						worstNextSail = nextSail;
 					}
 				}
+			} else if(e.isSail()){
+				nextSail = e.getNextEdge().getNextEdge();
+				feederPort = e.getFromNode().getPort();
+				if(checkInsertPort(nextSail, feederPort)){
+					int obj = (int) (insertPortObjective(nextSail, feederPort, flowBonus));
+					//					System.out.println("Feeder from port: " + e.getFromPortUNLo() + " to rotationPort: " + e.getToPortUNLo() +" yielding Try insert obj: " + obj);
+					if(obj > bestObj){
+						bestObj = obj;
+						bestFeederPort = feederPort;
+						madeChange = true;
+						worstNextSail = nextSail;
+					}
+				}
 			}
 		}
 		if(madeChange){
@@ -609,7 +622,7 @@ public class Rotation {
 		ArrayList<Port> portArray = getRemovePortArray(dwellEdge);
 
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
-		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
+		int noVesselsAvailable = noOfVessels + mainGraph.getNetNoVesselsAvailable(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
 			return false;
 		}
@@ -1141,6 +1154,9 @@ public class Rotation {
 				int no = e.getNoInRotation();
 				if(no == prevNo){
 					throw new RuntimeException("Duplicate number in rotation! Rotation no. " + id + ", duplicate ID " + no);
+				}
+				if(no != prevNo+1){
+					throw new RuntimeException("NoInRotation not increasing correctly for rotation no. " + id);
 				}
 				prevNo = no;
 			}

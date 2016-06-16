@@ -41,8 +41,8 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-//				graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
+//				graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -76,10 +76,10 @@ public class LNS {
 						madeChange = true;
 					}
 				}
-				if(madeChange){
-					//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
-					madeChange = false;
-				}
+//				if(madeChange){
+//					//					System.out.println("Objective after removing unserving calls = " + graph.getResult().getObjective());
+//					madeChange = false;
+//				}
 			}
 			for(Rotation r : graph.getResult().getRotations()){
 				r.removeRotationGraph();
@@ -89,20 +89,28 @@ public class LNS {
 				diversify(insert, remove, iteration);
 				madeChange = true;
 				lastDiversification = iteration+1;
-			} else if(iteration > lastImproveIter + 10) {
-				graph = bestGraph;
-				restart(AuxGraph.deserialize(), demandFileName);
-				currBestObj = -Integer.MAX_VALUE;
-				lastImproveIter = iteration+1;
-				lastDiversification = iteration+1;
+//			} else if(iteration > lastImproveIter + 10) {
+//				graph = bestGraph;
+//				restart(AuxGraph.deserialize(), demandFileName);
+//				currBestObj = -Integer.MAX_VALUE;
+//				lastImproveIter = iteration+1;
+//				lastDiversification = iteration+1;
 			} else if(rand < 0.2){
 				if(graph.serviceBiggestOmissionDemand(iteration)){
+					madeChange = true;
+				}
+			} else if(rand < 0.3){
+				if(graph.createFeederRotation()){
 					madeChange = true;
 				}
 			} else if(rand < 0.6){
 				for(Rotation r : rotations){
 					r.includeOmissionDemands();
-					if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
+					if(r.getVesselClass().getCapacity() <= 800 && r.isActive() && r.insertBestPort(1.05, 0.05, false)){
+						remove.add(r);
+						madeChange = true;
+					}
+					else if(r.isActive() && r.insertBestPortEdge(1.05, 0.05, false)){
 						remove.add(r);
 						madeChange = true;
 					}
@@ -116,7 +124,6 @@ public class LNS {
 				//					madeChange = true;
 				//				}
 			} else {
-				ArrayList<Rotation> rotatons = graph.getResult().getRotations();
 				for(Rotation r : rotations){
 					//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
 					if(r.isActive() && r.removeWorstPort(1, false)){
@@ -193,10 +200,10 @@ public class LNS {
 		portsId.add(demand.getOrigin().getPortId());
 		portsId.add(demand.getDestination().getPortId());
 		Rotation newR = null;
-		for(int i = Data.getVesselClasses().size()-1; i>=0; i--){
+		for(int i = Data.getVesselClasses().size()-1; i>=2; i--){
 			VesselClass v = Data.getVesselClasses().get(i);
 			int reqVessels = ComputeRotations.calcNumberOfVessels(ports, v);
-			int spareVessels = graph.getNoVesselsAvailable(v.getId()) - graph.getNoVesselsUsed(v.getId());
+			int spareVessels = graph.getNetNoVesselsAvailable(v.getId());
 			if(reqVessels < spareVessels){
 				if(v.getDraft() <= demand.getOrigin().getDraft() && v.getDraft() <= demand.getDestination().getDraft()){
 					newR = graph.createRotationFromPorts(portsId, v);
@@ -343,7 +350,7 @@ public class LNS {
 		graph.runMcf();
 		ArrayList<Rotation> rotationsToKeep = graph.findRotationsToKeep();
 		System.out.println("Keeping " + rotationsToKeep.size() + " rotations.");
-//		auxGraph.setEdgesUsed(rotationsToKeep);
+		//		auxGraph.setEdgesUsed(rotationsToKeep);
 		AuxRun auxRun = new AuxRun(graph, rotationsToKeep, 5, 43);
 		auxRun.run();
 		graph = findInitialSolution(20, rotationsToKeep, demandFileName);
@@ -441,7 +448,7 @@ public class LNS {
 			cr.createAuxFlowRotation(length, sortedEdges, vesselClass);
 		}
 	}
-	*/
+	 */
 
 	private void saveSol(BufferedWriter progressWriter, long currentTime, int objective){
 		graph.getResult().saveAllEdgesSol("AllEdgesSol.csv");
