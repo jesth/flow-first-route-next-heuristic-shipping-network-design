@@ -217,7 +217,7 @@ public class Graph {
 				unservedPorts.add(p.getPortId());
 			}
 		}
-		
+		/*
 		if(considerUnservedPorts){
 			Graph mainGraph = rotation.getMainGraph();
 			for(Integer i : unservedPorts){
@@ -241,7 +241,7 @@ public class Graph {
 				}
 			}
 		}
-		
+		*/
 		demandsMatrix = createDemandsMatrix();
 	}
 
@@ -292,10 +292,11 @@ public class Graph {
 
 	private void createOmissionEdges(){
 		for(Demand d : getDemands()){
-			Node fromCentroid = d.getOrigin().getFromCentroidNode();
-			Node toCentroid = d.getDestination().getToCentroidNode();
-			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate(), edgeIdCounter.getAndIncrement());
-			addEdge(newOmissionEdge);
+//			Node fromCentroid = d.getOrigin().getFromCentroidNode();
+//			Node toCentroid = d.getDestination().getToCentroidNode();
+//			Edge newOmissionEdge = new Edge(fromCentroid, toCentroid, d.getRate(), edgeIdCounter.getAndIncrement());
+//			addEdge(newOmissionEdge);
+			createOmissionEdge(d);
 		}
 	}
 
@@ -394,14 +395,12 @@ public class Graph {
 				} 
 			}
 		}
-		
-		
 		if(considerUnservedPorts)
-			createFeederToUservedPorts(oldRotation, newRotation);
+			createFeederToUnservedPorts(oldRotation, newRotation);
 		
 	}
 
-	private void createFeederToUservedPorts(Rotation oldRotation, Rotation newRotation){
+	private void createFeederToUnservedPorts(Rotation oldRotation, Rotation newRotation){
 		
 		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
 		for(Port p : oldRotation.getMainGraph().getPorts()){
@@ -412,12 +411,12 @@ public class Graph {
 		if(unservedPorts.size()<1){
 			return;
 		}
-		System.out.println("in createFeederToUnservedPorts(). # unservedPorts = " + unservedPorts.size());
+//		System.out.println("in createFeederToUnservedPorts(). # unservedPorts = " + unservedPorts.size());
 		for(Integer i : unservedPorts){
 			Port unservedPort = getPort(i);
 			Node fromCentroid = unservedPort.getFromCentroidNode();
 			Node toCentroid = unservedPort.getToCentroidNode();
-			Port[] closestPorts = findClosestPorts(unservedPort, 5, 8, oldRotation);
+			Port[] closestPorts = findClosestPorts(unservedPort, 5, 10, oldRotation);
 			
 			for(Node n : nodes.values()){
 				if(n.isArrival()){

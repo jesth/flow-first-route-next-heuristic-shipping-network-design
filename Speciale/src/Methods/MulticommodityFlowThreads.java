@@ -319,6 +319,10 @@ public class MulticommodityFlowThreads {
 				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}
 		}
+//		graph.getResult().saveAllEdgesSol("AllEdgesSolErr.csv");
+//		graph.getResult().saveODSol("ODSolErr.csv");
+//		graph.getResult().saveRotationSol("RotationSolErr.csv");
+//		graph.getResult().saveDemands("DemandSolErr.csv");
 		for(Demand d : graph.getDemands()){
 			d.checkDemand();
 		}

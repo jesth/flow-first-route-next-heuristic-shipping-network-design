@@ -57,7 +57,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 306;
+		int allTimeLastImproveIter = 50;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -103,7 +103,7 @@ public class LNS {
 ////				lastDiversification = iteration+1;
 //>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 			} else if(rand < 0.2){
-				System.out.println("    serviceOmissionDemand() chosen");
+//				System.out.println("    serviceOmissionDemand() chosen");
 				for(Rotation r : graph.getResult().getRotations())
 					r.createRotationGraph(false);
 				if(graph.serviceBiggestOmissionDemand(iteration)){
@@ -114,7 +114,7 @@ public class LNS {
 					madeChange = true;
 				}
 			} else if(rand < 0.6){
-				System.out.println("    insertBestPortEdge() chosen");
+//				System.out.println("    insertBestPortEdge() chosen");
 				for(Rotation r : rotations){
 					r.createRotationGraph(true);
 					r.includeOmissionDemands();
@@ -136,7 +136,7 @@ public class LNS {
 				//					madeChange = true;
 				//				}
 			} else {
-				System.out.println("    removeWorstPort() chosen");
+//				System.out.println("    removeWorstPort() chosen");
 				for(Rotation r : rotations){
 					//					if(r.isActive() && r.getLoadFactor() < 0.7 && r.removeWorstPort(1, false)){
 					if(r.isActive() && r.removeWorstPort(1, false)){
@@ -145,6 +145,9 @@ public class LNS {
 				}
 			}
 			graph.runMcf();
+			if(lastDiversification == iteration+1){
+				currBestObj = graph.getResult().getObjective();
+			}
 			if(madeChange){
 				int obj = graph.getResult().getObjective();
 				if(currBestObj < obj){

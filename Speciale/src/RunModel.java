@@ -32,7 +32,7 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testLNS("WorldSmall");
+		testLNS("WorldLarge");
 //		testMedManual2();
 //		testWorldLargeAuto();
 		
@@ -42,7 +42,7 @@ public class RunModel {
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
 		LNS lns = new LNS();
-		lns.run(600, 20, fleetFileName, demandFileName);
+		lns.run(3000, 10, fleetFileName, demandFileName);
 	}
 	
 	private static String getFleetFileName(String caseName){
