@@ -217,7 +217,7 @@ public class Graph {
 				unservedPorts.add(p.getPortId());
 			}
 		}
-		/*
+		
 		if(considerUnservedPorts){
 			Graph mainGraph = rotation.getMainGraph();
 			for(Integer i : unservedPorts){
@@ -241,7 +241,7 @@ public class Graph {
 				}
 			}
 		}
-		*/
+		
 		demandsMatrix = createDemandsMatrix();
 	}
 
