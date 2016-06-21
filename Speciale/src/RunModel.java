@@ -42,7 +42,7 @@ public class RunModel {
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
 		LNS lns = new LNS();
-		lns.run(3000, 10, fleetFileName, demandFileName);
+		lns.run(200, 1, fleetFileName, demandFileName);
 	}
 	
 	private static String getFleetFileName(String caseName){
