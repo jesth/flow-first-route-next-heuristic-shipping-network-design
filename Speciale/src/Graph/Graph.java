@@ -207,41 +207,59 @@ public class Graph {
 		for(Demand d : orgDemands){
 			Port origin = ports[d.getOrigin().getPortId()];
 			Port destination = ports[d.getDestination().getPortId()];
+//			if(origin.getUNLocode().equals("CNLYG") || destination.getUNLocode().equals("CNLYG"))
+//				throw new RuntimeException("WTF!");
 			Demand newDemand = new Demand(d, origin, destination, demands[origin.getPortId()][destination.getPortId()]);
 			demandsList.add(newDemand);
 		}
 		
 		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
 		for(Port p : rotation.getMainGraph().getPorts()){
+			if(p.getUNLocode().equals("COBAQ") || p.getUNLocode().equals("CNLYG"))
+//				System.out.println(p.getUNLocode() + " noDwell= " + p.getDwellEdges().size());
 			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
 				unservedPorts.add(p.getPortId());
 			}
 		}
-		/*
+//		for(Demand d : demandsList){
+//			System.out.println(d.getOrigin().getUNLocode() + " -> " + d.getDestination().getUNLocode()+ " #" +d.getDemand());
+//		}
+		
+//		System.out.println("unservedPorts:");
+//		for(Integer i : unservedPorts)
+//			System.out.println(getPort(i).getUNLocode());
+//		System.out.println("Rotation ports:");
+//		for(Port p : rotation.getPorts()){
+//			System.out.println(p.getUNLocode());
+//		}
 		if(considerUnservedPorts){
 			Graph mainGraph = rotation.getMainGraph();
 			for(Integer i : unservedPorts){
 				//is the port unserved in the main graph
 				for(Port p : mainGraph.getPorts()){
+					if(!p.isActive())
+						continue;
 					int id = p.getPortId();
 					if(id != i && !unservedPorts.contains(id)){
 						Demand dFrom = mainGraph.getDemand(i, id);
 						Demand dTo = mainGraph.getDemand(id, i);
 						Port unserved = getPort(i);
+						if(!unserved.isActive())
+							continue;
 						Port served = getPort(id);
 						if(dFrom != null){
-							Demand newDemandFrom = new Demand(dFrom, unserved, served, dFrom.getDemand());
+							Demand newDemandFrom = new Demand(dFrom, unserved, served);
 							demandsList.add(newDemandFrom);
 						} 
 						if(dTo != null){
-							Demand newDemandTo = new Demand(dTo, served, unserved, dTo.getDemand());
+							Demand newDemandTo = new Demand(dTo, served, unserved);
 							demandsList.add(newDemandTo);
 						}
 					}
 				}
 			}
 		}
-		*/
+		
 		demandsMatrix = createDemandsMatrix();
 	}
 
@@ -416,7 +434,7 @@ public class Graph {
 			Port unservedPort = getPort(i);
 			Node fromCentroid = unservedPort.getFromCentroidNode();
 			Node toCentroid = unservedPort.getToCentroidNode();
-			Port[] closestPorts = findClosestPorts(unservedPort, 5, 10, oldRotation);
+			Port[] closestPorts = findClosestPorts(unservedPort, 5, 0, oldRotation);
 			
 			for(Node n : nodes.values()){
 				if(n.isArrival()){
@@ -668,6 +686,10 @@ public class Graph {
 	public Edge createRotationEdge(Rotation rotation, Node fromNode, Node toNode, int cost, int capacity, int noInRotation, DistanceElement distance){
 		Edge newEdge = new Edge(fromNode, toNode, cost, capacity, true, false, rotation, noInRotation, distance, edgeIdCounter.getAndIncrement());
 		rotation.addRotationEdge(newEdge);
+//		if(newEdge.isDwell()){
+//			Port port = newEdge.getFromNode().getPort();
+//			port.addDwellEdge(newEdge);
+//		}
 		addEdge(newEdge);
 		return newEdge;
 	}
