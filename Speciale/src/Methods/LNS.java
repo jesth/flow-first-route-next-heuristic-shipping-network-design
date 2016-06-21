@@ -116,7 +116,7 @@ public class LNS {
 			} else if(rand < 0.6){
 //				System.out.println("    insertBestPortEdge() chosen");
 				for(Rotation r : rotations){
-					r.createRotationGraph(false);
+					r.createRotationGraph(true);
 					r.includeOmissionDemands();
 					if(r.getVesselClass().getCapacity() <= 800 && r.isActive() && r.insertBestPort(1.05, 0.05, false)){
 						remove.add(r);

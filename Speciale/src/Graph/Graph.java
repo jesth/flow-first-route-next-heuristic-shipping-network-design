@@ -212,54 +212,6 @@ public class Graph {
 			Demand newDemand = new Demand(d, origin, destination, demands[origin.getPortId()][destination.getPortId()]);
 			demandsList.add(newDemand);
 		}
-		
-		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
-		for(Port p : rotation.getMainGraph().getPorts()){
-//			if(p.getUNLocode().equals("COBAQ") || p.getUNLocode().equals("CNLYG"))
-//				System.out.println(p.getUNLocode() + " noDwell= " + p.getDwellEdges().size());
-			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
-				unservedPorts.add(p.getPortId());
-			}
-		}
-//		for(Demand d : demandsList){
-//			System.out.println(d.getOrigin().getUNLocode() + " -> " + d.getDestination().getUNLocode()+ " #" +d.getDemand());
-//		}
-		
-//		System.out.println("unservedPorts:");
-//		for(Integer i : unservedPorts)
-//			System.out.println(getPort(i).getUNLocode());
-//		System.out.println("Rotation ports:");
-//		for(Port p : rotation.getPorts()){
-//			System.out.println(p.getUNLocode());
-//		}
-		if(considerUnservedPorts){
-			Graph mainGraph = rotation.getMainGraph();
-			for(Integer i : unservedPorts){
-				//is the port unserved in the main graph
-				for(Port p : mainGraph.getPorts()){
-					if(!p.isActive())
-						continue;
-					int id = p.getPortId();
-					if(id != i && !unservedPorts.contains(id)){
-						Demand dFrom = mainGraph.getDemand(i, id);
-						Demand dTo = mainGraph.getDemand(id, i);
-						Port unserved = getPort(i);
-						if(!unserved.isActive())
-							continue;
-						Port served = getPort(id);
-						if(dFrom != null){
-							Demand newDemandFrom = new Demand(dFrom, unserved, served);
-							demandsList.add(newDemandFrom);
-						} 
-						if(dTo != null){
-							Demand newDemandTo = new Demand(dTo, served, unserved);
-							demandsList.add(newDemandTo);
-						}
-					}
-				}
-			}
-		}
-		
 		demandsMatrix = createDemandsMatrix();
 	}
 
