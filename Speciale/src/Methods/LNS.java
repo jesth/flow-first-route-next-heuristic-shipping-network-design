@@ -57,7 +57,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 50;
+		int allTimeLastImproveIter = 0;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -116,7 +116,7 @@ public class LNS {
 			} else if(rand < 0.6){
 //				System.out.println("    insertBestPortEdge() chosen");
 				for(Rotation r : rotations){
-					r.createRotationGraph(true);
+					r.createRotationGraph(false);
 					r.includeOmissionDemands();
 					if(r.getVesselClass().getCapacity() <= 800 && r.isActive() && r.insertBestPort(1.05, 0.05, false)){
 						remove.add(r);
