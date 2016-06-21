@@ -215,7 +215,7 @@ public class Graph {
 		
 		ArrayList<Integer> unservedPorts = new ArrayList<Integer>();
 		for(Port p : rotation.getMainGraph().getPorts()){
-			if(p.getUNLocode().equals("COBAQ") || p.getUNLocode().equals("CNLYG"))
+//			if(p.getUNLocode().equals("COBAQ") || p.getUNLocode().equals("CNLYG"))
 //				System.out.println(p.getUNLocode() + " noDwell= " + p.getDwellEdges().size());
 			if(p.getDwellEdges().isEmpty() && p.isActive() && p.getTotalDemand() > 0){
 				unservedPorts.add(p.getPortId());
