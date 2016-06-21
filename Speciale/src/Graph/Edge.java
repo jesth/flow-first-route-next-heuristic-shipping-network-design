@@ -74,6 +74,7 @@ public class Edge {
 			this.travelTime = this.distance.getDistance()/rotation.getVesselClass().getDesignSpeed();
 		} else if(fromNode.isArrival() && toNode.isDeparture() && rotationEdge){
 			this.dwell = true;
+//			fromNode.getPort().addDwellEdge(this);
 			this.travelTime = Data.getPortStay();
 		} else if(feederIn){
 			feeder = true;

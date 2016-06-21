@@ -41,7 +41,7 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(1, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -295,7 +295,7 @@ public class LNS {
 	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
 		Graph bestGraph = null;
 		int bestObj = -Integer.MAX_VALUE;
-		for(int i = 0; i < 3; i++){
+		for(int i = 0; i < 1; i++){
 			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
 			AuxRun auxRun = new AuxRun(graph, 3, i);

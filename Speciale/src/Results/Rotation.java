@@ -70,7 +70,6 @@ public class Rotation {
 	public void createRotationGraph(boolean considerUnservedPorts){
 		if(rotationGraph == null){
 			this.rotationGraph = new Graph(this, considerUnservedPorts);
-			
 		}
 	}
 
@@ -212,6 +211,7 @@ public class Rotation {
 //			getRotationGraph().getResult().saveRotationSol("RotSolBefImplement.csv");
 //			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolBefImplement.csv");
 //			getRotationGraph().getResult().saveRotationCost("RotationCostBefImplement.csv");
+//			System.out.println("bestFeederPort: " + bestFeederPort.getUNLocode());
 			subRotation.implementInsertPortEdge(rotationGraph, bestFeederPort, worstNextSail);
 			int noInRot = worstNextSail.getNoInRotation();
 			Edge mainGraphWorstNextSail = null;
@@ -330,6 +330,7 @@ public class Rotation {
 		Node orgNextPortArrNode = nextSailEdge.getToNode();
 
 		ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodesEdge(subRotation, insertPort, nextSailEdge);
+//		System.out.println("insertPort:" + insertPort.getUNLocode());
 		ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdgesEdge(subRotation, insertNodes, orgDepNode, orgNextPortArrNode);
 
 		//		if(subRotation.enoughVessels(orgNoVessels)){
