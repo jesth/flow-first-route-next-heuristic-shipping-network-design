@@ -3,6 +3,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import Data.Demand;
@@ -11,8 +12,9 @@ import Graph.Graph;
 import Graph.Node;
 import Sortables.SortableAuxEdge;
 
-public class Result {
-	private Graph graph;
+public class Result implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private transient Graph graph;
 	private ArrayList<Rotation> rotations;
 
 	public Result(Graph inputGraph){

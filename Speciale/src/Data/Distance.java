@@ -1,6 +1,9 @@
 package Data;
 
-public class Distance {
+import java.io.Serializable;
+
+public class Distance implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private PortData origin;
 	private PortData destination;
 	private DistanceElement[] distances;

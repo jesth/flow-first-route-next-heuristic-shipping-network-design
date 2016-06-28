@@ -41,13 +41,13 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution(1, rotationsToKeep, demandFileName);
+		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
 		Graph bestGraph = null;
-		System.out.println("Rotations generated.");
+//		System.out.println("Rotations generated.");
 
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("ProgressSol.csv");
 		saveSol(progressWriter, 0, allTimeBestObj);
@@ -57,7 +57,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 0;
+		int allTimeLastImproveIter = 550;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -116,7 +116,7 @@ public class LNS {
 			} else if(rand < 0.6){
 //				System.out.println("    insertBestPortEdge() chosen");
 				for(Rotation r : rotations){
-					r.createRotationGraph(false);
+					r.createRotationGraph(true);
 					r.includeOmissionDemands();
 					if(r.getVesselClass().getCapacity() <= 800 && r.isActive() && r.insertBestPort(1.05, 0.05, false)){
 						remove.add(r);
@@ -167,6 +167,7 @@ public class LNS {
 			iteration++;
 		}
 		progressWriter.close();
+		graph.serialize();
 	}
 
 	private void diversify(ArrayList<Rotation> insert, ArrayList<Rotation> remove, int iteration) throws InterruptedException{
@@ -271,13 +272,14 @@ public class LNS {
 		Graph bestGraph = null;
 
 		for(int i = 0; i < iterations; i++){
-			System.out.println("Activity " + i);
+//			System.out.println("Activity " + i);
 			Graph graph = new Graph(demandFileName);
 			ComputeRotations cr = new ComputeRotations(graph);
 			findSolution(cr, graph, sortedEdges, rotationsToKeep, i+iterations);
 			graph.runMcf();
 			int obj = graph.getResult().getObjective();
-			System.out.println("Objective " + obj);
+//			System.out.println("Objective " + obj);
+			System.out.println(obj);
 			if(obj > bestObj){
 				bestObj = obj;
 				bestGraph = graph;
@@ -295,7 +297,7 @@ public class LNS {
 	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
 		Graph bestGraph = null;
 		int bestObj = -Integer.MAX_VALUE;
-		for(int i = 0; i < 1; i++){
+		for(int i = 0; i < 3; i++){
 			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
 			AuxRun auxRun = new AuxRun(graph, 3, i);

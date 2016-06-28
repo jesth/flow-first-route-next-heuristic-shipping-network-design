@@ -1,4 +1,5 @@
 package Data;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -6,7 +7,8 @@ import Graph.Edge;
 import Methods.BellmanFord;
 import Results.Route;
 
-public class Demand {
+public class Demand implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private Port origin;
 	private Port destination;

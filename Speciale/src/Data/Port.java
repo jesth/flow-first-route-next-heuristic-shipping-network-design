@@ -1,20 +1,23 @@
 package Data;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import Graph.Edge;
 import Graph.Node;
 import Results.Rotation;
 
-public class Port {
+public class Port implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private Node fromCentroidNode;
 	private Node toCentroidNode;
-	private ArrayList<Node> arrivalNodes = new ArrayList<Node>();
-	private ArrayList<Node> departureNodes = new ArrayList<Node>();
-	private ArrayList<Edge> dwellEdges = new ArrayList<Edge>();
+	private transient ArrayList<Node> arrivalNodes = new ArrayList<Node>();
+	private transient ArrayList<Node> departureNodes = new ArrayList<Node>();
+	private transient ArrayList<Edge> dwellEdges = new ArrayList<Edge>();
 	private boolean active;
 	private int totalDemand = 0;
 	private int totalProfitPotential = 0;
-	private PortData portData;
+	private transient PortData portData;
 	
 	public Port(){
 		

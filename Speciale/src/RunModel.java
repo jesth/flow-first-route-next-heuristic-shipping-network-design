@@ -32,9 +32,13 @@ public class RunModel {
 //		testMed();
 //		saveAux();
 //		testAux();
-		testLNS("WorldLarge");
+
 //		testMedManual2();
 //		testWorldLargeAuto();
+		
+		testLNS("WorldSmall");
+//		Graph network = Graph.deserialize();
+//		network.runMcf();
 		
 	}
 	
@@ -42,7 +46,7 @@ public class RunModel {
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
 		LNS lns = new LNS();
-		lns.run(200, 1, fleetFileName, demandFileName);
+		lns.run(300, 20, fleetFileName, demandFileName);
 	}
 	
 	private static String getFleetFileName(String caseName){

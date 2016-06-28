@@ -1,4 +1,5 @@
 package Results;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,18 +16,19 @@ import Methods.ComputeRotations;
 import RotationFlow.RotationEdge;
 import RotationFlow.RotationGraph;
 
-public class Rotation {
+public class Rotation implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private int id;
-	private VesselClass vesselClass;
-	private ArrayList<Node> rotationNodes;
-	private ArrayList<Edge> rotationEdges;
+	private transient VesselClass vesselClass;
+	private transient ArrayList<Node> rotationNodes;
+	private transient ArrayList<Edge> rotationEdges;
 	private double speed;
 	private int noOfVessels;
 	private int distance;
 	private boolean active;
-	private Graph mainGraph;
-	private Graph rotationGraph;
-	private Rotation subRotation;
+	private transient Graph mainGraph;
+	private transient Graph rotationGraph;
+	private transient Rotation subRotation;
 
 	public Rotation(){
 	}

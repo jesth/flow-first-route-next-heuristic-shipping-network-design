@@ -1,9 +1,14 @@
 package Graph;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import AuxFlow.AuxEdge;
+import AuxFlow.AuxGraph;
 import Data.Data;
 import Data.Demand;
 import Data.DistanceElement;
@@ -28,7 +34,8 @@ import RotationFlow.RotationEdge;
 import RotationFlow.RotationGraph;
 import RotationFlow.RotationNode;
 
-public class Graph {
+public class Graph implements Serializable{
+	private static final long serialVersionUID = 1L;
 	public static final double DOUBLE_TOLERANCE = 0.0000000001;
 
 	private HashMap<Integer, Node> nodes;
@@ -39,10 +46,10 @@ public class Graph {
 	private MulticommodityFlowThreads mcf;
 	private Demand[][] demandsMatrix;
 	private ArrayList<Demand> demandsList;
-	private int[] noVesselsAvailable;
-	private int[] noVesselsUsed;
+	private transient int[] noVesselsAvailable;
+	private transient int[] noVesselsUsed;
 	private Port[] ports;
-	private boolean subGraph;
+	private transient boolean subGraph;
 	private AtomicInteger nodeIdCounter = new AtomicInteger();
 	private AtomicInteger edgeIdCounter = new AtomicInteger();
 	private AtomicInteger rotationIdCounter = new AtomicInteger();
@@ -439,7 +446,7 @@ public class Graph {
 			for(Node n : nodes.values()){
 				if(n.isArrival()){
 					for(Port p : closestPorts){
-						if(n.getPort().getPortData().equals(p.getPortData())){
+						if(p != null && n.getPortId() == p.getPortId()){
 							int cost = computeFeederCost(n, toCentroid, newRotation);
 							Edge feeder = new Edge(n, toCentroid, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
 							addEdge(feeder);
@@ -449,7 +456,7 @@ public class Graph {
 					}
 				} else if (n.isDeparture()){
 					for(Port p : closestPorts){
-						if(n.getPort().getPortData().equals(p.getPortData())){
+						if(p != null && n.getPortId() == p.getPortId()){
 							int cost = computeFeederCost(fromCentroid, n, newRotation);
 							Edge feeder = new Edge(fromCentroid, n, cost, newRotation.getVesselClass().getCapacity(), false, true, null, -1, null, edgeIdCounter.getAndIncrement());
 							addEdge(feeder);
@@ -1502,5 +1509,35 @@ public class Graph {
 			}
 		}
 		return false;
+	}
+	
+	public void serialize(){
+		try{
+			FileOutputStream fileOut = new FileOutputStream("Network.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(this);
+			out.close();
+			fileOut.close();
+			System.out.println("Serialized data is saved in Network.ser");
+		}catch(IOException i){
+			i.printStackTrace();
+		}
+	}
+
+	public static Graph deserialize(){
+		Graph network = null;
+		try{
+			FileInputStream fileIn = new FileInputStream("Network.ser");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			network = (Graph) in.readObject();
+			in.close();
+			fileIn.close();
+		}catch(IOException i){
+			i.printStackTrace();
+		}catch(ClassNotFoundException c){
+			System.out.println("Graph class not found");
+			c.printStackTrace();
+		}
+		return network;
 	}
 }

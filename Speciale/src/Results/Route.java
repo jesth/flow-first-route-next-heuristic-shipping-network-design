@@ -1,11 +1,13 @@
 package Results;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import Data.Demand;
 import Graph.Edge;
 import Methods.BellmanFord;
 
-public class Route {
+public class Route implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Edge> route;
 	private Demand demand;
 	private int FFE;

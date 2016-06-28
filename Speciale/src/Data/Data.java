@@ -1,14 +1,16 @@
 package Data;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Data {
+public class Data implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private static HashMap<String, PortData> portsMap;
 	private static PortData[] ports;
-	private static Distance[][] distances;
-	private static ArrayList<VesselClass> vesselClasses;
-	private static double[][] randomNumbers;
+	private static transient Distance[][] distances;
+	private static transient ArrayList<VesselClass> vesselClasses;
+	private static transient double[][] randomNumbers;
 	private static int portStay = 24;
 	private static int fuelPrice = 600;
 

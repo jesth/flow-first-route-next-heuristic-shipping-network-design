@@ -1,4 +1,5 @@
 package Methods;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,14 +12,15 @@ import Graph.Node;
 import Results.Route;
 
 
-public class BellmanFord implements Runnable {
+public class BellmanFord implements Runnable, Serializable{
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Node> unprocessedNodes = new ArrayList<Node>();
 	private ArrayList<Node> unprocessedNodesRep = new ArrayList<Node>();
 	private ArrayList<Node> changedRepNodes = new ArrayList<Node>();
 	private Node centroidNode;
 	private boolean rep;
 	private boolean active;
-	private Graph graph;
+	private transient Graph graph;
 
 	/** Initializes all nodes to distance Integer.MAX_VALUE and predecessor to null. Exception: Centroids.
 	 * @param graph

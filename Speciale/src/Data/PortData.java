@@ -1,6 +1,9 @@
 package Data;
 
-public class PortData {
+import java.io.Serializable;
+
+public class PortData implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String UNLocode;
 	private String name;
 	private String country;

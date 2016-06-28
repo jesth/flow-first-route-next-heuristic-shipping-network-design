@@ -1,4 +1,5 @@
 package Graph;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -8,7 +9,9 @@ import Methods.BellmanFord;
 import Results.Rotation;
 import Results.Route;
 
-public class Edge {
+public class Edge implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private boolean active;
 	private Node fromNode;
@@ -27,10 +30,10 @@ public class Edge {
 	private boolean transshipment;
 	private boolean loadUnload;
 	private boolean feeder;
-	private Rotation rotation;
+	private transient Rotation rotation;
 	private int noInRotation;
 	private ArrayList<Route> routes;
-	private DistanceElement distance;
+	private transient DistanceElement distance;
 	private int[] lagrangeValues = new int[1200];
 	private int[] loadValues = new int[1200];
 
@@ -247,35 +250,11 @@ public class Edge {
 	}
 
 	public void adjustLagrange(int iteration, boolean overflow){
-		//		int adjust = (int) Math.max( (double)this.lagrangeStart / (double) iteration, 1);
-		//		System.out.println("LagrangeStart " + lagrangeStart + " for " + simplePrint());
 		if(this.sail){
 			if(overflow){
 				this.lagrange = Math.max(this.lagrange + lagrangeStep, 1);
-				/*
-				if(getLagrangeUp() > 0){
-					doubleLagrangeStep();
-				} else {
-					halveLagrangeStep();
-				}
-				this.lagrange = Math.max(Math.min(this.lagrange + this.lagrangeStep, 1000000),1);
-				incrementLagrangeUp();
-				resetLagrangeDown();
-				 */
 			} else {
-				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 5), 1);
-				/*
-				if(getLagrangeDown() >= 3 && this.lagrange > 1){
-					doubleLagrangeStep();
-				} else if(getLagrangeDown() == 0){
-					halveLagrangeStep();
-				}
-				if(getLagrangeDown() >= 3){
-					this.lagrange = Math.max(this.lagrange - this.lagrangeStep, 1);
-				}
-				incrementLagrangeDown();
-				resetLagrangeUp();
-				 */
+				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 3), 1);
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -509,41 +488,40 @@ public class Edge {
 		return capacity - getLoad();
 	}
 
-	public int getLagrangeDown(){
-		return lagrangeDown;
-	}
-
-	public int getLagrangeUp(){
-		return lagrangeUp;
-	}
-
-	public void resetLagrangeDown(){
-		lagrangeDown = 0;
-	}
-
-	public void resetLagrangeUp(){
-		lagrangeUp = 0;
-	}
-
-	public void incrementLagrangeUp(){
-		lagrangeUp++;
-	}
-
-	public void incrementLagrangeDown(){
-		lagrangeDown++;
-	}
-
-	public void doubleLagrangeStep(){
-		lagrangeStep = lagrangeStep * 2;
-	}
+//	public int getLagrangeDown(){
+//		return lagrangeDown;
+//	}
+//
+//	public int getLagrangeUp(){
+//		return lagrangeUp;
+//	}
+//
+//	public void resetLagrangeDown(){
+//		lagrangeDown = 0;
+//	}
+//
+//	public void resetLagrangeUp(){
+//		lagrangeUp = 0;
+//	}
+//
+//	public void incrementLagrangeUp(){
+//		lagrangeUp++;
+//	}
+//
+//	public void incrementLagrangeDown(){
+//		lagrangeDown++;
+//	}
+//
+//	public void doubleLagrangeStep(){
+//		lagrangeStep = lagrangeStep * 2;
+//	}
 
 	public void decreaseLagrangeStep(){
-		int decrement = lagrangeStep / 3;
+		int decrement = lagrangeStep / 2;
 		//		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);
 	}
-
 
 	public Route findLeastProfitableRoute(){
 		int lowestProfit = Integer.MAX_VALUE;

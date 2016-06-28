@@ -1,23 +1,18 @@
 package Methods;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import Data.Data;
 import Data.Demand;
 import Graph.Edge;
 import Graph.Graph;
 import Graph.Node;
-import Results.Result;
-import Results.Rotation;
 import Results.Route;
 
-public class MulticommodityFlowThreads {
+public class MulticommodityFlowThreads implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private Graph graph;
 	private int bestFlowProfit;
 	private ArrayList<Route> bestRoutes;
@@ -52,7 +47,7 @@ public class MulticommodityFlowThreads {
 	public void reset(){
 		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
-				e.setLagrangeStep(50);
+				e.setLagrangeStep(10);
 				e.setLagrange(1);
 			}
 		}
@@ -88,7 +83,6 @@ public class MulticommodityFlowThreads {
 
 		while (improvementCounter < 20 && iteration < 100){
 			//			System.out.println("Now running BellmanFord in iteration " + iteration);
-			//			System.out.println();
 			for(Edge e : graph.getEdges().values()){
 				e.clearRoutes();
 			}
@@ -101,10 +95,8 @@ public class MulticommodityFlowThreads {
 			double overflow = getOverflow();
 			if(overflow < 0.3 || improvementCounter == 19 || iteration == 99){
 				improvementCounter++;
-				//				System.out.println("Finding repair flow.");
 				validFlow = findRepairFlow(improvementCounter, iteration);
 				repairCounter++;
-
 			}
 			int flowProfit = graph.getResult().getFlowProfit(false);
 			if(validFlow && flowProfit > bestFlowProfit){
@@ -114,8 +106,6 @@ public class MulticommodityFlowThreads {
 				improvementCounter = 0;
 			}
 
-			//			for (Edge e : graph.getEdges()){
-			//				if(e.isSail()){
 			for(Edge e : sailEdges){
 				if(repairCounter >= 5){
 					e.setLagrange(Math.max(e.getLagrange() / 2,1));
@@ -123,15 +113,8 @@ public class MulticommodityFlowThreads {
 				} else {
 					e.lagrangeAdjustment(iteration);
 				}
-				//				}
 			}
-			//			for(Demand d : graph.getDemands()){
-			//				for(Route r : d.getRoutes()){
-			//					r.updateLagrangeProfit();
-			//				}
-			//			}
 			if(repairCounter >= 5){
-				//				System.out.println("Halving Lagranges.");
 				repairCounter = 0;
 			}
 			iteration++;
@@ -140,10 +123,6 @@ public class MulticommodityFlowThreads {
 		long endTime = System.currentTimeMillis();
 //		saveLagranges("lagranges.csv", iteration);
 //		saveLoads("loads.csv", iteration);
-		if(!graph.isSubGraph()){
-//			System.out.println("RunningTime " + (endTime-startTime));
-//			System.out.println("Exiting while loop after iteration " + iteration);
-		}
 	}
 
 	//TODO: ALWAYS runs threaded BF!
@@ -196,7 +175,6 @@ public class MulticommodityFlowThreads {
 		}
 		boolean validFlow = true;
 		ArrayList<Route> overflowRoutes = new ArrayList<Route>();
-		//		for(Edge e : graph.getEdges()){
 		if(!graph.isSubGraph()){
 			runBF(true, true);
 		} else {
@@ -211,8 +189,6 @@ public class MulticommodityFlowThreads {
 			}
 			int i = (int) (length * Data.getRandomNumber(iteration, counter));
 			Edge e = edges.remove(i);
-			//					for(int i = graph.getEdges().size()-1; i>= 0; i--){
-			//						Edge e = graph.getEdges().get(i);
 			length--;
 			counter++;
 			if(e.isSail() || e.isFeeder()){
@@ -238,9 +214,6 @@ public class MulticommodityFlowThreads {
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){
 			improvementCounter = 0;
-			if(!graph.isSubGraph()){
-//				System.out.println("Found better flow: " + flowProfit + " > " + bestFlowProfit);
-			}
 			updateBestFlow(flowProfit);
 			for(Edge e : graph.getEdges().values()){
 				if(e.isSail()){
@@ -260,7 +233,6 @@ public class MulticommodityFlowThreads {
 		}
 		int FFEforRemoval = Math.min(overflow, (r.getFFErep()-r.getFFEforRemoval()));
 		r.addFFEforRemoval(FFEforRemoval);
-		//		System.err.println("Route from " + r.getDemand().getOrigin().getUNLocode() + " to " + r.getDemand().getDestination().getUNLocode() + " with FFEforRemoval " + r.getFFEforRemoval());
 		overflowRoutes.add(r);
 		overflow -= FFEforRemoval;
 		if(overflow > 0){
@@ -301,20 +273,8 @@ public class MulticommodityFlowThreads {
 				}
 			}
 		}
-//		for(Edge e : graph.getEdges()){
-//			if(e.isSail()){
-//				//				System.out.println(e.simplePrint() + " with load " + e.getLoad());
-//			}
-//		}
-
 
 		for(Edge e : graph.getEdges().values()){
-			//			System.out.println(e.simplePrint() + " with load " + e.getLoad());
-//			if(e.isSail()){
-//				for(Route r : e.getRoutes()){
-//					//					System.out.println("origin: " +r.getDemand().getOrigin().getUNLocode()+" destination: "+r.getDemand().getDestination().getUNLocode()+ " load on route " + r.getFFE());
-//				}
-//			}
 			if(e.getCapacity() < e.getLoad()){
 				throw new RuntimeException("Capacity limit not respected on edge from " + e.getFromPortUNLo() + " to " + e.getToPortUNLo() + " with load: " + e.getLoad() + " and capacity: " + e.getCapacity());
 			}

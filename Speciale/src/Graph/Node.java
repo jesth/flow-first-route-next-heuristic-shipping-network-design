@@ -1,4 +1,5 @@
 package Graph;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -6,12 +7,14 @@ import Data.Port;
 import Methods.BellmanFord;
 import Results.Rotation;
 
-public class Node {
+public class Node implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private int sequenceId;
 	private boolean active;
-	private Port port;
-	private Rotation rotation;
+	private transient Port port;
+	private transient Rotation rotation;
 	private boolean fromCentroid;
 	private boolean toCentroid;
 	private boolean departure;
