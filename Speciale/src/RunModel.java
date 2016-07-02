@@ -23,28 +23,22 @@ import RotationFlow.RotationGraph;
 
 public class RunModel {
 	public static void main(String[] args) throws InterruptedException, IOException {
-//		Thread.sleep(15000);
-//		testBaltic();
-//		testBaltic();
-//		testAutomatic();
-//		testBalticManual();
-//		testMedManual();
 //		testMed();
 //		saveAux();
 //		testAux();
 
+		testLNS("WorldSmall");
 //		testMedManual2();
 //		testWorldLargeAuto();
-		
 //		testLNS("WorldSmall");
-		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
-		Graph network = new Graph("Demand_WorldSmall.csv");
-		network.copyRotations("network.csv", "networkCost.csv");
-		network.runMcf();
-		System.out.println(network.getResult().getFlowProfit(false));
-//		Graph network = Graph.deserialize();
-//		network.runMcf();
+
 		
+		
+//		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
+//		Graph network = new Graph("Demand_WorldSmall.csv");
+//		network.copyRotations("network.csv", "networkCost.csv");
+//		network.runMcf();
+//		System.out.println(network.getResult().getFlowProfit(false));
 	}
 	
 	public static void testLNS(String caseName) throws InterruptedException, IOException{

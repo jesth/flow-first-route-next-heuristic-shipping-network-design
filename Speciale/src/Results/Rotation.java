@@ -242,44 +242,44 @@ public class Rotation implements Serializable{
 		return madeChange;
 	}
 
-	private ArrayList<Port> getInsertionPortArray(Edge nextSail, Port feederPort) {
+	private ArrayList<Integer> getInsertionPortArray(int nextNoInRotation, int feederPortId) {
 		if(!active){
 			throw new RuntimeException("Working on inactive rotation.");
 		}
-		ArrayList<Port> portArray = new ArrayList<Port>();
+		ArrayList<Integer> portArray = new ArrayList<Integer>();
 		Edge firstEdge = subRotation.getRotationEdges().get(0);
-		portArray.add(firstEdge.getFromNode().getPort());
-		if(nextSail.equals(firstEdge)){
-			portArray.add(feederPort);
-			portArray.add(firstEdge.getFromNode().getPort());
+		portArray.add(firstEdge.getFromNode().getPortId());
+		if(nextNoInRotation == firstEdge.getNoInRotation()){
+			portArray.add(feederPortId);
+			portArray.add(firstEdge.getFromNode().getPortId());
 		}
 		Edge nextEdge = firstEdge.getNextEdge().getNextEdge();
 		while(!nextEdge.equals(firstEdge)){
-			portArray.add(nextEdge.getFromNode().getPort());
-			if(nextSail.equals(nextEdge)){
-				portArray.add(feederPort);
-				portArray.add(nextEdge.getFromNode().getPort());
+			portArray.add(nextEdge.getFromNode().getPortId());
+			if(nextNoInRotation == nextEdge.getNoInRotation()){
+				portArray.add(feederPortId);
+				portArray.add(nextEdge.getFromNode().getPortId());
 			}
 			nextEdge = nextEdge.getNextEdge().getNextEdge();
 		}
 		return portArray;
 	}
 
-	private ArrayList<Port> getInsertionPortArrayEdge(Edge nextSail, Port feederPort) {
+	private ArrayList<Integer> getInsertionPortArrayEdge(int noInRotation, int feederPortId) {
 		if(!active){
 			throw new RuntimeException("Working on inactive rotation.");
 		}
-		ArrayList<Port> portArray = new ArrayList<Port>();
+		ArrayList<Integer> portArray = new ArrayList<Integer>();
 		Edge firstEdge = subRotation.getRotationEdges().get(0);
-		portArray.add(firstEdge.getFromNode().getPort());
-		if(nextSail.equals(firstEdge)){
-			portArray.add(feederPort);
+		portArray.add(firstEdge.getFromNode().getPortId());
+		if(noInRotation == firstEdge.getNoInRotation()){
+			portArray.add(feederPortId);
 		}
 		Edge nextEdge = firstEdge.getNextEdge().getNextEdge();
 		while(!nextEdge.equals(firstEdge)){
-			portArray.add(nextEdge.getFromNode().getPort());
-			if(nextSail.equals(nextEdge)){
-				portArray.add(feederPort);
+			portArray.add(nextEdge.getFromNode().getPortId());
+			if(noInRotation == nextEdge.getNoInRotation()){
+				portArray.add(feederPortId);
 			}
 			nextEdge = nextEdge.getNextEdge().getNextEdge();
 		}
@@ -606,7 +606,7 @@ public class Rotation implements Serializable{
 		//		rotationGraph.getResult().saveAllEdgesSol("AllEdgesSolErrRot.csv");
 		//		mainGraph.getResult().saveRotationSol("RotationSolErrMain.csv");
 		//		rotationGraph.getResult().saveAllEdgesSol("RotationSolErrRot.csv");
-		ArrayList<Port> portArray = getInsertionPortArray(e, insertPort);
+		ArrayList<Integer> portArray = getInsertionPortArray(e.getNoInRotation(), insertPort.getPortId());
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
 		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
@@ -615,25 +615,27 @@ public class Rotation implements Serializable{
 		return true;
 	}
 
-	private boolean checkInsertPortEdge(Edge e, Port insertPort) {
+	public boolean checkInsertPortEdge(Edge e, Port insertPort) {
 		if(insertPort.getDraft() < vesselClass.getDraft()){
 			return false;
 		}
 		if(insertPort.equals(e.getFromNode().getPort()) || insertPort.equals(e.getToNode().getPort())){
 			return false;
 		}
-		ArrayList<Port> portArray = getInsertionPortArrayEdge(e, insertPort);
+		ArrayList<Integer> portArray = getInsertionPortArrayEdge(e.getNoInRotation(), insertPort.getPortId());
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
-		int noVesselsAvailable = noOfVessels + mainGraph.getNoVesselsAvailable(vesselClass.getId()) - mainGraph.getNoVesselsUsed(vesselClass.getId());
+		int noVesselsAvailable = noOfVessels + mainGraph.getNetNoVesselsAvailable(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
 			return false;
 		}
 		return true;
 	}
 
-	private boolean checkRemovePort(Edge dwellEdge){
-		ArrayList<Port> portArray = getRemovePortArray(dwellEdge);
-
+	public boolean checkRemovePort(Edge dwellEdge){
+		ArrayList<Integer> portArray = getRemovePortArray(dwellEdge);
+		if(portArray.isEmpty()){
+			return true;
+		}
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
 		int noVesselsAvailable = noOfVessels + mainGraph.getNetNoVesselsAvailable(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
@@ -643,32 +645,47 @@ public class Rotation implements Serializable{
 		return true;
 	}
 
-	private ArrayList<Port> getRemovePortArray(Edge dwellEdge) {
-		ArrayList<Port> portArray = new ArrayList<Port>();
-		for(Edge e : rotationEdges){
-			if(e.isDwell() && !e.equals(dwellEdge)){
-				portArray.add(e.getFromNode().getPort());
-			}
+	private ArrayList<Integer> getRemovePortArray(Edge dwellEdge) {
+		if(!dwellEdge.isDwell()){
+			throw new RuntimeException("Input mismatch.");
 		}
+		ArrayList<Integer> portArray = new ArrayList<Integer>();
+		Edge firstEdge = rotationEdges.get(0);
+		Edge nextEdge = firstEdge.getNextEdge();
+		while(!nextEdge.equals(firstEdge)){
+			if(nextEdge.isDwell() && !nextEdge.equals(dwellEdge)){
+				portArray.add(nextEdge.getFromNode().getPortId());
+			}
+			nextEdge = nextEdge.getNextEdge();
+		}
+//		System.out.println(rotationEdges.size());
+//		ArrayList<Port> portArray = new ArrayList<Port>();
+//		for(Edge e : rotationEdges){
+//			if(e.isDwell() && !e.equals(dwellEdge)){
+//				portArray.add(e.getFromNode().getPort());
+//				System.out.println("Check");
+//			} else {
+//				System.out.println("Fail");
+//			}
+//		}
 		boolean consecutivePorts = true;
-		while(consecutivePorts){
+		while(consecutivePorts && portArray.size() > 0){
 			consecutivePorts = false;
-			Port i = portArray.get(0);
-			Port j = portArray.get(portArray.size()-1);
-			if(i.equals(j)){
+			int i = portArray.get(0);
+			int j = portArray.get(portArray.size()-1);
+			if(i == j){
 				portArray.remove(portArray.size()-1);
 				consecutivePorts = true;
 			}
 			for(int n=portArray.size()-1; n>=1; n--){
 				i = portArray.get(n);
 				j = portArray.get(n-1);
-				if(i.equals(j)){
-					portArray.remove(i);
+				if(i == j){
+					portArray.remove(n);
 					consecutivePorts = true;
 				}
 			}
 		}
-
 		return portArray;
 	}
 
@@ -1176,7 +1193,7 @@ public class Rotation implements Serializable{
 					throw new RuntimeException("Duplicate number in rotation! Rotation no. " + id + ", duplicate ID " + no);
 				}
 				if(no != prevNo+1){
-					throw new RuntimeException("NoInRotation not increasing correctly for rotation no. " + id);
+					throw new RuntimeException("NoInRotation not increasing correctly for rotation no. " + id + ". No is " + no + " and prevNo is " + prevNo);
 				}
 				prevNo = no;
 			}

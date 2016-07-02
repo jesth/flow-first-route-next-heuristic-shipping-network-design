@@ -57,11 +57,11 @@ public class ComputeRotations {
 		//		DistanceElement leg1 = graph.getData().getBestDistanceElement(node1.getPortId(), node2.getPortId(), vesselClass);
 		//		DistanceElement leg2 = graph.getData().getBestDistanceElement(node2.getPortId(), node1.getPortId(), vesselClass);
 		//TODO: Port stay hardcoded at 24 hrs.
-		ArrayList<Port> ports = new ArrayList<Port>();
-		ports.add(graph.getPort(node1.getPortId()));
-		ports.add(graph.getPort(node2.getPortId()));
+		ArrayList<Integer> ports = new ArrayList<Integer>();
+		ports.add(node1.getPortId());
+		ports.add(node2.getPortId());
 		while(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
-			ports.add(addBestLeg(rotationNodes, sortedEdges, vesselClass, true));
+			ports.add(addBestLeg(rotationNodes, sortedEdges, vesselClass, true).getPortId());
 		}
 		if(calcNumberOfVessels(ports, vesselClass) > durationWeeks){
 			ports.remove(ports.size()-1);
@@ -72,14 +72,14 @@ public class ComputeRotations {
 	}
 
 	private AuxEdge getFirstUnusedEdge(int durationWeeks, ArrayList<AuxEdge> sortedEdges, VesselClass vesselClass){
-		ArrayList<Port> ports = new ArrayList<Port>();
+		ArrayList<Integer> ports = new ArrayList<Integer>();
 		for(AuxEdge e : sortedEdges){
 			if(e.isActive()){
 				Port fromPort = graph.getPort(e.getFromNode().getPortId());
 				Port toPort = graph.getPort(e.getToNode().getPortId());
 				if(!e.isUsedInRotation() && fromPort.getDraft() >= vesselClass.getDraft() && toPort.getDraft() >= vesselClass.getDraft() && fromPort.isActive() && toPort.isActive() && e.isLegal(vesselClass, graph)){
-					ports.add(fromPort);
-					ports.add(toPort);
+					ports.add(fromPort.getPortId());
+					ports.add(toPort.getPortId());
 					if(calcNumberOfVessels(ports, vesselClass) <= durationWeeks){
 						return e;
 					}
@@ -740,7 +740,7 @@ public class ComputeRotations {
 		return cost;
 	}
 
-	public static int calcNumberOfVessels(ArrayList<Port> ports, VesselClass vesselClass){
+	public static int calcNumberOfVessels(ArrayList<Integer> ports, VesselClass vesselClass){
 		double distance = getRotationLength(ports, vesselClass);
 
 		double minRotationTime = (Data.getPortStay() * ports.size()+ (distance / vesselClass.getMaxSpeed())) / 168.0;
@@ -772,16 +772,16 @@ public class ComputeRotations {
 		return noVessels;
 	}
 
-	public static int getRotationLength(ArrayList<Port> ports, VesselClass vesselClass){
+	public static int getRotationLength(ArrayList<Integer> ports, VesselClass vesselClass){
 		int distance = 0;
 		for(int i = 0; i < ports.size()-1; i++){
-			int prePortId = ports.get(i).getPortId();
-			int postPortId = ports.get(i+1).getPortId();
+			int prePortId = ports.get(i);
+			int postPortId = ports.get(i+1);
 			DistanceElement dist = Data.getBestDistanceElement(prePortId, postPortId, vesselClass);
 			distance += dist.getDistance();
 			//			System.out.println("Distance from " + ports.get(i).getUNLocode() + " to " + ports.get(i+1).getUNLocode() + " is " + dist.getDistance());
 		}
-		distance += Data.getBestDistanceElement(ports.get(ports.size()-1).getPortId(), ports.get(0).getPortId(), vesselClass).getDistance();
+		distance += Data.getBestDistanceElement(ports.get(ports.size()-1), ports.get(0), vesselClass).getDistance();
 		return distance;
 	}
 }
