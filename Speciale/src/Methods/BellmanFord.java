@@ -20,7 +20,7 @@ public class BellmanFord implements Runnable, Serializable{
 	private Node centroidNode;
 	private boolean rep;
 	private boolean active;
-	private transient Graph graph;
+	private Graph graph;
 
 	/** Initializes all nodes to distance Integer.MAX_VALUE and predecessor to null. Exception: Centroids.
 	 * @param graph

@@ -47,7 +47,7 @@ public class MulticommodityFlowThreads implements Serializable{
 	public void reset(){
 		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
-				e.setLagrangeStep(10);
+				e.setLagrangeStep(5000);
 				e.setLagrange(1);
 			}
 		}
@@ -82,7 +82,7 @@ public class MulticommodityFlowThreads implements Serializable{
 		long startTime = System.currentTimeMillis();
 
 		while (improvementCounter < 20 && iteration < 100){
-			//			System.out.println("Now running BellmanFord in iteration " + iteration);
+//						System.out.println("Now running BellmanFord in iteration " + iteration);
 			for(Edge e : graph.getEdges().values()){
 				e.clearRoutes();
 			}

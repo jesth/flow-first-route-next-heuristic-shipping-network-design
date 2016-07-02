@@ -36,7 +36,12 @@ public class RunModel {
 //		testMedManual2();
 //		testWorldLargeAuto();
 		
-		testLNS("WorldSmall");
+//		testLNS("WorldSmall");
+		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv");
+		Graph network = new Graph("Demand_WorldSmall.csv");
+		network.copyRotations("network.csv", "networkCost.csv");
+		network.runMcf();
+		System.out.println(network.getResult().getFlowProfit(false));
 //		Graph network = Graph.deserialize();
 //		network.runMcf();
 		

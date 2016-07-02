@@ -517,7 +517,7 @@ public class Edge implements Serializable{
 //	}
 
 	public void decreaseLagrangeStep(){
-		int decrement = lagrangeStep / 2;
+		int decrement = lagrangeStep / 10;
 		//		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);

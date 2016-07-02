@@ -41,7 +41,7 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -167,7 +167,7 @@ public class LNS {
 			iteration++;
 		}
 		progressWriter.close();
-		graph.serialize();
+//		graph.serialize();
 	}
 
 	private void diversify(ArrayList<Rotation> insert, ArrayList<Rotation> remove, int iteration) throws InterruptedException{

@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.plaf.synth.SynthSpinnerUI;
@@ -48,7 +49,7 @@ public class Graph implements Serializable{
 	private ArrayList<Demand> demandsList;
 	private transient int[] noVesselsAvailable;
 	private transient int[] noVesselsUsed;
-	private Port[] ports;
+	private transient Port[] ports;
 	private transient boolean subGraph;
 	private AtomicInteger nodeIdCounter = new AtomicInteger();
 	private AtomicInteger edgeIdCounter = new AtomicInteger();
@@ -128,7 +129,7 @@ public class Graph implements Serializable{
 		demandsMatrix = createDemandsMatrix();
 		mcf = new MulticommodityFlowThreads(this);
 	}
-
+	
 	private void setNoVessels(){
 		this.noVesselsAvailable = new int[Data.getVesselClasses().size()];
 		this.noVesselsUsed = new int[Data.getVesselClasses().size()];
@@ -1491,5 +1492,61 @@ public class Graph implements Serializable{
 			c.printStackTrace();
 		}
 		return network;
+	}
+
+	public void copyRotations(String RotationSol, String RotationCost) throws FileNotFoundException {
+		File solInput = new File(RotationSol);
+		Scanner solScanner = new Scanner(solInput);
+		solScanner.useDelimiter("\t|\n|;");
+		solScanner.nextLine();
+		
+		File costInput = new File(RotationCost);
+		Scanner costScanner = new Scanner(costInput);
+		costScanner.useDelimiter("\t|\n|;");
+		costScanner.nextLine();
+		
+		int rotNo = 0;
+		int rotNoNext = 0;
+		ArrayList<Integer> rotationPorts = new ArrayList<Integer>();
+		int vesselIndex = 0;
+		while(solScanner.hasNextLine()){
+			rotNo = rotNoNext;
+			String textIn = solScanner.next();
+			rotNoNext = (int) Integer.parseInt(textIn);
+			if(rotNoNext== rotNo){
+				solScanner.next();
+				String portStr = solScanner.next();
+				int portId = Data.getPortsMap().get(portStr).getPortId();
+				rotationPorts.add(portId);
+			} else {
+//				for(int i : rotationPorts){
+//					System.out.println(Data.getPort(i).getUNLocode());
+//				}
+				costScanner.next();
+				String vesselCapInput = costScanner.next();
+				int vesselCap = Integer.parseInt(vesselCapInput);
+//				System.out.println(vesselCap);
+//				System.out.println();
+				costScanner.nextLine();
+				createRotationFromPorts(rotationPorts, Data.getVesselClassFromCap(vesselCap));
+				rotationPorts.clear();
+				vesselIndex = 0;
+				solScanner.next();
+				String portStr = solScanner.next();
+				int portId = Data.getPortsMap().get(portStr).getPortId();
+				rotationPorts.add(portId);
+			}
+			solScanner.nextLine();
+		}
+//		for(int i : rotationPorts){
+//			System.out.println(Data.getPort(i).getUNLocode());
+//		}
+		costScanner.next();
+		String vesselCapInput = costScanner.next();
+		int vesselCap = Integer.parseInt(vesselCapInput);
+//		System.out.println(vesselCap);
+		createRotationFromPorts(rotationPorts, Data.getVesselClassFromCap(vesselCap));
+		solScanner.close();
+		costScanner.close();
 	}
 }

@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class Data implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static HashMap<String, PortData> portsMap;
-	private static PortData[] ports;
+	private static transient HashMap<String, PortData> portsMap;
+	private static transient PortData[] ports;
 	private static transient Distance[][] distances;
 	private static transient ArrayList<VesselClass> vesselClasses;
 	private static transient double[][] randomNumbers;
@@ -119,5 +119,14 @@ public class Data implements Serializable{
 		int col = num % randomNumbers[0].length;
 		
 		return randomNumbers[row][col];
+	}
+	
+	public static VesselClass getVesselClassFromCap(int capacity){
+		for(VesselClass i : vesselClasses){
+			if(i.getCapacity() == capacity){
+				return i;
+			}
+		}
+		return null;
 	}
 }
