@@ -41,7 +41,7 @@ public class LNS {
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution(1, rotationsToKeep, demandFileName);
+		graph = findInitialSolution2(20, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
@@ -57,7 +57,7 @@ public class LNS {
 		ArrayList<Rotation> remove = new ArrayList<Rotation>();
 		ArrayList<Rotation> insert = new ArrayList<Rotation>();
 
-		int allTimeLastImproveIter = 0;
+		int allTimeLastImproveIter = 55;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -102,6 +102,11 @@ public class LNS {
 ////				lastImproveIter = iteration+1;
 ////				lastDiversification = iteration+1;
 //>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
+			} else if(iteration > allTimeLastImproveIter + 20) {
+				allTimeLastImproveIter = iteration + 1;
+				graph = new Graph(bestGraph);
+				madeChange = true;
+				System.out.println("Resetting to best graph.");
 			} else if(rand < 0.2){
 //				System.out.println("    serviceOmissionDemand() chosen");
 				for(Rotation r : graph.getResult().getRotations())
@@ -143,6 +148,10 @@ public class LNS {
 						madeChange = true;
 					}
 				}
+			}
+			if(!madeChange){
+				graph.randomAction(iteration);
+				madeChange = true;
 			}
 			graph.runMcf();
 			if(lastDiversification == iteration+1){
@@ -206,12 +215,9 @@ public class LNS {
 
 	public Rotation createNewRotation(ArrayList<Demand> noGoes){
 		Demand demand = graph.findHighestCostDemand(noGoes);
-		ArrayList<Integer> portsId = new ArrayList<Integer>();
-		ArrayList<Port> ports = new ArrayList<Port>();
-		ports.add(demand.getOrigin());
-		ports.add(demand.getDestination());
-		portsId.add(demand.getOrigin().getPortId());
-		portsId.add(demand.getDestination().getPortId());
+		ArrayList<Integer> ports = new ArrayList<Integer>();
+		ports.add(demand.getOrigin().getPortId());
+		ports.add(demand.getDestination().getPortId());
 		Rotation newR = null;
 		for(int i = Data.getVesselClasses().size()-1; i>=2; i--){
 			VesselClass v = Data.getVesselClasses().get(i);
@@ -219,7 +225,7 @@ public class LNS {
 			int spareVessels = graph.getNetNoVesselsAvailable(v.getId());
 			if(reqVessels < spareVessels){
 				if(v.getDraft() <= demand.getOrigin().getDraft() && v.getDraft() <= demand.getDestination().getDraft()){
-					newR = graph.createRotationFromPorts(portsId, v);
+					newR = graph.createRotationFromPorts(ports, v);
 					System.out.println("Creating rotation from " + demand.getOrigin().getUNLocode() + "-" + demand.getDestination().getUNLocode());
 					break;
 				}
@@ -295,10 +301,10 @@ public class LNS {
 	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
 		Graph bestGraph = null;
 		int bestObj = -Integer.MAX_VALUE;
-		for(int i = 0; i < 1; i++){
+		for(int i = 0; i < 5; i++){
 			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
-			AuxRun auxRun = new AuxRun(graph, 3, i);
+			AuxRun auxRun = new AuxRun(graph, 10, i);
 			auxRun.run();
 			AuxGraph auxGraph = AuxGraph.deserialize();
 			ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
@@ -346,7 +352,7 @@ public class LNS {
 		VesselClass superPanamax = Data.getVesselClasses().get(5);
 
 		VesselClass[] vesselClasses = new VesselClass[]{superPanamax, postPanamax, panamax2400, panamax1200, feeder800, feeder450};
-		int[] minLengths = new int[]{10, 7, 6, 6, 2, 2};
+		int[] minLengths = new int[]{10, 7, 6, 4, 2, 2};
 		int[] maxLengths = new int[]{10, 14, 12, 10, 8, 5};
 		int[] noAvailable = new int[]{graph.getNetNoVesselsAvailable(superPanamax.getId()), graph.getNetNoVesselsAvailable(postPanamax.getId()), graph.getNetNoVesselsAvailable(panamax2400.getId()),
 				graph.getNetNoVesselsAvailable(panamax1200.getId()), graph.getNetNoVesselsAvailable(feeder800.getId()), graph.getNetNoVesselsAvailable(feeder450.getId())};

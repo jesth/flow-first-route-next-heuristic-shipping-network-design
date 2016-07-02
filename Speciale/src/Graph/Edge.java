@@ -147,10 +147,10 @@ public class Edge {
 		this.feeder = copyEdge.isFeeder();
 		this.rotation = r;
 		this.distance = copyEdge.getDistance();
+		this.noInRotation = copyEdge.getNoInRotation();
 		if(r != null){
 			r.addRotationEdge(this);
 		}
-		this.noInRotation = copyEdge.getNoInRotation();
 		toNode.addIngoingEdge(this);
 		fromNode.addOutgoingEdge(this);
 		routes = new ArrayList<Route>();
