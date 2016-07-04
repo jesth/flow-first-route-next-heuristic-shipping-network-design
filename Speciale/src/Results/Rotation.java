@@ -778,6 +778,14 @@ public class Rotation implements Serializable{
 		return bestNoVessels;
 	}
 
+	public void setVesselsAndSailTimes(int noShips){
+		double speed = calculateSpeed(noShips);
+		this.speed = speed;
+		setNoOfVessels(noShips);
+		setSailTimes();
+		setDwellTimes();
+	}
+	
 	private void setNoOfVessels(int newNoOfVessels){
 		mainGraph.removeNoUsed(vesselClass, noOfVessels);
 		noOfVessels = newNoOfVessels;

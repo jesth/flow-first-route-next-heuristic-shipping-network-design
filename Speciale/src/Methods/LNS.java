@@ -35,12 +35,16 @@ public class LNS {
 
 	//	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
 	public void run(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName) throws InterruptedException, IOException{
-		Data.initialize(fleetFileName, "randomNumbers.csv");
+		Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
+		graph = findInitialSolution(25, rotationsToKeep, demandFileName);
+		graph.getResult().saveRotationSol("initialSolForTuning.csv");
+		graph.getResult().saveRotationCost("initialCostForTuning.csv");
+		if(true)
+			throw new RuntimeException();
 //		graph = findInitialSolution2(20, rotationsToKeep, demandFileName);
 		startTime = System.currentTimeMillis();
 		graph.runMcf();

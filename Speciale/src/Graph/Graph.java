@@ -300,6 +300,15 @@ public class Graph implements Serializable{
 		rotation.calcOptimalSpeed();
 		return rotation;
 	}
+	
+	public Rotation createRotationWithSetNoVessels(ArrayList<DistanceElement> distances, VesselClass vesselClass, int noVessels){
+		Rotation rotation = new Rotation(vesselClass, this, rotationIdCounter.getAndIncrement());
+		createRotationEdges(distances, rotation, vesselClass);
+		createLoadUnloadEdges(rotation);
+		createTransshipmentEdges(rotation);
+		rotation.setVesselsAndSailTimes(noVessels);
+		return rotation;
+	}
 
 	public Rotation createRotation(Rotation rotation, boolean rotationGraph, boolean considerUnservedPorts){
 		ArrayList<Integer> ports = new ArrayList<Integer>();
@@ -543,6 +552,12 @@ public class Graph implements Serializable{
 	public Rotation createRotationFromPorts(ArrayList<Integer> ports, VesselClass vesselClass){
 		ArrayList<DistanceElement> distances = findDistances(ports, vesselClass);
 		Rotation rotation = createRotation(distances, vesselClass);
+		return rotation;
+	}
+	
+	public Rotation createRotationFromPortsWithSetNoVessels(ArrayList<Integer> ports, VesselClass vesselClass, int noVessels){
+		ArrayList<DistanceElement> distances = findDistances(ports, vesselClass);
+		Rotation rotation = createRotationWithSetNoVessels(distances, vesselClass, noVessels);
 		return rotation;
 	}
 
