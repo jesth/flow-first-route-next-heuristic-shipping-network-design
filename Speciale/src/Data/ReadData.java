@@ -142,7 +142,7 @@ public class ReadData {
 		return distances;
 	}
 
-	public static ArrayList<VesselClass> readVesselClass(String fileName) throws FileNotFoundException{
+	public static ArrayList<VesselClass> readVesselClass(String fileName, double factorTC, double factorCapacity) throws FileNotFoundException{
 		ArrayList<VesselClass> vesselClasses = new ArrayList<VesselClass>();
 		File input = new File("LinerLib_Data\\fleet_data.csv");
 		Scanner scanner = new Scanner(input);
@@ -153,7 +153,7 @@ public class ReadData {
 			String textIn = scanner.next();
 			int capacity = Integer.parseInt(textIn);	
 			textIn = scanner.next();
-			int TCRate = Integer.parseInt(textIn);
+			int TCRate = (int) Math.round(((Integer.parseInt(textIn)/1000)*factorTC)*1000);
 			textIn = scanner.next();
 			double draft = Double.parseDouble(textIn);
 			textIn = scanner.next();
@@ -189,10 +189,11 @@ public class ReadData {
 			if(scanner2.hasNext()){
 				String name = scanner2.next();
 				String textIn = scanner2.next();
-				int noAvailable = Integer.parseInt(textIn);	
+				double noAvailable = Double.parseDouble(textIn);	
 				for(VesselClass i : vesselClasses){
 					if(i.getName().equals(name)){
-						i.setNoAvailable(noAvailable);
+//						System.out.println((int) Math.round(noAvailable*factorCapacity));
+						i.setNoAvailable((int) Math.round(noAvailable*factorCapacity));
 						break;
 					}
 				}

@@ -1,6 +1,9 @@
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 import AuxFlow.AuxDijkstra;
 import AuxFlow.AuxEdge;
@@ -9,6 +12,7 @@ import AuxFlow.AuxRun;
 import Data.Data;
 import Data.DistanceElement;
 import Data.Port;
+import Data.PortData;
 import Data.VesselClass;
 import Graph.Edge;
 import Graph.Graph;
@@ -36,12 +40,22 @@ public class RunModel {
 		
 //		testCode("WorldSmall", 3);
 
+//		testBrouerNetwork("WorldSmall_pid_4953_15_best_low.log", "fleet_WorldSmall.csv",
+//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.4, 0.8);
 		
 		
+//		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv", 1, 1);
+//		Graph network = new Graph("Demand_WorldSmall.csv");
+//		network.copyRotations("Network.csv", "NetworkCost.csv");
 //		Data.initialize("fleet_WorldLarge.csv", "randomNumbers.csv");
 //		Graph network = new Graph("Demand_WorldLarge.csv");
 //		network.copyRotations("network.csv", "networkCost.csv");
 //		network.runMcf();
+//		network.getResult().saveLoads("testLoads", 100);
+//		network.getResult().saveLagranges("testLagranges", 100);
+//		System.out.println(network.getResult().getFlowProfit(false));
+//		network.getResult().saveRotationSol("test.csv");
+		
 //		network.getResult().saveAllEdgesSol("AllEdgesSol.csv");
 //		network.getResult().saveODSol("ODSol.csv");
 //		network.getResult().saveRotationSol("RotationSol.csv");
@@ -50,6 +64,7 @@ public class RunModel {
 //		network.getResult().saveRotationCost("RotationCost.csv");
 //		network.getResult().saveOPLData("OPLData.dat");
 //		System.out.println(network.getResult().getObjective());
+
 	}
 	
 	public static void testLNS(String caseName) throws InterruptedException, IOException{
@@ -112,12 +127,69 @@ public class RunModel {
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Data.initialize("fleet_WorldLarge.csv", "RandomNumbers.csv");
+		Data.initialize("fleet_WorldLarge.csv", "RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_WorldLarge.csv");
 		AuxRun auxRun = new AuxRun(testGraph, 1, 0);
 		auxRun.run();
 		System.out.println("SaveAux is done");
 	}
+	
+	public static void testBrouerNetwork(String resultFile, String fleetFile, String randomFile, String demandFile,
+			double factorTC, double factorCapacity) throws FileNotFoundException, InterruptedException{
+		Data.initialize(fleetFile, randomFile, factorTC, factorCapacity);
+		Graph network = new Graph(demandFile);
+		ArrayList<Integer> rotation = new ArrayList<Integer>();
+		HashMap<String, PortData> ports = Data.getPortsMap();
+		
+		File solInput = new File("BrouerResultCases\\" + resultFile);
+		Scanner scanner = new Scanner(solInput);
+		scanner.useDelimiter("\t|\n|;| ");
+		scanner.nextLine();
+		
+		String vesselCapStr = "";
+		String vesselNoStr = "";
+		VesselClass v = null;
+		int vesselNo = -1;
+		String portStr = "";
+		while(scanner.hasNextLine()){
+			String textIn = scanner.next();
+			if(textIn.equals("capacity")){
+				vesselCapStr = scanner.next();
+				v = Data.getVesselClassFromCap(Integer.parseInt(vesselCapStr));
+				scanner.nextLine();
+				scanner.next();
+				scanner.next();
+				vesselNoStr = scanner.next();
+				vesselNo = Integer.parseInt(vesselNoStr);
+				scanner.nextLine();
+				if(!scanner.hasNextInt()){
+					scanner.nextLine();
+				}
+				while(scanner.hasNextInt()){
+					scanner.next();
+					portStr = scanner.next();
+					rotation.add(ports.get(portStr).getPortId());
+					scanner.nextLine();
+				}
+//				System.out.println("vesselCapStr: " + vesselCapStr);
+//				System.out.println("Brouer #vessels: " + vesselNo);
+				Rotation r = network.createRotationFromPortsWithSetNoVessels(rotation, v, vesselNo);
+//				System.out.println("# vessels: " + r.getNoOfVessels());
+//				for(int i : rotation){
+//					System.out.println(Data.getPort(i).getUNLocode());
+//				}
+//				System.out.println();
+				rotation.clear();
+				v = null;
+			}
+			scanner.nextLine();
+		}
+		scanner.close();
+		
+		network.runMcf();
+		System.out.println(network.getResult().getFlowProfit(false));
+	}
+	
 	
 	/* Out-of-date method.
 	public static void testAux() throws FileNotFoundException, InterruptedException{
@@ -199,7 +271,7 @@ public class RunModel {
 	*/
 	
 	public static void testBalticManual() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
+		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -258,7 +330,7 @@ public class RunModel {
 	}
 	
 	public static void testBaltic() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv");
+		Data.initialize("fleet_Baltic.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_Baltic.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(0);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -313,7 +385,7 @@ public class RunModel {
 	}
 	
 	public static void testMedManual() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -430,7 +502,7 @@ public class RunModel {
 	}
 	
 	public static void testMedManual2() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(2);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();
@@ -576,7 +648,7 @@ public class RunModel {
 
 	
 	public static void testMed() throws FileNotFoundException, InterruptedException{
-		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv");
+		Data.initialize("fleet_Mediterranean.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
 		Graph testGraph = new Graph("Demand_Mediterranean.csv");
 		VesselClass vesselClass = Data.getVesselClasses().get(1);
 		ArrayList<DistanceElement> distances = new ArrayList<DistanceElement>();

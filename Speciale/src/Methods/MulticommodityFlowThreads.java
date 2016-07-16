@@ -111,6 +111,8 @@ public class MulticommodityFlowThreads implements Serializable{
 				if(iteration > 0 && iteration % 5 == 0){
 					e.decreaseLagrangeStep();
 				}
+//				System.out.println("decreaseNum: " + d);
+				
 				e.lagrangeAdjustment(iteration);
 				
 //				if(repairCounter >= 5){
@@ -120,10 +122,6 @@ public class MulticommodityFlowThreads implements Serializable{
 //					e.lagrangeAdjustment(iteration);
 //				}
 			}
-			if(repairCounter >= 5){
-				repairCounter = 0;
-			}
-			iteration++;
 		}
 		implementBestFlow();
 		long endTime = System.currentTimeMillis();
@@ -223,7 +221,7 @@ public class MulticommodityFlowThreads implements Serializable{
 			updateBestFlow(flowProfit);
 //			for(Edge e : graph.getEdges().values()){
 //				if(e.isSail()){
-//					e.decreaseLagrangeStep();
+//					e.decreaseLagrangeStep(decreaseNum);
 //				}
 //			}
 		}

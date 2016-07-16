@@ -14,11 +14,11 @@ public class Data implements Serializable{
 	private static int portStay = 24;
 	private static int fuelPrice = 600;
 
-	public static void initialize(String vesselNoFileName, String randomNumbersFileName) throws FileNotFoundException{
+	public static void initialize(String vesselNoFileName, String randomNumbersFileName, double factorTC, double factorCapacity) throws FileNotFoundException{
 		portsMap = ReadData.readPorts();
 		convertPortsMap();
 		distances = ReadData.readDistances(portsMap);
-		vesselClasses = ReadData.readVesselClass(vesselNoFileName);
+		vesselClasses = ReadData.readVesselClass(vesselNoFileName, factorTC, factorCapacity);
 		randomNumbers = ReadData.readRandomNumbers(randomNumbersFileName);
 	}
 

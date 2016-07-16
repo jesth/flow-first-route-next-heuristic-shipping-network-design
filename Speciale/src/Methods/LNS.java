@@ -38,7 +38,7 @@ public class LNS {
 	//	public void run(int timeToRunSeconds, int numIterToFindInit, AuxGraph auxGraph) throws InterruptedException, IOException{
 	public void run(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName, int id) throws InterruptedException, IOException{
 		if(id == 0){
-			Data.initialize(fleetFileName, "randomNumbers.csv");
+			Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		}
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
@@ -177,7 +177,7 @@ public class LNS {
 
 	public void VNSrun(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName, int id) throws InterruptedException, IOException{
 		if(id == 0){
-			Data.initialize(fleetFileName, "randomNumbers.csv");
+			Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		}
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
@@ -341,13 +341,23 @@ public class LNS {
 	/*
 	public void testInsertion(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName) throws InterruptedException, IOException{
 		Data.initialize(fleetFileName, "randomNumbers.csv");
+>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
+<<<<<<< HEAD
+		graph = findInitialSolution(25, rotationsToKeep, demandFileName);
+		graph.getResult().saveRotationSol("initialSolForTuning.csv");
+		graph.getResult().saveRotationCost("initialCostForTuning.csv");
+		if(true)
+			throw new RuntimeException();
+//		graph = findInitialSolution2(20, rotationsToKeep, demandFileName);
+=======
 		graph = findInitialSolution(numIterToFindInit, rotationsToKeep, demandFileName);
 		//		graph = findInitialSolution2(20, rotationsToKeep, demandFileName);
 		System.out.println(System.currentTimeMillis() - startTime);
+>>>>>>> branch 'master' of https://github.com/jesth/speciale.git
 		startTime = System.currentTimeMillis();
 		graph.runMcf();
 		int allTimeBestObj = graph.getResult().getObjective();
