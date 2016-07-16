@@ -36,24 +36,19 @@ public class RunModel {
 //		testWorldLargeAuto();
 		
 		
-		testLNS("WAF");
-		
-//		testCode("WorldSmall", 3);
+		testLNS("Mediterranean");
 
-//		testBrouerNetwork("WorldSmall_pid_4953_15_best_low.log", "fleet_WorldSmall.csv",
-//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.4, 0.8);
+//		testBrouerCases();
 		
 		
 //		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv", 1, 1);
 //		Graph network = new Graph("Demand_WorldSmall.csv");
 //		network.copyRotations("Network.csv", "NetworkCost.csv");
-//		Data.initialize("fleet_WorldLarge.csv", "randomNumbers.csv");
-//		Graph network = new Graph("Demand_WorldLarge.csv");
-//		network.copyRotations("network.csv", "networkCost.csv");
 //		network.runMcf();
+//		System.out.println(network.getResult().getFlowProfit(false));
+		
 //		network.getResult().saveLoads("testLoads", 100);
 //		network.getResult().saveLagranges("testLagranges", 100);
-//		System.out.println(network.getResult().getFlowProfit(false));
 //		network.getResult().saveRotationSol("test.csv");
 		
 //		network.getResult().saveAllEdgesSol("AllEdgesSol.csv");
@@ -71,7 +66,9 @@ public class RunModel {
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
 		LNS lns = new LNS();
-		lns.VNSrun(900, 20, fleetFileName, demandFileName, 0);
+		for(int i=1; i<6; i++){
+			lns.VNSrun(120, 20, caseName, i);	
+		}
 //		lns.testInsertion(150, 20, fleetFileName, demandFileName);
 	}
 	
@@ -132,6 +129,31 @@ public class RunModel {
 		AuxRun auxRun = new AuxRun(testGraph, 1, 0);
 		auxRun.run();
 		System.out.println("SaveAux is done");
+	}
+	
+	private static void testBrouerCases() throws FileNotFoundException, InterruptedException {
+
+//		testBrouerNetwork("WorldSmall_Best_Base.log", "fleet_WorldSmall.csv",
+//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.5, 1.5);
+//		testBrouerNetwork("WorldSmall_high_best_12848_1.log", "fleet_WorldSmall.csv",
+//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.5, 1.5);
+//		testBrouerNetwork("WorldSmall_pid_4953_15_best_low.log", "fleet_WorldSmall.csv",
+//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.5, 1.5);
+		
+//		testBrouerNetwork("Pacific_base_best.log", "fleet_Pacific.csv",
+//				"RandomNumbers.csv", "Demand_Pacific.csv", 1.5, 1.5);
+//		testBrouerNetwork("Pacific_high_best_30600_4.log", "fleet_Pacific.csv",
+//				"RandomNumbers.csv", "Demand_Pacific.csv", 1.5, 1.5);
+//		testBrouerNetwork("Pacific_28043_5_low_best.log", "fleet_Pacific.csv",
+//				"RandomNumbers.csv", "Demand_Pacific.csv", 1.5, 1.5);
+		
+		
+//		testBrouerNetwork("Med_base_best.log", "fleet_Mediterranean.csv",
+//				"RandomNumbers.csv", "Demand_Mediterranean.csv", 1.5, 1.5);
+//		testBrouerNetwork("Med_high_best_5840_1.log", "fleet_Mediterranean.csv",
+//				"RandomNumbers.csv", "Demand_Mediterranean.csv", 1.5, 1.5);
+//		testBrouerNetwork("Med_low_best_12808_11.log", "fleet_Mediterranean.csv",
+//				"RandomNumbers.csv", "Demand_Mediterranean.csv", 1.5, 1.5);
 	}
 	
 	public static void testBrouerNetwork(String resultFile, String fleetFile, String randomFile, String demandFile,

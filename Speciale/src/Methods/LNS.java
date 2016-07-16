@@ -162,7 +162,7 @@ public class LNS {
 				if(allTimeBestObj < obj){
 					allTimeBestObj = obj;
 					bestGraph = new Graph(graph);
-					saveFolderSol(id);
+//					saveFolderSol(caseNaid);
 					allTimeLastImproveIter = iteration+1;
 					System.out.println("New best solution: " + allTimeBestObj);
 				}
@@ -175,15 +175,17 @@ public class LNS {
 	}
 
 
-	public void VNSrun(int timeToRunSeconds, int numIterToFindInit, String fleetFileName, String demandFileName, int id) throws InterruptedException, IOException{
-		if(id == 0){
+	public void VNSrun(int timeToRunSeconds, int numIterToFindInit, String caseName, int id) throws InterruptedException, IOException{
+		if(id == 1){
+			String fleetFileName = "fleet_" + caseName + ".csv";
 			Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		}
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
 		ArrayList<Rotation> rotationsToKeep = new ArrayList<Rotation>();
-		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName);
+		String demandFileName = "Demand_" + caseName + ".csv";
+		graph = findInitialSolution2(numIterToFindInit, rotationsToKeep, demandFileName, id);
 		//		graph = findInitialSolution2(20, rotationsToKeep, demandFileName);
 		System.out.println(System.currentTimeMillis() - startTime);
 		startTime = System.currentTimeMillis();
@@ -191,10 +193,11 @@ public class LNS {
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
 		Graph bestGraph = new Graph(graph);
-		BufferedWriter progressWriter = graph.getResult().openProgressWriter("testResults\\" + id + "ProgressSol.csv");
+		String neighbourhood = "Feeder";
+		BufferedWriter progressWriter = graph.getResult().openProgressWriter("testResults\\" + caseName + "-" + neighbourhood + "-" + id + "ProgressSol.csv");
 		saveSol(progressWriter, 0, allTimeBestObj, allTimeBestObj);
 
-		int allTimeLastImproveIter = 0;
+		int allTimeLastImproveIter = id*50;
 		int lastImproveIter = allTimeLastImproveIter;
 		int lastDiversification = lastImproveIter;
 		int iteration = lastImproveIter;
@@ -210,40 +213,16 @@ public class LNS {
 			method.add(1);
 			method.add(2);
 			method.add(3);
-			method.add(4);
-			method.add(5);
+//			method.add(4);
+//			method.add(5);
 			ArrayList<Rotation> rotations = graph.getResult().getRotations();
-			//					findRotationsToNS(rand);
-			//					
 			while(!madeChange && method.size() > 0){
 				for(Rotation r : graph.getResult().getRotations()){
 					r.removeRotationGraph();
 				}
 				int index = selectMethod(method, iteration);
 				if(index == 0){
-					//			} else if(rand < 0.2){
-					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
-						Rotation r = graph.getResult().getRotations().get(i); 
-						if(r.removeUnservingCalls(0.05)){
-							madeChange = true;
-						}
-					}
-				} else if(index == 1){
-					//			} else if(rand < 0.4){
-					for(Rotation r : graph.getResult().getRotations())
-						r.createRotationGraph(false);
-					if(graph.serviceBiggestOmissionDemand(iteration)){
-						madeChange = true;
-					}
-				} else if(index == 2){
-					//			} else if(rand < 0.6){
-					if(graph.createFeederRotation()){
-						madeChange = true;
-					}
-				} else if(index == 3){
-					//			} else if(rand < 0.8){
 					for(int i = rotations.size()-1; i>=0; i--){
-						//					for(Rotation r : rotations){
 						Rotation r = rotations.get(i);
 						r.createRotationGraph(true);
 						r.includeOmissionDemands();
@@ -254,11 +233,27 @@ public class LNS {
 							madeChange = true;
 						}
 					}
-				} else if(index == 4){
+				} else if(index == 1){
 					for(int i = rotations.size()-1; i>=0; i--){
-						//				for(Rotation r : rotations){
 						Rotation r = rotations.get(i);
 						if(r.isActive() && r.removeWorstPort(1, false)){
+							madeChange = true;
+						}
+					}
+				} else if(index == 2){
+					for(Rotation r : graph.getResult().getRotations())
+						r.createRotationGraph(false);
+					if(graph.serviceBiggestOmissionDemand(iteration)){
+						madeChange = true;
+					}
+				} else if(index == 2){
+					if(graph.createFeederRotation()){
+						madeChange = true;
+					}
+				} else if(index == 0){
+					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
+						Rotation r = graph.getResult().getRotations().get(i); 
+						if(r.removeUnservingCalls(0.05)){
 							madeChange = true;
 						}
 					}
@@ -268,17 +263,8 @@ public class LNS {
 					if(graph.serviceUnservedPort(iteration)){
 						madeChange = true;
 					}
-				}
+				} 
 			}
-			//			if(iteration > lastDiversification + 5 && iteration > lastImproveIter + 5){
-			//				diversify(insert, remove, iteration);
-			//				madeChange = true;
-			//				lastDiversification = iteration+1;
-			//			} else if(iteration > allTimeLastImproveIter + 20) {
-			//				allTimeLastImproveIter = iteration + 1;
-			//				graph = new Graph(bestGraph);
-			//				madeChange = true;
-			//				System.out.println("Resetting to best graph.");
 
 			if((!madeChange && !shakeLast) || lastImproveIter + 20 <= iteration){
 				int noRotations = Math.max(1, (int) (graph.getResult().getRotations().size() * 0.1));
@@ -286,9 +272,6 @@ public class LNS {
 					graph.randomAction(iteration);
 				}
 				lastImproveIter = iteration + 1;
-				//				ArrayList<Rotation> empty1 = new ArrayList<Rotation>();
-				//				ArrayList<Rotation> empty2 = new ArrayList<Rotation>();
-				//				diversify(empty1, empty2, 0);
 				madeChange = true;
 				shakeLast = true;
 			} else if(shakeLast){
@@ -303,7 +286,7 @@ public class LNS {
 					lastImproveIter = iteration + 1;
 					allTimeBestObj = obj;
 					bestGraph = new Graph(graph);
-					saveFolderSol(id);
+					saveFolderSol(caseName, neighbourhood, id);
 					allTimeLastImproveIter = iteration+1;
 					System.out.println("New best solution: " + allTimeBestObj);
 					shakeLastLast = false;
@@ -328,7 +311,6 @@ public class LNS {
 			iteration++;
 		}
 		progressWriter.close();
-		//		graph.serialize();
 	}
 
 	public int selectMethod(ArrayList<Integer> method, int iteration){
@@ -624,13 +606,13 @@ public class LNS {
 		return bestGraph;
 	}
 
-	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName) throws FileNotFoundException, InterruptedException{
+	private Graph findInitialSolution2(int iterations, ArrayList<Rotation> rotationsToKeep, String demandFileName, int runId) throws FileNotFoundException, InterruptedException{
 		Graph bestGraph = null;
 		int bestObj = -Integer.MAX_VALUE;
-		for(int i = 0; i < 1; i++){
+		for(int i = 1; i < 2; i++){
 			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
-			AuxRun auxRun = new AuxRun(graph, 5, i);
+			AuxRun auxRun = new AuxRun(graph, 5, i*runId);
 			auxRun.run();
 			AuxGraph auxGraph = AuxGraph.deserialize();
 			ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
@@ -808,14 +790,14 @@ public class LNS {
 		graph.getResult().saveProgress(progressWriter, currentTime, bestObj, objective);
 	}
 
-	private void saveFolderSol(int id){
-		graph.getResult().saveAllEdgesSol("testResults\\" + id + "AllEdgesSol.csv");
-		graph.getResult().saveODSol("testResults\\" + id + "ODSol.csv");
-		graph.getResult().saveRotationSol("testResults\\" + id + "RotationSol.csv");
-		graph.getResult().saveTransferSol("testResults\\" + id + "TransferSol.csv");
-		graph.getResult().saveFlowCost("testResults\\" + id + "FlowCost.csv");
-		graph.getResult().saveRotationCost("testResults\\" + id + "RotationCost.csv");
-		graph.getResult().saveOPLData("testResults\\" + id + "OPLData.dat");
+	private void saveFolderSol(String caseName, String neighbourhood, int id){
+//		graph.getResult().saveAllEdgesSol("testResults\\" + caseName + "-" +neighbourhood+ "-" + id + "AllEdgesSol.csv");
+		graph.getResult().saveODSol("testResults\\"+ caseName + "-" +neighbourhood+ "-" + id + "ODSol.csv");
+		graph.getResult().saveRotationSol("testResults\\" + caseName +"-" +neighbourhood+ "-" + id + "RotationSol.csv");
+//		graph.getResult().saveTransferSol("testResults\\" + caseName +"-" +neighbourhood+ "-" + id + "TransferSol.csv");
+		graph.getResult().saveFlowCost("testResults\\" + caseName +"-" +neighbourhood+ "-" + id + "FlowCost.csv");
+		graph.getResult().saveRotationCost("testResults\\" + caseName +"-" +neighbourhood+ "-" + id + "RotationCost.csv");
+		graph.getResult().saveOPLData("testResults\\" + caseName +"-" +neighbourhood+ "-" + id + "OPLData.dat");
 	}
 
 	private void saveFolderProgress(BufferedWriter progressWriter, long currentTime, int bestObjective, int objective, int id){
