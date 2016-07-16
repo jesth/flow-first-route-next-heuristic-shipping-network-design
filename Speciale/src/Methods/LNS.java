@@ -219,7 +219,7 @@ public class LNS {
 				for(Rotation r : graph.getResult().getRotations()){
 					r.removeRotationGraph();
 				}
-				int index = selectMethod(method);
+				int index = selectMethod(method, iteration);
 				if(index == 0){
 					//			} else if(rand < 0.2){
 					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
@@ -265,7 +265,7 @@ public class LNS {
 				} else if(index == 5){
 					for(Rotation r : graph.getResult().getRotations())
 						r.createRotationGraph(false);
-					if(graph.serviceUnservedPort()){
+					if(graph.serviceUnservedPort(iteration)){
 						madeChange = true;
 					}
 				}
@@ -331,8 +331,8 @@ public class LNS {
 		//		graph.serialize();
 	}
 
-	public int selectMethod(ArrayList<Integer> method){
-		double rand = Data.getRandomNumber(0);
+	public int selectMethod(ArrayList<Integer> method, int iteration){
+		double rand = Data.getRandomNumber(iteration * 8);
 		int index = (int) (rand * method.size());
 		return method.remove(index);
 	}

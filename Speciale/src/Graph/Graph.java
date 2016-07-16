@@ -1482,8 +1482,8 @@ public class Graph implements Serializable{
 		return false;
 	}
 	
-	public boolean serviceUnservedPort() throws InterruptedException, IOException{
-		Port p = chooseUnservedPort();
+	public boolean serviceUnservedPort(int iteration) throws InterruptedException, IOException{
+		Port p = chooseUnservedPort(iteration);
 		if(p != null){
 			return serviceOmissionDemand(p);
 		}
@@ -1491,7 +1491,7 @@ public class Graph implements Serializable{
 	}
 	
 
-	private Port chooseUnservedPort(){
+	private Port chooseUnservedPort(int iteration){
 		ArrayList<Port> unservicedPorts = new ArrayList<Port>();
 		int omissionDemand = 0;
 		for(Port p : ports){
@@ -1513,7 +1513,7 @@ public class Graph implements Serializable{
 				index++;
 			}
 		}
-		double rand = Data.getRandomNumber(0);
+		double rand = Data.getRandomNumber(iteration * 3);
 		index = (int) (rand * unservicedPortsDemand.length);
 		return unservicedPortsDemand[index];
 	}
