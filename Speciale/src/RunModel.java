@@ -36,7 +36,7 @@ public class RunModel {
 //		testWorldLargeAuto();
 		
 		
-		testLNS("WAF");
+		testLNS("Pacific");
 		
 //		testCode("WorldSmall", 3);
 

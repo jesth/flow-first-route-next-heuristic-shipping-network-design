@@ -200,8 +200,6 @@ public class LNS {
 		int iteration = lastImproveIter;
 		while(System.currentTimeMillis() < startTime + timeToRun){
 			boolean madeChange = false;
-			boolean shakeLast = false;
-			boolean shakeLastLast = false;
 
 			double rand = Data.getRandomNumber(iteration);
 
@@ -280,19 +278,16 @@ public class LNS {
 			//				madeChange = true;
 			//				System.out.println("Resetting to best graph.");
 
-			if((!madeChange && !shakeLast) || lastImproveIter + 20 <= iteration){
+			if(!madeChange || lastImproveIter + 20 <= iteration){
+				allTimeLastImproveIter = iteration + 1;
+				graph = new Graph(bestGraph);
+				madeChange = true;
+				System.out.println("Resetting to best graph and shaking.");
 				int noRotations = Math.max(1, (int) (graph.getResult().getRotations().size() * 0.1));
 				for(int i = 0; i < noRotations; i++){
 					graph.randomAction(iteration);
 				}
 				lastImproveIter = iteration + 1;
-				//				ArrayList<Rotation> empty1 = new ArrayList<Rotation>();
-				//				ArrayList<Rotation> empty2 = new ArrayList<Rotation>();
-				//				diversify(empty1, empty2, 0);
-				madeChange = true;
-				shakeLast = true;
-			} else if(shakeLast){
-				shakeLastLast = true;
 			}
 			graph.runMcf();
 			if(madeChange){
@@ -306,24 +301,8 @@ public class LNS {
 					saveFolderSol(id);
 					allTimeLastImproveIter = iteration+1;
 					System.out.println("New best solution: " + allTimeBestObj);
-					shakeLastLast = false;
-					shakeLast = false;
-				} else if(shakeLastLast){
-					allTimeLastImproveIter = iteration + 1;
-					graph = new Graph(bestGraph);
-					madeChange = true;
-					shakeLastLast = false;
-					shakeLast = false;
-					System.out.println("Resetting to best graph.");
 				}
 				System.out.println("#"+ iteration +" Iteration objective: " + obj);
-			} else if(shakeLastLast){
-				allTimeLastImproveIter = iteration + 1;
-				graph = new Graph(bestGraph);
-				madeChange = true;
-				shakeLastLast = false;
-				shakeLast = false;
-				System.out.println("Resetting to best graph.");
 			}
 			iteration++;
 		}

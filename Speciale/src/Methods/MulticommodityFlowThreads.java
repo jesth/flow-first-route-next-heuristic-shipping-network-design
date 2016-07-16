@@ -122,6 +122,7 @@ public class MulticommodityFlowThreads implements Serializable{
 //					e.lagrangeAdjustment(iteration);
 //				}
 			}
+			iteration++;
 		}
 		implementBestFlow();
 		long endTime = System.currentTimeMillis();
