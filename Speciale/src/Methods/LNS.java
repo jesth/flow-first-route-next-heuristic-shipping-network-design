@@ -281,11 +281,14 @@ public class LNS {
 			//				System.out.println("Resetting to best graph.");
 
 			if((!madeChange && !shakeLast) || lastImproveIter + 20 <= iteration){
-				graph.randomAction(iteration);
+				int noRotations = Math.max(1, (int) (graph.getResult().getRotations().size() * 0.1));
+				for(int i = 0; i < noRotations; i++){
+					graph.randomAction(iteration);
+				}
 				lastImproveIter = iteration + 1;
-//				ArrayList<Rotation> empty1 = new ArrayList<Rotation>();
-//				ArrayList<Rotation> empty2 = new ArrayList<Rotation>();
-//				diversify(empty1, empty2, 0);
+				//				ArrayList<Rotation> empty1 = new ArrayList<Rotation>();
+				//				ArrayList<Rotation> empty2 = new ArrayList<Rotation>();
+				//				diversify(empty1, empty2, 0);
 				madeChange = true;
 				shakeLast = true;
 			} else if(shakeLast){
