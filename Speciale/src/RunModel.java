@@ -34,28 +34,54 @@ public class RunModel {
 //		testLNS("WorldSmall");
 //		testMedManual2();
 //		testWorldLargeAuto();
-//		testLNS("WorldSmall");
+		
+		
+		testLNS("WAF");
+		
+//		testCode("WorldSmall", 3);
 
-		testBrouerNetwork("WorldSmall_pid_4953_15_best_low.log", "fleet_WorldSmall.csv",
-				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.4, 0.8);
+//		testBrouerNetwork("WorldSmall_pid_4953_15_best_low.log", "fleet_WorldSmall.csv",
+//				"RandomNumbers.csv", "Demand_WorldSmall.csv", 1.4, 0.8);
 		
 		
 //		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv", 1, 1);
 //		Graph network = new Graph("Demand_WorldSmall.csv");
 //		network.copyRotations("Network.csv", "NetworkCost.csv");
+//		Data.initialize("fleet_WorldLarge.csv", "randomNumbers.csv");
+//		Graph network = new Graph("Demand_WorldLarge.csv");
+//		network.copyRotations("network.csv", "networkCost.csv");
 //		network.runMcf();
 //		network.getResult().saveLoads("testLoads", 100);
 //		network.getResult().saveLagranges("testLagranges", 100);
 //		System.out.println(network.getResult().getFlowProfit(false));
 //		network.getResult().saveRotationSol("test.csv");
 		
+//		network.getResult().saveAllEdgesSol("AllEdgesSol.csv");
+//		network.getResult().saveODSol("ODSol.csv");
+//		network.getResult().saveRotationSol("RotationSol.csv");
+//		network.getResult().saveTransferSol("TransferSol.csv");
+//		network.getResult().saveFlowCost("FlowCost.csv");
+//		network.getResult().saveRotationCost("RotationCost.csv");
+//		network.getResult().saveOPLData("OPLData.dat");
+//		System.out.println(network.getResult().getObjective());
+
 	}
 	
 	public static void testLNS(String caseName) throws InterruptedException, IOException{
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
 		LNS lns = new LNS();
-		lns.run(300, 20, fleetFileName, demandFileName);
+		lns.VNSrun(900, 20, fleetFileName, demandFileName, 0);
+//		lns.testInsertion(150, 20, fleetFileName, demandFileName);
+	}
+	
+	public static void testCode(String caseName, int runs) throws InterruptedException, IOException{
+		String fleetFileName = getFleetFileName(caseName);
+		String demandFileName = getDemandFileName(caseName);
+		for(int i = 0; i < runs; i++){
+			LNS lns = new LNS();
+			lns.run(600, 20, fleetFileName, demandFileName, i);
+		}
 	}
 	
 	private static String getFleetFileName(String caseName){
@@ -101,9 +127,9 @@ public class RunModel {
 	}
 	
 	public static void saveAux() throws FileNotFoundException{
-		Data.initialize("fleet_WorldSmall.csv", "LinerLib_Data\\RandomNumbers.csv", 1, 1);
-		Graph testGraph = new Graph("Demand_WorldSmall.csv");
-		AuxRun auxRun = new AuxRun(testGraph, 10, 0);
+		Data.initialize("fleet_WorldLarge.csv", "RandomNumbers.csv", 1, 1);
+		Graph testGraph = new Graph("Demand_WorldLarge.csv");
+		AuxRun auxRun = new AuxRun(testGraph, 1, 0);
 		auxRun.run();
 		System.out.println("SaveAux is done");
 	}

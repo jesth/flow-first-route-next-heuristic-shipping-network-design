@@ -393,7 +393,7 @@ public class Result implements Serializable{
 			File fileOut = new File(fileName);
 			BufferedWriter out;
 			out = new BufferedWriter(new FileWriter(fileOut));
-			String str = "Time;objective";
+			String str = "Time;BestObjective;CurrentObjective";
 			out.write(str); 
 			out.newLine();
 			return out;
@@ -403,16 +403,15 @@ public class Result implements Serializable{
 		return null;
 	}
 	
-	public void saveProgress(BufferedWriter out, long currentTime, int objective){
+	public void saveProgress(BufferedWriter out, long currentTime, int bestObjective, int objective){
 		try {
-		String str = currentTime + ";" + objective;
+		String str = currentTime + ";" + bestObjective + ";" + objective;
 		out.write(str); 
 		out.newLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public void saveOPLData(String fileName){
 		try {

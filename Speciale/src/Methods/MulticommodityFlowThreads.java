@@ -44,10 +44,10 @@ public class MulticommodityFlowThreads implements Serializable{
 		setBFsActive();
 	}
 
-	public void reset(int lagrangeStep){
+	public void reset(){
 		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
-				e.setLagrangeStep(lagrangeStep);
+				e.setLagrangeStep(40);
 				e.setLagrange(1);
 			}
 		}
@@ -71,87 +71,59 @@ public class MulticommodityFlowThreads implements Serializable{
 				sailEdges.add(e);
 			}
 		}
-		
-		int iterationsToRun = 30;
-		int[] lagrangeStepList = {10
-				, 20
-				, 40
-				, 80
-				, 160
-				, 320
-				};
-		for(int i : lagrangeStepList){
-				
-			reset(i);
-			
-			//				startLagrange();
-			//TODO hardcoded 100 iterations...
-			long startTime = System.currentTimeMillis();
-			double[] decreaseNumList = {2
-					, 3
-					, 4
-					, 5
-					, 7
-					, 10
-					};
-			System.out.println("LagrangeStep: " + i);
-			for(double d : decreaseNumList){
-				reset(i);
-				bestFlowProfit = -Integer.MAX_VALUE;
-				bestRoutes = new ArrayList<Route>();
-				int iteration = 0;
-				int repairCounter = 0;
-				int improvementCounter = 0;
-				while (
-//						improvementCounter < 20 && 
-						iteration < iterationsToRun){
-					
-		//						System.out.println("Now running BellmanFord in iteration " + iteration);
-					for(Edge e : graph.getEdges().values()){
-						e.clearRoutes();
-					}
-					if(!graph.isSubGraph()){
-						runBF(true, false);
-					} else {
-						runBF(false, false);
-					}
-					boolean validFlow = false;
-					double overflow = getOverflow();
-					if(overflow < 0.3 || improvementCounter == 19 || iteration == (iterationsToRun-1)){
-						improvementCounter++;
-						validFlow = findRepairFlow(improvementCounter, iteration, d);
-						repairCounter++;
-					}
-					int flowProfit = graph.getResult().getFlowProfit(false);
-					if(validFlow && flowProfit > bestFlowProfit){
-		//				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
-						updateBestFlow(flowProfit);
-						repairCounter = 0;
-						improvementCounter = 0;
-					}
-		
-					for(Edge e : sailEdges){
-						if(iteration > 0 && (iteration % 5 == 0)){
-							e.decreaseLagrangeStep(d);
-						}
-//						if(repairCounter >= 5){
-//							e.setLagrange(Math.max(e.getLagrange() / 2,1));
-//							e.saveValues(iteration);
-//						} else {
-							e.lagrangeAdjustment(iteration);
-//						}
-					}
-					if(repairCounter >= 5){
-						repairCounter = 0;
-					}
-					iteration++;
+		reset();
+		bestFlowProfit = -Integer.MAX_VALUE;
+		bestRoutes = new ArrayList<Route>();
+		int iteration = 0;
+		int repairCounter = 0;
+		int improvementCounter = 0;
+		//				startLagrange();
+		//TODO hardcoded 100 iterations...
+		long startTime = System.currentTimeMillis();
+		int targetIteration = 30;
+
+		while (improvementCounter < 20 && iteration < targetIteration){
+//						System.out.println("Now running BellmanFord in iteration " + iteration);
+			for(Edge e : graph.getEdges().values()){
+				e.clearRoutes();
+			}
+			if(!graph.isSubGraph()){
+				runBF(true, false);
+			} else {
+				runBF(false, false);
+			}
+			boolean validFlow = false;
+			double overflow = getOverflow();
+			if(overflow < 0.3 || improvementCounter == 19 || iteration == targetIteration - 1){
+				improvementCounter++;
+				validFlow = findRepairFlow(improvementCounter, iteration);
+				repairCounter++;
+			}
+			int flowProfit = graph.getResult().getFlowProfit(false);
+			if(validFlow && flowProfit > bestFlowProfit){
+//				System.out.println("Found better flow without repair: " + flowProfit + " > " + bestFlowProfit);
+				updateBestFlow(flowProfit);
+				repairCounter = 0;
+				improvementCounter = 0;
+			}
+
+			for(Edge e : sailEdges){
+				if(iteration > 0 && iteration % 5 == 0){
+					e.decreaseLagrangeStep();
 				}
 //				System.out.println("decreaseNum: " + d);
-				implementBestFlow();
-				System.out.println(graph.getResult().getFlowProfit(false));
+				
+				e.lagrangeAdjustment(iteration);
+				
+//				if(repairCounter >= 5){
+//					e.setLagrange(Math.max(e.getLagrange() / 2,1));
+//					e.saveValues(iteration);
+//				} else {
+//					e.lagrangeAdjustment(iteration);
+//				}
 			}
 		}
-		
+		implementBestFlow();
 		long endTime = System.currentTimeMillis();
 //		saveLagranges("lagranges.csv", iteration);
 //		saveLoads("loads.csv", iteration);
@@ -201,7 +173,7 @@ public class MulticommodityFlowThreads implements Serializable{
 		return overflow;
 	}
 
-	private boolean findRepairFlow(int improvementCounter, int iteration, double decreaseNum) throws InterruptedException{
+	private boolean findRepairFlow(int improvementCounter, int iteration) throws InterruptedException{
 		while(iteration >= 100){
 			iteration -= 100;
 		}
@@ -241,7 +213,7 @@ public class MulticommodityFlowThreads implements Serializable{
 			d.rerouteOmissionFFEs();
 		}
 		if(!validFlow){
-			findRepairFlow(improvementCounter, iteration+1, decreaseNum);
+			findRepairFlow(improvementCounter, iteration+1);
 		}
 		int flowProfit = graph.getResult().getFlowProfit(true);
 		if(flowProfit > bestFlowProfit){

@@ -75,7 +75,7 @@ public class Graph implements Serializable{
 		//		this.toCentroids = new ArrayList<Node>();
 		Node.setNoOfCentroids(Data.getPortsMap().size());
 		createPorts();
-		createDemands(rotation, considerUnservedPorts);
+		createDemands(rotation);
 		createCentroids();
 		createOmissionEdges();
 		Rotation subRotation = createRotation(rotation, true, considerUnservedPorts);
@@ -191,7 +191,7 @@ public class Graph implements Serializable{
 		demandsMatrix = createDemandsMatrix();
 	}
 
-	private void createDemands(Rotation rotation, boolean considerUnservedPorts){
+	private void createDemands(Rotation rotation){
 		ArrayList<Route> orgRoutes = new ArrayList<Route>();
 		ArrayList<Demand> orgDemands = new ArrayList<Demand>();
 		demandsList = new ArrayList<Demand>();
@@ -1251,7 +1251,7 @@ public class Graph implements Serializable{
 		return getNoVesselsAvailable(vesselId) - getNoVesselsUsed(vesselId);
 	}
 
-	public boolean serviceBiggestOmissionDemand(int iteration) throws InterruptedException{
+	public boolean serviceBiggestOmissionDemand(int iteration) throws InterruptedException, IOException{
 		int[] portOmission = new int[Data.getPorts().length];
 		for(Demand d : demandsList){
 			for(Route r : d.getRoutes()){
@@ -1287,7 +1287,7 @@ public class Graph implements Serializable{
 		return serviceOmissionDemand(p);
 	}
 
-	public boolean serviceOmissionDemand(Port port) throws InterruptedException {
+	public boolean serviceOmissionDemand(Port port) throws InterruptedException, IOException {
 		boolean madeChange = false;
 		ArrayList<Demand> oldDemands = new ArrayList<Demand>();
 		for(Demand d : demandsList){
@@ -1316,6 +1316,10 @@ public class Graph implements Serializable{
 			bestRot.implementServiceOmissionDemand(oldDemands, port.getPortId());
 		}
 		return madeChange;
+	}
+	
+	private void saveInsertion(BufferedWriter insertionWriter, int obj) throws IOException{
+		insertionWriter.write(obj + ";");
 	}
 
 	public Demand findHighestCostDemand(ArrayList<Demand> noGoes){
@@ -1416,25 +1420,22 @@ public class Graph implements Serializable{
 			Port p = ports[i];
 			int pOmission = omissions[i];
 			//TODO: Hardcoded draft.
-			if(p.getDraft() < 8.5 && pOmission > biggestOmission){
+			if(p.getDraft() < 10 && pOmission > biggestOmission){
 				biggestOmission = pOmission;
 				biggestOmissionPort = p;
 			}
 		}
+
 		if(biggestOmissionPort != null){
-			int closestDist = Integer.MAX_VALUE;
-			Port closestDistPort = null;
-			for(Port p : ports){
-				if(p.getDraft() > 10 && !p.equals(biggestOmissionPort) && p.isActive()){
-					int dist = Data.getBestDistanceElement(biggestOmissionPort, p, Data.getVesselClassId(0)).getDistance();
-					//TODO: Hardcoded draft
-					if(dist < closestDist){
-						closestDist = dist;
-						closestDistPort = p;
-					}
-				}
+			VesselClass vessel = null;
+			if(biggestOmissionPort.getDraft() < 8.5){
+				vessel = Data.getVesselClassFromCap(450);
+			} else {
+				vessel = Data.getVesselClassFromCap(800);
 			}
-			if(closestDistPort != null){
+			Port hubPort = getHubPort(biggestOmissionPort);
+
+			if(hubPort != null){
 				Rotation existing = null;
 				Node existingNode = null;
 				for(Node n : biggestOmissionPort.getDepartureNodes()){
@@ -1444,31 +1445,34 @@ public class Graph implements Serializable{
 					}
 				}
 				if(existing != null){
-					int existingVessels = existing.getNoOfVessels();
+					int existingVessels = 0;
+					if(existing.getVesselClass().equals(vessel)){
+						existingVessels = existing.getNoOfVessels();
+					}
 					ArrayList<Integer> rotationPorts = new ArrayList<Integer>();
 					for(Edge e : existing.getRotationEdges()){
 						if(e.isSail()){
 							rotationPorts.add(e.getFromNode().getPortId());
 							if(e.getFromNode().equals(existingNode)){
-								rotationPorts.add(closestDistPort.getPortId());
+								rotationPorts.add(hubPort.getPortId());
 								rotationPorts.add(biggestOmissionPort.getPortId());
 							}
 						}
 					}
-					int reqVessels = ComputeRotations.calcNumberOfVessels(rotationPorts, Data.getVesselClassId(0));
+					int reqVessels = ComputeRotations.calcNumberOfVessels(rotationPorts, vessel);
 					int extraVessels = reqVessels - existingVessels;
-					if(extraVessels <= getNetNoVesselsAvailable(0)){
-						insertDoublePort(existing, existingNode.getNextEdge(), closestDistPort, biggestOmissionPort);
-						System.out.println("Extending feeder rotaton " + existing.getId() + " with roundtrip " + closestDistPort.getUNLocode()+"-"+biggestOmissionPort.getUNLocode());
+					if(extraVessels <= getNetNoVesselsAvailable(vessel.getId())){
+						insertDoublePort(existing, existingNode.getNextEdge(), hubPort, biggestOmissionPort);
+						System.out.println("Extending feeder rotaton " + existing.getId() + " with roundtrip " + hubPort.getUNLocode()+"-"+biggestOmissionPort.getUNLocode());
 						return true;
 					}
 				} else {
 					ArrayList<Integer> rotationPorts = new ArrayList<Integer>();
 					rotationPorts.add(biggestOmissionPort.getPortId());
-					rotationPorts.add(closestDistPort.getPortId());
-					int reqVessels = ComputeRotations.calcNumberOfVessels(rotationPorts, Data.getVesselClassId(0));
-					if(reqVessels <= getNetNoVesselsAvailable(0)){
-						createRotationFromPorts(rotationPorts, Data.getVesselClassId(0));
+					rotationPorts.add(hubPort.getPortId());
+					int reqVessels = ComputeRotations.calcNumberOfVessels(rotationPorts, vessel);
+					if(reqVessels <= getNetNoVesselsAvailable(vessel.getId())){
+						createRotationFromPorts(rotationPorts, vessel);
 						System.out.println("Creating feeder rotaton " + Data.getPort(rotationPorts.get(0)).getUNLocode() + "-" + Data.getPort(rotationPorts.get(1)).getUNLocode());
 						return true;
 					}
@@ -1476,6 +1480,70 @@ public class Graph implements Serializable{
 			}
 		}
 		return false;
+	}
+	
+	public boolean serviceUnservedPort() throws InterruptedException, IOException{
+		Port p = chooseUnservedPort();
+		if(p != null){
+			return serviceOmissionDemand(p);
+		}
+		return false;
+	}
+	
+
+	private Port chooseUnservedPort(){
+		ArrayList<Port> unservicedPorts = new ArrayList<Port>();
+		int omissionDemand = 0;
+		for(Port p : ports){
+			if(p.isActive() && p.getDwellEdges().isEmpty() && p.getTotalDemand() > 0){
+				unservicedPorts.add(p);
+				omissionDemand += p.getTotalDemand();
+			}
+		}
+		if(omissionDemand == 0){
+			return null;
+		}
+		Port[] unservicedPortsDemand = new Port[omissionDemand];
+		int index = 0;
+		for(Port p : unservicedPorts){
+			int demand = p.getTotalDemand();
+			while(demand > 0){
+				unservicedPortsDemand[index] = p;
+				demand--;
+				index++;
+			}
+		}
+		double rand = Data.getRandomNumber(0);
+		index = (int) (rand * unservicedPortsDemand.length);
+		return unservicedPortsDemand[index];
+	}
+	
+	public Port getHubPort(Port feederPort){
+		int closestDist = Integer.MAX_VALUE;
+		for(Port p : ports){
+			if(p.getDraft() > 10 && !p.equals(feederPort) && p.isActive()){
+				int dist = Data.getBestDistanceElement(feederPort, p, Data.getVesselClassId(0)).getDistance();
+				//TODO: Hardcoded draft
+				if(dist < closestDist){
+					closestDist = dist;
+				}
+			}
+		}
+		ArrayList<Port> potentialPorts = new ArrayList<Port>();
+		for(Port p : ports){
+			if(p.getDraft() > 10 && !p.equals(feederPort) && p.isActive()){
+				int dist = Data.getBestDistanceElement(feederPort, p, Data.getVesselClassId(0)).getDistance();
+				//TODO: Hardcoded draft
+				if(dist < 2 * closestDist){
+					potentialPorts.add(p);
+				}
+			}
+		}
+		if(potentialPorts.size() == 0){
+			return null;
+		}
+		int index = (int) (Data.getRandomNumber(0) * potentialPorts.size());
+		return potentialPorts.get(index);
 	}
 	
 	public void serialize(){

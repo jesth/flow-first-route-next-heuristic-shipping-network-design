@@ -1,4 +1,6 @@
 package Results;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,13 +97,14 @@ public class Rotation implements Serializable{
 	}
 	 */
 
-	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException{
+	public boolean insertBestPort(double flowBonus, double percentOfCapToAccept, boolean notImproving) throws InterruptedException, IOException{
 		boolean considerUnservedPorts = true;
 		this.createRotationGraph(considerUnservedPorts);
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		//		rotationGraph.getMcf().saveRotSol("ODSol_before.csv", rotationGraph.getDemands());
 		int bestObj = rotationGraph.getResult().getObjective();
+		int currObj = rotationGraph.getResult().getObjective();
 		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;	
 		}
@@ -174,6 +177,7 @@ public class Rotation implements Serializable{
 		boolean madeChange = false;
 		rotationGraph.runMcf();
 		int bestObj = rotationGraph.getResult().getObjective();
+		int currObj = rotationGraph.getResult().getObjective();
 		if(notImproving){
 			bestObj = -Integer.MAX_VALUE;
 		}
@@ -208,12 +212,13 @@ public class Rotation implements Serializable{
 		}
 
 		if(madeChange){
+
 			//DELETE LINES BELOW!!!
-//			rotationGraph.runMcf();
-//			getRotationGraph().getResult().saveRotationSol("RotSolBefImplement.csv");
-//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolBefImplement.csv");
-//			getRotationGraph().getResult().saveRotationCost("RotationCostBefImplement.csv");
-//			System.out.println("bestFeederPort: " + bestFeederPort.getUNLocode());
+			//			rotationGraph.runMcf();
+			//			getRotationGraph().getResult().saveRotationSol("RotSolBefImplement.csv");
+			//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolBefImplement.csv");
+			//			getRotationGraph().getResult().saveRotationCost("RotationCostBefImplement.csv");
+			//			System.out.println("bestFeederPort: " + bestFeederPort.getUNLocode());
 			subRotation.implementInsertPortEdge(rotationGraph, bestFeederPort, worstNextSail);
 			int noInRot = worstNextSail.getNoInRotation();
 			Edge mainGraphWorstNextSail = null;
@@ -225,20 +230,20 @@ public class Rotation implements Serializable{
 			Port mainGraphBestFeederPort = mainGraph.getPort(bestFeederPort.getPortId());
 			this.implementInsertPortEdge(mainGraph, mainGraphBestFeederPort, mainGraphWorstNextSail);
 			//DELETE LINES BELOW!!!
-//			rotationGraph.runMcf();
-//			getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
-//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
-//			getRotationGraph().getResult().saveRotationCost("RotationCostAfterImplement.csv");
+			//			rotationGraph.runMcf();
+			//			getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
+			//			getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
+			//			getRotationGraph().getResult().saveRotationCost("RotationCostAfterImplement.csv");
 			System.out.println("Improvement by INSERTING. Rotation: " + mainGraphWorstNextSail.getRotation().getId() + " Port: " +mainGraphBestFeederPort.getUNLocode() + " noInRot: " + noInRot);
-//			if(true){
-//				throw new RuntimeException("Stopping");
-//			}
+			//			if(true){
+			//				throw new RuntimeException("Stopping");
+			//			}
 		}
 		getRotationGraph().getResult().saveRotationSol("RotSolAfterImplement.csv");
 		getRotationGraph().getResult().saveAllEdgesSol("AllEdgesSolAfterImplement.csv");
-//		if(true)
-//			throw new RuntimeException("");
-		
+		//		if(true)
+		//			throw new RuntimeException("");
+
 		return madeChange;
 	}
 
@@ -332,7 +337,7 @@ public class Rotation implements Serializable{
 		Node orgNextPortArrNode = nextSailEdge.getToNode();
 
 		ArrayList<Node> insertNodes = rotationGraph.tryInsertMakeNodesEdge(subRotation, insertPort, nextSailEdge);
-//		System.out.println("insertPort:" + insertPort.getUNLocode());
+		//		System.out.println("insertPort:" + insertPort.getUNLocode());
 		ArrayList<Edge> insertEdges = rotationGraph.tryInsertMakeEdgesEdge(subRotation, insertNodes, orgDepNode, orgNextPortArrNode);
 
 		//		if(subRotation.enoughVessels(orgNoVessels)){
@@ -448,7 +453,7 @@ public class Rotation implements Serializable{
 		ArrayList<Edge> edges = new ArrayList<Edge>(rotationGraph.getEdges().values());
 		for(int i=edges.size()-1; i>=0; i--){
 			Edge e = edges.get(i);
-			if(e.isDwell() && isRelevantToRemove(e)){
+			if(e.isDwell() && (isRelevantToRemove(e) || notImproving)){
 				if(checkRemovePort(e)){
 					ArrayList<Edge> handledEdges = rotationGraph.tryRemovePort(e, subRotation);
 					rotationGraph.runMcf();
@@ -658,16 +663,16 @@ public class Rotation implements Serializable{
 			}
 			nextEdge = nextEdge.getNextEdge();
 		}
-//		System.out.println(rotationEdges.size());
-//		ArrayList<Port> portArray = new ArrayList<Port>();
-//		for(Edge e : rotationEdges){
-//			if(e.isDwell() && !e.equals(dwellEdge)){
-//				portArray.add(e.getFromNode().getPort());
-//				System.out.println("Check");
-//			} else {
-//				System.out.println("Fail");
-//			}
-//		}
+		//		System.out.println(rotationEdges.size());
+		//		ArrayList<Port> portArray = new ArrayList<Port>();
+		//		for(Edge e : rotationEdges){
+		//			if(e.isDwell() && !e.equals(dwellEdge)){
+		//				portArray.add(e.getFromNode().getPort());
+		//				System.out.println("Check");
+		//			} else {
+		//				System.out.println("Fail");
+		//			}
+		//		}
 		boolean consecutivePorts = true;
 		while(consecutivePorts && portArray.size() > 0){
 			consecutivePorts = false;
@@ -715,9 +720,9 @@ public class Rotation implements Serializable{
 		}
 		return false;
 	}
-	
+
 	public double getPercentPrimaryFFE() throws InterruptedException{
-		
+
 		double primary = 0;
 		double secondary = 0;
 		for(Route r : getRoutes()){
@@ -734,7 +739,7 @@ public class Rotation implements Serializable{
 				secondary += r.getFFE();
 			}
 		}
-		
+
 		return (primary/(primary+secondary));
 	}
 
@@ -762,7 +767,7 @@ public class Rotation implements Serializable{
 		} else {
 			for(int i = lbNoVessels; i <= ubNoVessels; i++){
 				double speed = calculateSpeed(i);
-				int bunkerCost = calcSailingBunkerCost(speed, i);
+				int bunkerCost = calcSailingBunkerCost(speed, i, Data.getFuelPrice());
 				int TCRate = i * vesselClass.getTCRate();
 				int cost = bunkerCost + TCRate;
 				if(cost < lowestCost){
@@ -898,7 +903,7 @@ public class Rotation implements Serializable{
 	}
 
 	public int getSailingBunkerCost(){
-		return calcSailingBunkerCost(speed, noOfVessels);
+		return calcSailingBunkerCost(speed, noOfVessels, Data.getFuelPrice());
 	}
 
 	public int getIdleBunkerCost(){
@@ -942,7 +947,7 @@ public class Rotation implements Serializable{
 				idleTime += e.getTravelTime();
 			}
 		}
-		int sailingBunkerCost = calcSailingBunkerCost(speed, noOfVessels);
+		int sailingBunkerCost = calcSailingBunkerCost(speed, noOfVessels, Data.getFuelPrice());
 		double idleBunkerCost = (int) Math.ceil(idleTime/24.0) * v.getFuelConsumptionIdle() * Data.getFuelPrice();
 
 		int rotationDays = (int) Math.ceil((sailingTime+idleTime)/24.0);
@@ -972,23 +977,23 @@ public class Rotation implements Serializable{
 		return portCost;
 	}
 
-	public int calcIdleFuelCost(){
-		int idleTime = 0;
-		for(Edge e : rotationEdges){
-			if(e.isDwell()){
-				idleTime += e.getTravelTime();
-			}
-		}
-		int idleCost = (int) (Math.ceil(idleTime/24.0) * vesselClass.getFuelConsumptionIdle() * Data.getFuelPrice());
+	//	public int calcIdleFuelCost(){
+	//		int idleTime = 0;
+	//		for(Edge e : rotationEdges){
+	//			if(e.isDwell()){
+	//				idleTime += e.getTravelTime();
+	//			}
+	//		}
+	//		int idleCost = (int) (Math.ceil(idleTime/24.0) * vesselClass.getFuelConsumptionIdle() * Data.getFuelPrice());
+	//
+	//		return idleCost;
+	//	}
 
-		return idleCost;
-	}
-
-	public int calcSailingBunkerCost(double speed, int noOfVessels){
+	public int calcSailingBunkerCost(double speed, int noOfVessels, int bunkerPrice){
 		double fuelConsumption = vesselClass.getFuelConsumption(speed);
 		double sailTimeDays = (distance / speed) / 24.0;
 		double bunkerConsumption = sailTimeDays * fuelConsumption;
-		return (int) (bunkerConsumption * Data.getFuelPrice());
+		return (int) (bunkerConsumption * bunkerPrice);
 	}
 
 	public int getNoOfVessels() {
@@ -1213,39 +1218,33 @@ public class Rotation implements Serializable{
 			Edge e = rotationEdges.get(i);
 			Node arrNode = null;
 			Node depNode = null;
-			boolean tooFewUnloading = false;
-			boolean tooFewLoading = false;
 			if(e.isDwell()){
-				arrNode = e.getFromNode();
-				int unloadLoad = 0;
-				for(Edge unload : arrNode.getOutgoingEdges()){
-					if(unload.isLoadUnload() || unload.isTransshipment()){
-						unloadLoad += unload.getLoad();
+				Port p = e.getFromNode().getPort();
+				int noCalling = p.getDwellEdges().size();
+				if(noCalling > 1){
+					arrNode = e.getFromNode();
+					int load = 0;
+					for(Edge eU : arrNode.getOutgoingEdges()){
+						if(eU.isLoadUnload() || eU.isTransshipment()){
+							load += eU.getLoad();
+						}
+					}
+					depNode = e.getToNode();
+					for(Edge eL : depNode.getIngoingEdges()){
+						if(eL.isLoadUnload() || eL.isTransshipment()){
+							load += eL.getLoad();
+						}
+					}
+					if(load < percentToAccept * vesselClass.getCapacity()){
+						mainGraph.removePort(e);
+						return true;
 					}
 				}
-				if(unloadLoad < percentToAccept * vesselClass.getCapacity()){
-					tooFewUnloading = true;
-				}
-
-				depNode = e.getToNode();
-				int loadLoad = 0;
-				for(Edge load : depNode.getIngoingEdges()){
-					if(load.isLoadUnload() || load.isTransshipment()){
-						loadLoad += load.getLoad();
-					}
-				}
-				if(loadLoad < percentToAccept * vesselClass.getCapacity()){
-					tooFewLoading = true;
-				}
-			}
-			if(tooFewUnloading && tooFewLoading){
-				mainGraph.removePort(e);
-				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	private ArrayList<Demand> findRelevantDemandsToInclude(){
 		ArrayList<Demand> relevantDemands = new ArrayList<Demand>();
 		ArrayList<Port> classAPorts = subRotation.getPorts();
@@ -1279,7 +1278,7 @@ public class Rotation implements Serializable{
 		}
 		return relevantDemands;
 	}
-	
+
 	public void includeOmissionDemands(){
 		ArrayList<Demand> relevantDemands = findRelevantDemandsToInclude();
 		for(Demand d : relevantDemands){

@@ -18,7 +18,6 @@ public class VesselClass implements Serializable{
 	private int panamaFee;
 	private int suezFee;
 	private int noAvailable;
-	private int noUsed;
 	private static AtomicInteger idCounter = new AtomicInteger();
 	
 	public VesselClass(){
@@ -53,7 +52,6 @@ public class VesselClass implements Serializable{
 		this.panamaFee = panamaFee;
 		this.suezFee = suezFee;
 		this.noAvailable = 0;
-		this.noUsed = 0;
 	}
 
 	public String getName() {
