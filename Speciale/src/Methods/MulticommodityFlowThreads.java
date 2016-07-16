@@ -111,16 +111,13 @@ public class MulticommodityFlowThreads implements Serializable{
 				if(iteration > 0 && iteration % 5 == 0){
 					e.decreaseLagrangeStep();
 				}
-//				System.out.println("decreaseNum: " + d);
-				
-				e.lagrangeAdjustment(iteration);
 				
 //				if(repairCounter >= 5){
 //					e.setLagrange(Math.max(e.getLagrange() / 2,1));
 //					e.saveValues(iteration);
-//				} else {
-//					e.lagrangeAdjustment(iteration);
-//				}
+//				} 
+
+				e.lagrangeAdjustment(iteration);
 			}
 			iteration++;
 		}
