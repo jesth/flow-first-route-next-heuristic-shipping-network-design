@@ -254,7 +254,7 @@ public class Edge implements Serializable{
 			if(overflow){
 				this.lagrange = Math.max(this.lagrange + lagrangeStep, 1);
 			} else {
-				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 3), 1);
+				this.lagrange = Math.max(this.lagrange - (lagrangeStep / 5), 1);
 			}
 			this.cost = this.realCost+this.lagrange;
 		}
@@ -517,7 +517,7 @@ public class Edge implements Serializable{
 //	}
 
 	public void decreaseLagrangeStep(){
-		int decrement = lagrangeStep / 10;
+		int decrement = lagrangeStep / 4;
 		//		int decrement = 0;
 		lagrangeStep = Math.max(lagrangeStep - decrement, 1);
 		//		lagrangeStep = Math.max(lagrangeStep / 2, 1);

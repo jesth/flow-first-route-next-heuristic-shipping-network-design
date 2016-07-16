@@ -47,7 +47,7 @@ public class MulticommodityFlowThreads implements Serializable{
 	public void reset(){
 		for(Edge e : graph.getEdges().values()){
 			if(e.isSail()){
-				e.setLagrangeStep(5000);
+				e.setLagrangeStep(40);
 				e.setLagrange(1);
 			}
 		}
@@ -80,8 +80,9 @@ public class MulticommodityFlowThreads implements Serializable{
 		//				startLagrange();
 		//TODO hardcoded 100 iterations...
 		long startTime = System.currentTimeMillis();
+		int targetIteration = 30;
 
-		while (improvementCounter < 20 && iteration < 100){
+		while (improvementCounter < 20 && iteration < targetIteration){
 //						System.out.println("Now running BellmanFord in iteration " + iteration);
 			for(Edge e : graph.getEdges().values()){
 				e.clearRoutes();
@@ -93,7 +94,7 @@ public class MulticommodityFlowThreads implements Serializable{
 			}
 			boolean validFlow = false;
 			double overflow = getOverflow();
-			if(overflow < 0.3 || improvementCounter == 19 || iteration == 99){
+			if(overflow < 0.3 || improvementCounter == 19 || iteration == targetIteration - 1){
 				improvementCounter++;
 				validFlow = findRepairFlow(improvementCounter, iteration);
 				repairCounter++;
@@ -107,12 +108,17 @@ public class MulticommodityFlowThreads implements Serializable{
 			}
 
 			for(Edge e : sailEdges){
-				if(repairCounter >= 5){
-					e.setLagrange(Math.max(e.getLagrange() / 2,1));
-					e.saveValues(iteration);
-				} else {
-					e.lagrangeAdjustment(iteration);
+				if(iteration > 0 && iteration % 5 == 0){
+					e.decreaseLagrangeStep();
 				}
+				e.lagrangeAdjustment(iteration);
+				
+//				if(repairCounter >= 5){
+//					e.setLagrange(Math.max(e.getLagrange() / 2,1));
+//					e.saveValues(iteration);
+//				} else {
+//					e.lagrangeAdjustment(iteration);
+//				}
 			}
 			if(repairCounter >= 5){
 				repairCounter = 0;
@@ -215,11 +221,11 @@ public class MulticommodityFlowThreads implements Serializable{
 		if(flowProfit > bestFlowProfit){
 			improvementCounter = 0;
 			updateBestFlow(flowProfit);
-			for(Edge e : graph.getEdges().values()){
-				if(e.isSail()){
-					e.decreaseLagrangeStep();
-				}
-			}
+//			for(Edge e : graph.getEdges().values()){
+//				if(e.isSail()){
+//					e.decreaseLagrangeStep();
+//				}
+//			}
 		}
 		return validFlow;
 	}

@@ -421,41 +421,6 @@ public class ComputeRotations {
 	//		return false;
 	//	}
 
-	private static ArrayList<Port> findUnservicedPorts(Port[] ports){
-		ArrayList<Port> unservicedPorts = new ArrayList<Port>();
-		for(Port p : ports){
-			if(p.isActive() && p.getDwellEdges().isEmpty() && p.getTotalDemand() > 0){
-				/*
-				double rand = Math.random() * (unservicedPorts.size() + 1);
-				int index = (int) rand;
-				unservicedPorts.add(index, p);
-				 */
-
-				unservicedPorts.add(p);
-
-				/*
-				int profitPotential = p.getTotalProfitPotential();
-				if(unservicedPorts.isEmpty()){
-					unservicedPorts.add(p);
-				} else {
-					int size = unservicedPorts.size();
-					for(int i = 0; i < size; i++){
-//						System.out.println("Entering for-loop at i=" + i + " with unservicedPort.size()=" + unservicedPorts.size());
-						if(profitPotential > unservicedPorts.get(i).getTotalProfitPotential()){
-							unservicedPorts.add(i, p);
-							break;
-
-						}
-						if(i == size){
-							unservicedPorts.add(p);
-						}
-					}
-				}
-				 */
-			}
-		}
-		return unservicedPorts;
-	}
 
 	private static ArrayList<Port> findServicedPorts(Port[] ports){
 		ArrayList<Port> servicedPorts = new ArrayList<Port>();
