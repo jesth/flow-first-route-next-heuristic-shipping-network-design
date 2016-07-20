@@ -105,20 +105,20 @@ public class Data implements Serializable{
 	}
 	
 	public static double getRandomNumber(int row, int column){
-//		return Math.random();
-		return randomNumbers[column][row];
+		return Math.random();
+//		return randomNumbers[column][row];
 	}
 	
 	public static double getRandomNumber(int num){
-//		return Math.random();
-		int matrixSize = randomNumbers[0].length * randomNumbers.length;
-		while(num >= matrixSize){
-			num -= matrixSize;
-		}
-		int row = num / randomNumbers[0].length;
-		int col = num % randomNumbers[0].length;
-		
-		return randomNumbers[row][col];
+		return Math.random();
+//		int matrixSize = randomNumbers[0].length * randomNumbers.length;
+//		while(num >= matrixSize){
+//			num -= matrixSize;
+//		}
+//		int row = num / randomNumbers[0].length;
+//		int col = num % randomNumbers[0].length;
+//		
+//		return randomNumbers[row][col];
 	}
 	
 	public static VesselClass getVesselClassFromCap(int capacity){

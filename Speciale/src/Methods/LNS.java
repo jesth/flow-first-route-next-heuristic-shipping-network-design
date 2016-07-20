@@ -193,7 +193,7 @@ public class LNS {
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
 		Graph bestGraph = new Graph(graph);
-		String neighbourhood = "Feeder";
+		String neighbourhood = "All";
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("testResults\\" + caseName + "-" + neighbourhood + "-" + id + "ProgressSol.csv");
 		saveSol(progressWriter, 0, allTimeBestObj, allTimeBestObj);
 
@@ -211,8 +211,8 @@ public class LNS {
 			method.add(1);
 			method.add(2);
 			method.add(3);
-//			method.add(4);
-//			method.add(5);
+			method.add(4);
+			method.add(5);
 			ArrayList<Rotation> rotations = graph.getResult().getRotations();
 			while(!madeChange && method.size() > 0){
 				for(Rotation r : graph.getResult().getRotations()){
@@ -244,11 +244,11 @@ public class LNS {
 					if(graph.serviceBiggestOmissionDemand(iteration)){
 						madeChange = true;
 					}
-				} else if(index == 2){
+				} else if(index == 3){
 					if(graph.createFeederRotation()){
 						madeChange = true;
 					}
-				} else if(index == 0){
+				} else if(index == 4){
 					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
 						Rotation r = graph.getResult().getRotations().get(i); 
 						if(r.removeUnservingCalls(0.05)){
