@@ -189,9 +189,7 @@ public class LNS {
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
 		Graph bestGraph = new Graph(graph);
-		
 		String neighbourhood = "All";
-		
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("testResults\\" + caseName + "-" + neighbourhood + "-" + id + "ProgressSol.csv");
 //		saveSol(progressWriter, 0, allTimeBestObj, allTimeBestObj);
 
@@ -251,7 +249,7 @@ public class LNS {
 						madeChange = true;
 					}
 					// Service Unserved Port
-				} else if(index == 4){
+				} else if(index == 5){
 					for(Rotation r : graph.getResult().getRotations())
 						r.createRotationGraph(false);
 					if(graph.serviceUnservedPort(iteration)){

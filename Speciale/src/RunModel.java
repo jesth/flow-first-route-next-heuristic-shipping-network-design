@@ -34,11 +34,13 @@ public class RunModel {
 //		saveAux();
 //		testAux();
 
-//		testLNS("WorldSmall");
 //		testMedManual2();
 //		testWorldLargeAuto();
 
 		testLNS("Baltic");
+		
+		
+//		testLNS("Pacific");
 		
 //		testCode("WorldSmall", 3);
 
@@ -49,6 +51,7 @@ public class RunModel {
 //		Graph network = new Graph("Demand_WorldSmall.csv");
 //		network.copyRotations("Network.csv", "NetworkCost.csv");
 //		network.runMcf();
+//		network.printNetworkFacts("sailArcs.csv", "dwellArcs.csv");
 //		System.out.println(network.getResult().getFlowProfit(false));
 		
 //		network.getResult().saveLoads("testLoads", 100);
@@ -62,6 +65,7 @@ public class RunModel {
 //		network.getResult().saveFlowCost("FlowCost.csv");
 //		network.getResult().saveRotationCost("RotationCost.csv");
 //		network.getResult().saveOPLData("OPLData.dat");
+//		network.saveJson("bestSolWS.GeoJSON", 10);
 //		System.out.println(network.getResult().getObjective());
 
 	}
@@ -71,8 +75,8 @@ public class RunModel {
 		String demandFileName = getDemandFileName(caseName);
 		Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		LNS lns = new LNS();
-		for(int i=1; i<11; i++){
-			lns.VNSrun(30, 20, caseName, i);	
+		for(int i=1; i<4; i++){
+			lns.VNSrun(3600, 20, caseName, i);	
 		}
 //		lns.testInsertion(150, 20, fleetFileName, demandFileName);
 	}

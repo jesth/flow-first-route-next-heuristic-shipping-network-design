@@ -1610,7 +1610,8 @@ public class Graph implements Serializable{
 //				System.out.println(vesselCap);
 //				System.out.println();
 				costScanner.nextLine();
-				createRotationFromPorts(rotationPorts, Data.getVesselClassFromCap(vesselCap));
+				Rotation r = createRotationFromPorts(rotationPorts, Data.getVesselClassFromCap(vesselCap));
+				r.setId(rotNo);
 				rotationPorts.clear();
 				vesselIndex = 0;
 				solScanner.next();
@@ -1630,6 +1631,59 @@ public class Graph implements Serializable{
 		createRotationFromPorts(rotationPorts, Data.getVesselClassFromCap(vesselCap));
 		solScanner.close();
 		costScanner.close();
+	}
+	
+	public void saveJson(String fileName, int minLoad){
+		try {
+			File fileOut = new File(fileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
+			out.write("{");
+			out.newLine();
+			out.write("\"type\": \"FeatureCollection\",");
+			out.newLine();
+			out.write("\"crs\": { \"type\": \"name\", \"properties\": { \"name\": \"urn:ogc:def:crs:OGC:1.3:CRS84\" } },");
+			out.newLine();
+			out.write("\"features\": [");
+			out.newLine();
+			int counter = 1;
+			int[][] demand = new int[Data.getPorts().length][Data.getPorts().length];
+			for(Edge e : edges.values()){
+				if(e.isSail()){
+					int fromPort = e.getFromNode().getPortId();
+					int toPort = e.getToNode().getPortId();
+					demand[fromPort][toPort] += e.getLoad();
+				}
+			}
+			
+			for(int i = 0; i < demand[0].length; i++){
+				for(int j = 0; j < demand.length; j++){
+					if(demand[i][j] >= minLoad){
+						if(counter > 1){
+							out.write(",");
+							out.newLine();
+						}
+						PortData fromPort = Data.getPort(i);
+						PortData toPort = Data.getPort(j);
+						out.write("{ \"type\": \"Feature\", \"properties\": { \"value\": ");
+						out.write(String.valueOf(demand[i][j])); 
+						out.write(", \"label\": \"polygon" + counter + "\" }, \"geometry\": { \"type\": \"LineString\", \"coordinates\": [ [");
+						out.write(String.valueOf(fromPort.getLng()) + ", " + String.valueOf(fromPort.getLat()) + "], [");
+						out.write(String.valueOf(toPort.getLng()) + ", " + String.valueOf(toPort.getLat()) + "] ] } }");
+						counter++;
+					}
+				}
+
+			}
+			out.newLine();
+			out.write("]");
+			out.newLine();
+			out.write("}");
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void randomAction(int iteration) {
@@ -1654,5 +1708,50 @@ public class Graph implements Serializable{
 			r.removePort(e.getPrevEdge().getPrevEdge().getNoInRotation(), e.getNoInRotation());
 		}
 		r.removeRotationGraph();
+	}
+
+	public void printNetworkFacts(String sailArcsFile, String dwellArcsFile) throws FileNotFoundException {
+		try {
+			File fileOutSail = new File(sailArcsFile);
+			BufferedWriter outSail;
+			outSail = new BufferedWriter(new FileWriter(fileOutSail));
+			File fileOutDwell = new File(dwellArcsFile);
+			BufferedWriter outDwell;
+			outDwell = new BufferedWriter(new FileWriter(fileOutDwell));		
+					
+			String strSail = "RotationId;NoInRotation;UNLOFrom;UNLOTo;Length;Time";
+			String strDwell = "RotationId;NoInRotationBefore;NoInRotationAfter;UNLO;Time";
+			outSail.write(strSail);
+			outDwell.write(strDwell);
+			outSail.newLine();
+			outDwell.newLine();
+			
+			for(Edge e : edges.values()){
+				String str;
+				if(e.isSail()){
+					int intTime = (int) e.getTravelTime();
+					int intDecimalTime = (int) (100 * (e.getTravelTime() - intTime));
+					str = e.getRotation().getId() + ";" + e.getNoInRotation() + ";";
+					str += e.getFromPortUNLo() + ";" + e.getToPortUNLo() + ";";
+					str += e.getDistance().getDistance() + ";" + intTime + "," + intDecimalTime;
+					outSail.write(str);
+					outSail.newLine();
+				} else if(e.isDwell()){
+					int intTime = (int) e.getTravelTime();
+					int intDecimalTime = (int) (100 * (e.getTravelTime() - intTime));
+					str = e.getRotation().getId() + ";" + e.getPrevEdge().getNoInRotation() + ";" + e.getNextEdge().getNoInRotation() + ";";
+					str += e.getFromPortUNLo() + ";" + intTime + "," + intDecimalTime;
+					outDwell.write(str);
+					outDwell.newLine();
+				}
+			}
+			outSail.close();
+			outDwell.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
+		
 	}
 }
