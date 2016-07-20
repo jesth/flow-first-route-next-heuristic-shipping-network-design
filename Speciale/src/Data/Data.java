@@ -117,7 +117,6 @@ public class Data implements Serializable{
 //		}
 //		int row = num / randomNumbers[0].length;
 //		int col = num % randomNumbers[0].length;
-//		
 //		return randomNumbers[row][col];
 	}
 	

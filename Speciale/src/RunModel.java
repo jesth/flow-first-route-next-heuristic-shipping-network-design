@@ -1,6 +1,9 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -31,9 +34,10 @@ public class RunModel {
 //		saveAux();
 //		testAux();
 
-//		testLNS("WorldLarge");
 //		testMedManual2();
 //		testWorldLargeAuto();
+
+		testLNS("Baltic");
 		
 		
 //		testLNS("Pacific");
@@ -43,11 +47,11 @@ public class RunModel {
 //		testBrouerCases();
 		
 		
-		Data.initialize("fleet_WAF.csv", "randomNumbers.csv", 1, 1);
-		Graph network = new Graph("Demand_WAF.csv");
-		network.copyRotations("Network.csv", "NetworkCost.csv");
-		network.runMcf();
-		network.printNetworkFacts("sailArcs.csv", "dwellArcs.csv");
+//		Data.initialize("fleet_WAF.csv", "randomNumbers.csv", 1, 1);
+//		Graph network = new Graph("Demand_WAF.csv");
+//		network.copyRotations("Network.csv", "NetworkCost.csv");
+//		network.runMcf();
+//		network.printNetworkFacts("sailArcs.csv", "dwellArcs.csv");
 //		System.out.println(network.getResult().getFlowProfit(false));
 		
 //		network.getResult().saveLoads("testLoads", 100);
@@ -62,13 +66,14 @@ public class RunModel {
 //		network.getResult().saveRotationCost("RotationCost.csv");
 //		network.getResult().saveOPLData("OPLData.dat");
 //		network.saveJson("bestSolWS.GeoJSON", 10);
-		System.out.println(network.getResult().getObjective());
+//		System.out.println(network.getResult().getObjective());
 
 	}
 	
 	public static void testLNS(String caseName) throws InterruptedException, IOException{
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
+		Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		LNS lns = new LNS();
 		for(int i=1; i<4; i++){
 			lns.VNSrun(3600, 20, caseName, i);	
