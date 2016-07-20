@@ -43,7 +43,7 @@ public class AuxRun {
 //		graph.serialize();
 //	}
 
-	public void run(){
+	public AuxGraph run(){
 		for(int i = 0; i < iterations; i++){
 //			System.out.println("Running iteration " + i);
 			graph.runDijkstra(iterations, rand);
@@ -59,7 +59,8 @@ public class AuxRun {
 //		}
 //		saveJson("AuxLoad.geoJSON", 5);
 //		saveODJson("PortsWorldLarge.geoJSON");
-		graph.serialize();
+//		graph.serialize();
+		return graph;
 	}
 	
 	private void saveJson(String fileName, int minLoad){

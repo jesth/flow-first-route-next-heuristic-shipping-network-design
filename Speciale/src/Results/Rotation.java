@@ -627,7 +627,12 @@ public class Rotation implements Serializable{
 		if(insertPort.equals(e.getFromNode().getPort()) || insertPort.equals(e.getToNode().getPort())){
 			return false;
 		}
+				
 		ArrayList<Integer> portArray = getInsertionPortArrayEdge(e.getNoInRotation(), insertPort.getPortId());
+//		System.out.println("insertPort: " + insertPort.getPortId());
+//		for(Integer i : portArray){
+//			System.out.println(i);
+//		}
 		int neededVessels = ComputeRotations.calcNumberOfVessels(portArray, vesselClass);
 		int noVesselsAvailable = noOfVessels + mainGraph.getNetNoVesselsAvailable(vesselClass.getId());
 		if(noVesselsAvailable < neededVessels){
@@ -1117,6 +1122,7 @@ public class Rotation implements Serializable{
 		Edge ingoingEdge = rotationEdges.get(noInRotationIn);
 		Edge dwell = ingoingEdge.getNextEdge();
 		mainGraph.removePort(dwell);
+//		rotationGraph.removePort(dwell);
 	}
 
 	public void insertPort(int noInRotation, Port p){
@@ -1213,7 +1219,7 @@ public class Rotation implements Serializable{
 		}
 	}
 
-	public boolean removeUnservingCalls(double percentToAccept){
+	public boolean simpleRemove(double percentToAccept){
 		for(int i=rotationEdges.size()-1; i>=0; i--){
 			Edge e = rotationEdges.get(i);
 			Node arrNode = null;

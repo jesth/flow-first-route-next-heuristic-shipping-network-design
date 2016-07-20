@@ -102,7 +102,7 @@ public class LNS {
 				//			} else if(rand < 0.2){
 				for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
 					Rotation r = graph.getResult().getRotations().get(i); 
-					if(r.removeUnservingCalls(0.05)){
+					if(r.simpleRemove(0.05)){
 						madeChange = true;
 					}
 				}
@@ -176,10 +176,6 @@ public class LNS {
 
 
 	public void VNSrun(int timeToRunSeconds, int numIterToFindInit, String caseName, int id) throws InterruptedException, IOException{
-		if(id == 1){
-			String fleetFileName = "fleet_" + caseName + ".csv";
-			Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
-		}
 		long timeToRun = (long) timeToRunSeconds * 1000;
 		long startTime = System.currentTimeMillis();
 
@@ -193,9 +189,11 @@ public class LNS {
 		int allTimeBestObj = graph.getResult().getObjective();
 		int currBestObj = allTimeBestObj;
 		Graph bestGraph = new Graph(graph);
-		String neighbourhood = "Feeder";
+		
+		String neighbourhood = "All";
+		
 		BufferedWriter progressWriter = graph.getResult().openProgressWriter("testResults\\" + caseName + "-" + neighbourhood + "-" + id + "ProgressSol.csv");
-		saveSol(progressWriter, 0, allTimeBestObj, allTimeBestObj);
+//		saveSol(progressWriter, 0, allTimeBestObj, allTimeBestObj);
 
 		int allTimeLastImproveIter = id*50;
 		int lastImproveIter = allTimeLastImproveIter;
@@ -211,14 +209,15 @@ public class LNS {
 			method.add(1);
 			method.add(2);
 			method.add(3);
-//			method.add(4);
-//			method.add(5);
+			method.add(4);
+			method.add(5);
 			ArrayList<Rotation> rotations = graph.getResult().getRotations();
 			while(!madeChange && method.size() > 0){
 				for(Rotation r : graph.getResult().getRotations()){
 					r.removeRotationGraph();
 				}
 				int index = selectMethod(method, iteration);
+				    // Insert port
 				if(index == 0){
 					for(int i = rotations.size()-1; i>=0; i--){
 						Rotation r = rotations.get(i);
@@ -231,6 +230,7 @@ public class LNS {
 							madeChange = true;
 						}
 					}
+					// Remove port
 				} else if(index == 1){
 					for(int i = rotations.size()-1; i>=0; i--){
 						Rotation r = rotations.get(i);
@@ -238,28 +238,32 @@ public class LNS {
 							madeChange = true;
 						}
 					}
+					// Service omission
 				} else if(index == 2){
 					for(Rotation r : graph.getResult().getRotations())
 						r.createRotationGraph(false);
 					if(graph.serviceBiggestOmissionDemand(iteration)){
 						madeChange = true;
 					}
-				} else if(index == 2){
+					// Feeder
+				} else if(index == 3){
 					if(graph.createFeederRotation()){
 						madeChange = true;
 					}
-				} else if(index == 0){
-					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
-						Rotation r = graph.getResult().getRotations().get(i); 
-						if(r.removeUnservingCalls(0.05)){
-							madeChange = true;
-						}
-					}
-				} else if(index == 5){
+					// Service Unserved Port
+				} else if(index == 4){
 					for(Rotation r : graph.getResult().getRotations())
 						r.createRotationGraph(false);
 					if(graph.serviceUnservedPort(iteration)){
 						madeChange = true;
+					}
+					// Simple remove
+				} else if(index == 5){
+					for(int i=graph.getResult().getRotations().size()-1; i>=0; i--){
+						Rotation r = graph.getResult().getRotations().get(i); 
+						if(r.simpleRemove(0.05)){
+							madeChange = true;
+						}
 					}
 				} 
 			}
@@ -271,7 +275,7 @@ public class LNS {
 				System.out.println("Resetting to best graph and shaking.");
 				int noRotations = Math.max(1, (int) (graph.getResult().getRotations().size() * 0.1));
 				for(int i = 0; i < noRotations; i++){
-					graph.randomAction(iteration);
+					graph.randomAction(iteration+i);
 				}
 				lastImproveIter = iteration + 1;
 			}
@@ -595,8 +599,8 @@ public class LNS {
 			graph = new Graph(demandFileName);
 			System.out.println("Running outer loop at iteration " + i);
 			AuxRun auxRun = new AuxRun(graph, 5, i*runId);
-			auxRun.run();
-			AuxGraph auxGraph = AuxGraph.deserialize();
+			AuxGraph auxGraph = auxRun.run();
+//			AuxGraph auxGraph = AuxGraph.deserialize();
 			ArrayList<AuxEdge> sortedEdges = auxGraph.getSortedAuxEdges();
 			//			for(AuxEdge e : sortedEdges){
 			//				System.out.println("AuxEdge " + e.getFromNode().getUNLocode() + "-" + e.getToNode().getUNLocode() + " with load " + e.getAvgLoad());

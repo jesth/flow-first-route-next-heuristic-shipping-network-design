@@ -1,6 +1,9 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -34,9 +37,8 @@ public class RunModel {
 //		testLNS("WorldSmall");
 //		testMedManual2();
 //		testWorldLargeAuto();
-		
-		
-		testLNS("Pacific");
+
+		testLNS("Baltic");
 		
 //		testCode("WorldSmall", 3);
 
@@ -67,9 +69,10 @@ public class RunModel {
 	public static void testLNS(String caseName) throws InterruptedException, IOException{
 		String fleetFileName = getFleetFileName(caseName);
 		String demandFileName = getDemandFileName(caseName);
+		Data.initialize(fleetFileName, "randomNumbers.csv", 1, 1);
 		LNS lns = new LNS();
-		for(int i=1; i<6; i++){
-			lns.VNSrun(120, 20, caseName, i);	
+		for(int i=1; i<11; i++){
+			lns.VNSrun(30, 20, caseName, i);	
 		}
 //		lns.testInsertion(150, 20, fleetFileName, demandFileName);
 	}

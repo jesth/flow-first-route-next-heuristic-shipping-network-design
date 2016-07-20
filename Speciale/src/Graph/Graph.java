@@ -1647,10 +1647,12 @@ public class Graph implements Serializable{
 		Port insertPort = closestPorts[index];
 		if(r.checkInsertPortEdge(e, insertPort)){
 			insertPort(r, e, insertPort);
+//			r.getRotationGraph().insertPort(r, e, insertPort);
 			System.out.println("Doing random action by inserting " + insertPort.getUNLocode() + " in rotation " + r.getId());
 		} else if(r.checkRemovePort(e.getPrevEdge())){
 			System.out.println("Doing random action by removing " + e.getFromPortUNLo() + " from rotation " + r.getId());
 			r.removePort(e.getPrevEdge().getPrevEdge().getNoInRotation(), e.getNoInRotation());
 		}
+		r.removeRotationGraph();
 	}
 }
