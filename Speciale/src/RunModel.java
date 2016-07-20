@@ -31,7 +31,7 @@ public class RunModel {
 //		saveAux();
 //		testAux();
 
-		testLNS("WorldLarge");
+//		testLNS("WorldLarge");
 //		testMedManual2();
 //		testWorldLargeAuto();
 		
@@ -43,11 +43,11 @@ public class RunModel {
 //		testBrouerCases();
 		
 		
-//		Data.initialize("fleet_WorldSmall.csv", "randomNumbers.csv", 1, 1);
-//		Graph network = new Graph("Demand_WorldSmall.csv");
-//		network.copyRotations("Network.csv", "NetworkCost.csv");
-//		network.runMcf();
-//		network.printNetworkFacts("sailArcs.csv", "dwellArcs.csv");
+		Data.initialize("fleet_WAF.csv", "randomNumbers.csv", 1, 1);
+		Graph network = new Graph("Demand_WAF.csv");
+		network.copyRotations("Network.csv", "NetworkCost.csv");
+		network.runMcf();
+		network.printNetworkFacts("sailArcs.csv", "dwellArcs.csv");
 //		System.out.println(network.getResult().getFlowProfit(false));
 		
 //		network.getResult().saveLoads("testLoads", 100);
@@ -62,7 +62,7 @@ public class RunModel {
 //		network.getResult().saveRotationCost("RotationCost.csv");
 //		network.getResult().saveOPLData("OPLData.dat");
 //		network.saveJson("bestSolWS.GeoJSON", 10);
-//		System.out.println(network.getResult().getObjective());
+		System.out.println(network.getResult().getObjective());
 
 	}
 	
