@@ -1,0 +1,3 @@
+RotationId;VesselSize;Distance;NoVessels;TotalCost;PortCallCost;SailingFuelCost;IdleFuelCost;CanalCost;TCCost
+0;800;3304;2;417434;131011;166923;7500;0;112000
+1;450;5805;4;650104;241268;255876;12960;0;140000
